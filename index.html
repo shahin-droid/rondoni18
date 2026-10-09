@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Rondoni 18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&display=swap">
+<style>
+/* Layout: one site, chapters switched by hash (#fissi, #complementi, #scelte); a home that lists them.
+   Brand voice from the BTWN mark: heavy condensed black type, vermilion brackets, warm paper. */
+:root{
+  --bg:#f3f1ec; --paper:#ffffff; --paper-2:#eae7e0;
+  --ink:#151412; --ink-2:#4a4743; --muted:#7a756e; --line:#d9d5cc;
+  --accent:#e8451a; --accent-ink:#ffffff;
+  --ok:#2f6b3a; --warn:#a4661b;
+  --display:"Archivo",system-ui,"Helvetica Neue",Arial,sans-serif;
+  --body:"Archivo",system-ui,"Helvetica Neue",Arial,sans-serif;
+  --shadow:0 18px 50px -24px rgba(20,18,14,.35);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#161513; --paper:#1e1d1a; --paper-2:#262420;
+  --ink:#f0ece4; --ink-2:#c9c4ba; --muted:#948e84; --line:#34312c;
+  --accent:#f25a2d; --accent-ink:#1a1612; --ok:#7fc08a; --warn:#e0a35a; --shadow:0 18px 50px -24px rgba(0,0,0,.7); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#161513; --paper:#1e1d1a; --paper-2:#262420;
+  --ink:#f0ece4; --ink-2:#c9c4ba; --muted:#948e84; --line:#34312c;
+  --accent:#f25a2d; --accent-ink:#1a1612; --ok:#7fc08a; --warn:#e0a35a; --shadow:0 18px 50px -24px rgba(0,0,0,.7); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.05}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* brand mark */
+.mark{font-family:var(--display);font-weight:900;font-stretch:72%;letter-spacing:-.01em;font-size:1.5rem;line-height:1;display:inline-flex;align-items:center;gap:.08em;text-decoration:none;white-space:nowrap}
+.mark b{color:var(--accent);font-weight:900;font-stretch:62%;transform:scaleY(1.18);display:inline-block}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:.7rem 16px;display:flex;align-items:center;gap:1.5rem}
+.top .proj{font-family:var(--display);font-weight:700;font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;color:var(--muted);white-space:nowrap}
+nav.sec{margin-left:auto;display:flex;gap:1.1rem;overflow-x:auto;scrollbar-width:none;min-width:0}
+nav.sec::-webkit-scrollbar{display:none}
+nav.sec a{text-decoration:none;font-size:.82rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;padding:.3rem 0;border-bottom:2px solid transparent}
+nav.sec a.on,nav.sec a:hover{color:var(--ink);border-color:var(--accent)}
+@media (max-width:720px){ .top .proj{display:none} }
+
+/* chapter sub-nav */
+.subnav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 3.3rem);z-index:19;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+@media (min-width:900px){ .subnav{margin-inline:-32px;padding-inline:32px} }
+.subnav div{max-width:1240px;margin:0 auto;display:flex;gap:1.2rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 0}
+.subnav div::-webkit-scrollbar{display:none}
+.subnav button{background:none;border:0;padding:.2rem 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent}
+.subnav button.on,.subnav button:hover{color:var(--ink);border-color:var(--ink)}
+
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:0 4rem}
+@media (min-width:900px){ .wrap{padding-inline:32px} }
+.chapter{display:none}
+.chapter.on{display:block}
+
+/* eyebrow / section head */
+.eyebrow{font-family:var(--display);font-weight:700;font-stretch:80%;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.sec-head{display:grid;gap:.5rem;padding-block:4rem 1.75rem;border-top:1px solid var(--line);margin-top:3rem}
+.sec-head.first{border-top:0;margin-top:0;padding-top:2.5rem}
+.sec-head h2{font-size:clamp(1.9rem,4vw,3rem);font-weight:800;font-stretch:85%;letter-spacing:-.02em}
+.sec-head .sub{color:var(--muted);font-size:1.02rem;max-width:62ch}
+section{scroll-margin-top:7rem}
+.status{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink-2);background:var(--paper-2);padding:.35rem .7rem;width:max-content;max-width:100%}
+.status i{width:.55rem;height:.55rem;border-radius:50%;background:var(--ok);display:inline-block}
+.status.open i{background:var(--warn)}
+
+/* chapter hero */
+.hero{display:grid;gap:2rem;padding-block:3rem 1rem;align-items:end}
+@media (min-width:900px){ .hero{grid-template-columns:1.1fr .9fr;gap:3rem;padding-block:4.5rem 2rem} }
+.hero h1{font-size:clamp(3.2rem,10vw,7.5rem);font-weight:900;font-stretch:70%;letter-spacing:-.025em;line-height:.9;margin-top:.6rem}
+.hero .lede{font-size:1.15rem;color:var(--ink-2);max-width:48ch;margin-top:1.4rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:2rem;color:var(--muted);font-size:.85rem}
+.hero .meta b{display:block;color:var(--ink);font-weight:600}
+.plan{background:var(--paper);border:1px solid var(--line);padding:1rem;box-shadow:var(--shadow)}
+.plan img{width:100%;aspect-ratio:1290/1219;object-fit:contain;cursor:zoom-in}
+.plan figcaption{margin-top:.75rem;font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+
+/* plan hotspots */
+.plan .hot{position:relative}
+.plan .hot img{display:block}
+.plan .hs{position:absolute;background:rgba(232,69,26,.28);border:1.5px solid var(--accent);cursor:pointer;padding:0;transition:background .15s}
+.plan .hs:hover,.plan .hs:focus-visible{background:rgba(232,69,26,.5)}
+.plan .hs span{position:absolute;left:50%;top:100%;transform:translate(-50%,.3rem);background:var(--ink);color:var(--bg);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:.25rem .5rem;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+.plan .hs:hover span,.plan .hs:focus-visible span{opacity:1}
+.plan .legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin-top:.6rem;font-size:.74rem;color:var(--ink-2)}
+.plan .legend i{display:inline-block;width:.7rem;height:.7rem;background:rgba(232,69,26,.35);border:1px solid var(--accent);vertical-align:-1px;margin-right:.3rem}
+
+/* home chapters list */
+.chapters{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:2.5rem}
+@media (min-width:900px){ .chapters{grid-template-columns:repeat(4,1fr)} }
+@media (min-width:600px) and (max-width:899px){ .chapters{grid-template-columns:1fr 1fr} }
+.chapters a{display:grid;grid-template-rows:auto auto 1fr auto;gap:.6rem;padding:1.5rem 1.6rem 1.4rem;background:var(--paper);text-decoration:none;position:relative;min-height:15rem}
+.chapters a:hover{background:var(--paper-2)}
+.chapters .k{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.chapters .v{font-family:var(--display);font-weight:800;font-stretch:80%;font-size:2rem;letter-spacing:-.015em;line-height:1}
+.chapters .d{color:var(--ink-2);font-size:.95rem}
+.chapters .arrow{color:var(--accent);font-weight:700;font-size:1.3rem}
+.chapters a.soon{color:var(--muted)}
+.chapters a.soon .v{color:var(--muted)}
+.overview{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:2.5rem}
+@media (min-width:720px){ .overview{grid-template-columns:1fr 1fr} }
+.overview a,.overview button{display:grid;gap:.35rem;padding:1.4rem 1.5rem;background:var(--paper);text-decoration:none;position:relative;text-align:left;border:0;width:100%}
+.overview a:hover,.overview button:hover{background:var(--paper-2)}
+.overview .k{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.overview .v{font-family:var(--display);font-weight:800;font-stretch:85%;font-size:1.6rem;letter-spacing:-.01em}
+.overview .d{color:var(--ink-2);font-size:.92rem}
+.overview .arrow{position:absolute;right:1.4rem;top:1.3rem;color:var(--accent);font-weight:700}
+
+/* figures */
+figure{margin:0}
+.fig{background:var(--paper);border:1px solid var(--line)}
+.fig img{width:100%;height:auto;cursor:zoom-in}
+.fig figcaption{padding:.7rem .9rem;font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);display:grid;gap:.1rem}
+.fig figcaption small{color:var(--muted);font-size:.76rem}
+.grid2{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .grid2{grid-template-columns:1fr 1fr} }
+.grid3{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .grid3{grid-template-columns:2fr 1fr 1fr} }
+.grid3e{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .grid3e{grid-template-columns:repeat(3,1fr)} }
+.grid4{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .grid4{grid-template-columns:repeat(4,1fr)} }
+@media (min-width:480px) and (max-width:719px){ .grid4{grid-template-columns:1fr 1fr} }
+.band{display:grid;gap:1.25rem;margin-top:2.5rem}
+@media (min-width:900px){ .band{grid-template-columns:1fr 2fr;gap:2.5rem;align-items:start} }
+.band h3{font-size:1.35rem;font-weight:800;font-stretch:85%;letter-spacing:-.01em}
+.band .txt{display:grid;gap:.9rem;color:var(--ink-2);font-size:.98rem;max-width:44ch}
+.band .txt p b{color:var(--ink);font-weight:600}
+.note{font-size:.8rem;color:var(--muted);margin-top:.9rem}
+
+/* material composition */
+.mat{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .mat{grid-template-columns:1fr 2.3fr 1.3fr} }
+.mat .fig img{aspect-ratio:1/1;object-fit:cover}
+.mat .fig.tall img{aspect-ratio:1/2}
+@media (max-width:719px){ .mat .fig.tall img{aspect-ratio:2/1} }
+
+/* colour picker (compact) + palette modal */
+.palette{display:grid;gap:1.25rem;margin-top:1.5rem}
+@media (min-width:900px){ .palette{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2.5rem} }
+.palette>*{min-width:0}
+.swgroup{margin-bottom:1.25rem}
+.swgroup h4{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:.6rem}
+.sw{display:grid;grid-template-columns:repeat(9,1fr);gap:.4rem}
+@media (max-width:480px){ .sw{grid-template-columns:repeat(6,1fr)} }
+.sw.mini{grid-template-columns:repeat(12,1fr);gap:.3rem}
+@media (max-width:480px){ .sw.mini{grid-template-columns:repeat(9,1fr)} }
+.sw button{padding:0;border:0;background:none;display:grid;gap:.25rem;text-align:left;cursor:pointer}
+.sw .chip{aspect-ratio:1;background-size:cover;background-position:center;border:1px solid rgba(0,0,0,.08);outline:2px solid transparent;outline-offset:2px;transition:transform .12s,outline-color .12s}
+.sw button:hover .chip{transform:scale(1.08)}
+.sw button[aria-pressed="true"] .chip{outline-color:var(--accent)}
+.sw .lbl{font-size:.62rem;line-height:1.15;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sw button[aria-pressed="true"] .lbl{color:var(--ink);font-weight:600}
+.sw.mini .lbl{display:none}
+.minihost .swgroup{margin-bottom:.4rem}
+.minihost .swgroup:last-child{margin-bottom:0}
+.colmap{background:var(--paper);border:1px solid var(--line);display:grid;align-content:start;position:sticky;top:7rem}
+.colmap h4{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:.9rem 1.1rem;border-bottom:1px solid var(--line)}
+.colmap .row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.8rem;padding:.65rem 1.1rem;border-bottom:1px solid var(--line);font-size:.9rem}
+.colmap .row:last-child{border-bottom:0}
+.colmap .row .n{font-family:var(--display);font-weight:900;font-stretch:65%;color:var(--accent);font-size:1.3rem;min-width:2ch;font-variant-numeric:tabular-nums}
+.colmap .row .c{width:2.2rem;height:2.2rem;background-size:cover;background-position:center;border:1px solid rgba(0,0,0,.1);background-color:var(--paper-2)}
+.colmap .row .t{display:grid;gap:.05rem;min-width:0}
+.colmap .row .t b{font-weight:600}
+.colmap .row .t small{color:var(--muted);font-size:.75rem}
+.colmap .row button{background:none;border:1px solid var(--line);padding:.35rem .6rem;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--ink-2)}
+.colmap .row button:hover{border-color:var(--ink);color:var(--ink)}
+.colmap .all{padding:.8rem 1.1rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--muted)}
+/* per-wardrobe colour block */
+.arm .colsel{background:var(--paper);border:1px solid var(--line);display:grid;gap:.9rem;padding:1rem 1.1rem}
+@media (min-width:720px){ .arm .colsel{grid-template-columns:auto 1fr;align-items:center} }
+.arm .colsel .cur{display:flex;align-items:center;gap:.8rem}
+.arm .colsel .cur .c{width:3.6rem;height:3.6rem;background-size:cover;background-position:center;border:1px solid rgba(0,0,0,.1);background-color:var(--paper-2);flex:none;cursor:zoom-in}
+.arm .colsel .cur .t{display:grid;gap:.05rem}
+.arm .colsel .cur .t span{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.arm .colsel .cur .t b{font-family:var(--display);font-weight:800;font-stretch:85%;font-size:1.2rem;letter-spacing:-.01em}
+.arm .colsel .cur .t small{color:var(--muted);font-size:.78rem}
+/* modal */
+.pm{position:fixed;inset:0;z-index:60;background:rgba(10,9,8,.6);display:grid;place-items:center;padding:1rem}
+.pm .box{background:var(--paper);color:var(--ink);width:min(100%,980px);max-height:min(92vh,900px);overflow:auto;display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);box-shadow:var(--shadow)}
+.pm .hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.2rem;border-bottom:1px solid var(--line)}
+.pm .hd h3{font-size:1.1rem;font-weight:800;font-stretch:85%}
+.pm .hd h3 small{display:block;font-family:var(--body);font-weight:500;font-stretch:100%;font-size:.78rem;color:var(--muted)}
+.pm .x{background:none;border:1px solid var(--line);width:2.2rem;height:2.2rem;font-size:1.1rem;line-height:1}
+.pm .bd{display:grid;gap:1.25rem;padding:1.2rem}
+@media (min-width:720px){ .pm .bd{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)} }
+.pm .bd>*{min-width:0}
+.pm .prev{display:grid;grid-template-rows:auto auto;border:1px solid var(--line);align-self:start;position:sticky;top:0;background:var(--paper);z-index:1}
+@media (max-width:719px){ .pm .prev{order:-1;grid-template-columns:7rem 1fr;grid-template-rows:auto} .pm .prev .big{aspect-ratio:auto;min-height:7rem} .pm .prev .info{padding:.7rem .8rem} .pm .prev .info .v{font-size:1.15rem} }
+.pm .prev .big{aspect-ratio:1;background-size:cover;background-position:center;background-color:var(--paper-2);position:relative}
+.pm .prev .big .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:.9rem;text-align:center;padding:1rem}
+.pm .prev .info{padding:.9rem 1rem;display:grid;gap:.6rem}
+.pm .prev .info .v{font-family:var(--display);font-weight:800;font-stretch:85%;font-size:1.5rem;letter-spacing:-.01em}
+.pm .prev .info .d{font-size:.82rem;color:var(--muted)}
+.pm .apply{display:flex;flex-wrap:wrap;gap:.4rem}
+.pm .apply button{border:1px solid var(--line);background:var(--paper);padding:.5rem .7rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--ink-2)}
+.pm .apply button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.pm .apply button:disabled{opacity:.4;cursor:default}
+/* legacy (unused) */
+.picker{display:none}
+/* wardrobe cards */
+.armadi{display:grid;gap:2.5rem;margin-top:1rem}
+.arm{display:grid;gap:1rem}
+.arm .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 1.2rem}
+.arm .num{font-family:var(--display);font-weight:900;font-stretch:65%;font-size:2.6rem;line-height:1;color:var(--accent);min-width:2ch;font-variant-numeric:tabular-nums}
+.arm h3{font-size:1.5rem;font-weight:800;font-stretch:85%;letter-spacing:-.01em}
+.arm .head p{color:var(--muted);flex-basis:100%;font-size:.95rem}
+@media (min-width:720px){ .arm .head p{flex-basis:auto;margin-left:auto} }
+.arm .grid2 .fig img{aspect-ratio:4/3;object-fit:contain;background:#f4f4f2}
+.chipline{display:inline-flex;align-items:center;gap:.45rem}
+.chipline i{width:.9rem;height:.9rem;border:1px solid rgba(0,0,0,.12);display:inline-block;background:var(--pick,#ddd)}
+
+/* specs */
+.specs{display:grid;gap:1.25rem}
+@media (min-width:720px){ .specs{grid-template-columns:1fr 1fr} }
+.spec{background:var(--paper);border:1px solid var(--line);padding:1.4rem 1.5rem;display:grid;gap:1rem;align-content:start}
+.spec h3{font-size:1.1rem;font-weight:800;font-stretch:85%;letter-spacing:.02em;text-transform:uppercase;color:var(--accent)}
+.spec dl{margin:0;display:grid;gap:.8rem}
+.spec dt{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.spec dd{margin:.15rem 0 0;color:var(--ink-2);font-size:.95rem}
+.spec dd.flag{color:var(--ink);font-weight:600}
+
+/* product cards (complementi) */
+.prod{background:var(--paper);border:1px solid var(--line);display:grid;grid-template-rows:auto 1fr}
+.prod .media{display:grid;gap:2px;background:var(--line)}
+.prod .media img{width:100%;aspect-ratio:4/3;object-fit:cover;cursor:zoom-in;background:var(--paper-2)}
+.prod .media.two{grid-template-columns:1fr 1fr}
+.prod .media.two img{aspect-ratio:1/1}
+.prod .media.wide img{aspect-ratio:16/9}
+.prod .media.render img{object-fit:contain;background:#f7f7f6}
+.prod .body{padding:1.1rem 1.2rem 1.2rem;display:grid;gap:.75rem;align-content:start}
+.prod .k{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.prod h3{font-size:1.6rem;font-weight:800;font-stretch:85%;letter-spacing:-.015em}
+.prod h3 small{display:block;font-size:.85rem;font-weight:500;font-stretch:100%;color:var(--muted);letter-spacing:0;margin-top:.2rem}
+.prod .d{color:var(--ink-2);font-size:.95rem}
+.prod .fin{display:grid;gap:.5rem;font-size:.86rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:.75rem}
+.prod .fin b{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:.1rem}
+.prod .fin img{cursor:zoom-in;border:1px solid var(--line)}
+.prod .foot{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;align-items:baseline;justify-content:space-between;border-top:1px solid var(--line);padding-top:.75rem;margin-top:.25rem}
+.price{font-family:var(--display);font-weight:800;font-stretch:85%;font-size:1.25rem;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.price small{display:block;font-family:var(--body);font-weight:500;font-size:.72rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-stretch:100%}
+.sheet{font-size:.82rem;font-weight:600;color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--accent)}
+.sheet:hover{color:var(--accent)}
+.react{display:inline-flex;border:1px solid var(--line);width:max-content;max-width:100%}
+.react button{background:var(--paper);border:0;padding:.5rem .75rem;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--line)}
+.react button:last-child{border-right:0}
+.react button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.react button[data-v="si"][aria-pressed="true"]{background:var(--ok);color:#fff}
+.react button[data-v="no"][aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.reactrow{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center}
+.reactrow .lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.vs{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:900px){ .vs{grid-template-columns:1fr 1fr} }
+.choose{display:flex;align-items:center;gap:.6rem;background:var(--paper-2);padding:.6rem .8rem;font-size:.85rem;font-weight:600;cursor:pointer}
+.choose input{accent-color:var(--accent);width:1.1rem;height:1.1rem;margin:0}
+.prod.chosen{outline:2px solid var(--accent);outline-offset:-2px}
+.room{display:grid;gap:1.25rem}
+@media (min-width:900px){ .room.r2{grid-template-columns:1fr 1fr} .room.r3{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:600px) and (max-width:899px){ .room.r3{grid-template-columns:1fr 1fr} }
+
+/* concept chapter */
+.mood{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:900px){ .mood{grid-template-columns:2fr 1fr} }
+.mood .fig img{aspect-ratio:2180/963;object-fit:cover}
+.palette-k{display:grid;gap:.6rem}
+.palette-k .sw4{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.palette-k .sw4 div{display:grid;gap:.3rem}
+.palette-k .sw4 i{display:block;aspect-ratio:1;border:1px solid rgba(0,0,0,.08)}
+.palette-k .sw4 span{font-size:.72rem;color:var(--ink-2);line-height:1.2}
+.kplan{display:grid;gap:1.25rem;align-items:start}
+@media (min-width:720px){ .kplan{grid-template-columns:1fr 1fr} }
+.kplan .fig img{aspect-ratio:1360/1778;object-fit:contain;background:#fff}
+.rooms{display:grid;gap:2rem;margin-top:1rem}
+.roomk{display:grid;gap:.9rem}
+.roomk .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem}
+.roomk h3{font-size:1.35rem;font-weight:800;font-stretch:85%;letter-spacing:-.01em}
+.roomk .head p{color:var(--muted);font-size:.9rem}
+.roomk .shots{display:flex;gap:.6rem;align-items:stretch}
+.roomk .shots img{flex:0.75 1 0;min-width:0;width:auto;height:auto;aspect-ratio:3/4;object-fit:cover;cursor:zoom-in;background:var(--paper-2);border:1px solid var(--line)}
+.roomk .shots img.wide{flex:1.6 1 0;aspect-ratio:16/10}
+@media (max-width:719px){ .roomk .shots{flex-wrap:wrap} .roomk .shots img{flex:1 1 45%} .roomk .shots img.wide{flex:1 1 100%} }
+.fromk{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--accent);padding:.9rem 1rem;margin-top:1.25rem;font-size:.92rem;color:var(--ink-2)}
+.fromk .k{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;white-space:nowrap;padding-top:.15rem}
+.fromk a{color:var(--ink);font-weight:600}
+
+/* scelte */
+.scelte{display:grid;gap:1.5rem}
+@media (min-width:900px){ .scelte{grid-template-columns:1fr 1fr;gap:2.5rem} }
+.form{display:grid;gap:1rem}
+.field{display:grid;gap:.35rem}
+.field label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.field input,.field textarea{font:inherit;padding:.7rem .8rem;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:0;width:100%}
+.field textarea{min-height:5.5rem;resize:vertical}
+.riepilogo{background:var(--ink);color:var(--bg);padding:1.5rem;display:grid;gap:1rem;align-content:start}
+.riepilogo h3{font-size:1.2rem;font-weight:800;font-stretch:85%;letter-spacing:.02em;text-transform:uppercase}
+.riepilogo pre{margin:0;white-space:pre-wrap;font:inherit;font-size:.92rem;line-height:1.6;opacity:.92;min-width:0}
+.btnrow{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;padding:.8rem 1.2rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:inherit;border:1px solid currentColor}
+.hint{font-size:.8rem;opacity:.75}
+.chapnext{margin-top:3.5rem;border-top:1px solid var(--line);padding-top:1.5rem;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center}
+.chapnext a{text-decoration:none;font-family:var(--display);font-weight:800;font-stretch:85%;font-size:1.2rem}
+.chapnext a span{display:block;font-family:var(--body);font-weight:600;font-stretch:100%;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);margin-top:4rem;padding-block:2rem;display:flex;flex-wrap:wrap;gap:1rem 2.5rem;align-items:center;color:var(--muted);font-size:.82rem}
+footer .mark{font-size:1.2rem}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(10,9,8,.92);z-index:50;display:grid;place-items:center;padding:1rem;cursor:zoom-out}
+.lb img{max-width:min(96vw,1600px);max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lb figcaption{position:absolute;left:0;right:0;bottom:env(safe-area-inset-bottom,0px);padding:1rem;color:#e9e4da;font-size:.85rem;text-align:center}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="mark" href="#home" aria-label="BTWN · Rondoni 18"><b>[</b>BTWN<b>]</b></a>
+    <span class="proj">Rondoni 18 · Progetto d'arredo</span>
+    <nav class="sec" aria-label="Capitoli">
+      <a href="#home" data-route="home">Home</a>
+      <a href="#concept" data-route="concept">Concept</a>
+      <a href="#fissi" data-route="fissi">Arredi fissi</a>
+      <a href="#complementi" data-route="complementi">Complementi</a>
+      <a href="#scelte" data-route="scelte">Le tue scelte</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= HOME ================= -->
+<div class="chapter" id="ch-home">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Progetto d'arredo · Ottobre 2026</span>
+      <h1>Rondoni 18</h1>
+      <p class="lede">Il progetto d'arredo della casa, a partire dal concept dell'architetto: gli arredi fissi già definiti, cucina e armadi, e una prima selezione di complementi da discutere insieme. Qui scegli finiture, lasci preferenze e ritrovi tutto in un riepilogo da mandarci.</p>
+      <div class="meta">
+        <div><b>A cura di</b>BTWN – Between Contract &amp; Design</div>
+        <div><b>Concept</b>Arch. Luca Camporeale – Studio LCR</div>
+        <div><b>Aziende</b>Binova · Lema</div>
+      </div>
+    </div>
+    <figure class="plan">
+      <img src="img/s02_14.jpg" alt="Planimetria dell'appartamento" data-zoom data-cap="Planimetria · distribuzione generale">
+      <figcaption><span>Distribuzione generale</span><span>Planimetria aggiornata secondo layout fornito</span></figcaption>
+    </figure>
+  </section>
+
+  <div class="chapters">
+    <a href="#concept">
+      <span class="k">Il punto di partenza</span>
+      <span class="v">Il concept dell'architetto</span>
+      <span class="d">Moodboard, planimetria di progetto e render di Studio LCR. La visione da cui partono tutte le scelte d'arredo.</span>
+      <span class="arrow">→</span>
+    </a>
+    <a href="#fissi">
+      <span class="k">Capitolo 1</span>
+      <span class="v">Arredi fissi</span>
+      <span class="d">Cucina Binova Bluna e cinque armadi Lema Text su misura. Progetto definito: qui scegli il colore delle ante e confermi le finiture.</span>
+      <span class="arrow">→</span>
+    </a>
+    <a href="#complementi">
+      <span class="k">Capitolo 2</span>
+      <span class="v">Complementi e accessori</span>
+      <span class="d">Divano, tavolini, tavolo e sedie, letto e comò, cameretta. Selezione preliminare BTWN in base ai feedback dell'architetto, con alternative e prezzi di listino.</span>
+      <span class="arrow">→</span>
+    </a>
+    <a href="#scelte">
+      <span class="k">Per chiudere</span>
+      <span class="v">Le tue scelte</span>
+      <span class="d">Il riepilogo di tutto quello che hai scelto o commentato nei due capitoli, pronto da copiare e inviarci.</span>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- ================= CONCEPT ================= -->
+<div class="chapter" id="ch-concept">
+  <div class="subnav"><div>
+    <button type="button" data-go="k-mood">Moodboard</button>
+    <button type="button" data-go="k-plan">Planimetria</button>
+    <button type="button" data-go="k-render">Render</button>
+  </div></div>
+
+  <section class="hero" id="k-top">
+    <div>
+      <span class="eyebrow">Il punto di partenza</span>
+      <h1>Il concept dell'architetto</h1>
+      <p class="lede">La visione di Studio LCR per la casa: una palette di neutri caldi, grigio-verde, bordeaux e blu profondo, superfici continue, armadiature a tutta altezza laccate, pietra scura in cucina. Le proposte BTWN nei capitoli successivi partono da qui.</p>
+      <div class="meta">
+        <div><b>Progetto</b>Arch. Luca Camporeale – Studio LCR</div>
+        <div><b>Documento</b>Via Rondoni 18 · moodboard e render · maggio 2026</div>
+        <div><b>Stato</b><span class="status"><i></i>Concept approvato</span></div>
+      </div>
+    </div>
+    <figure class="plan">
+      <img src="img/k_plan.jpg" alt="Planimetria di progetto dell'architetto" data-zoom data-cap="Stato di progetto · Studio LCR" style="aspect-ratio:1360/1778">
+      <figcaption><span>Stato di progetto</span><span>Studio LCR</span></figcaption>
+    </figure>
+  </section>
+
+  <section id="k-mood">
+    <div class="sec-head">
+      <span class="eyebrow">Moodboard</span>
+      <h2>Materia e colore</h2>
+      <p class="sub">Tre riferimenti e quattro colori: superfici curve e continue, armadiature laccate grigio-verde a tutta altezza, tessuti naturali color sabbia.</p>
+    </div>
+    <div class="mood">
+      <figure class="fig"><img src="img/k_mood.jpg" alt="Moodboard dell'architetto: parete curva, armadiatura laccata grigio-verde, tessuto sabbia e quattro campioni colore" data-zoom data-cap="Moodboard · Studio LCR"><figcaption>Moodboard<small>Studio LCR · maggio 2026</small></figcaption></figure>
+      <div class="palette-k">
+        <span class="eyebrow">La palette del concept</span>
+        <div class="sw4">
+          <div><i style="background:#9e9e94"></i><span>Grigio-verde<br>armadi e boiserie</span></div>
+          <div><i style="background:#4d3130"></i><span>Bordeaux<br>soffitto camera, bagno</span></div>
+          <div><i style="background:#36404c"></i><span>Blu profondo<br>soffitto camera 2</span></div>
+          <div><i style="background:#b3b4b6"></i><span>Grigio chiaro<br>pareti e porte</span></div>
+        </div>
+        <p class="note" style="margin-top:.4rem">Colori indicativi, letti dalla moodboard. I codici reali si definiscono a campione.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="k-plan">
+    <div class="sec-head">
+      <span class="eyebrow">Planimetria</span>
+      <h2>Stato di progetto</h2>
+      <p class="sub">La distribuzione definita dall'architetto: cucina e sala da pranzo verso il giardino, soggiorno, due camere, cameretta e due bagni. Le planimetrie BTWN dei capitoli successivi seguono questo layout.</p>
+    </div>
+    <div class="kplan">
+      <figure class="fig"><img src="img/k_plan.jpg" alt="Stato di progetto" data-zoom data-cap="Stato di progetto · Studio LCR"><figcaption>Stato di progetto<small>Studio LCR</small></figcaption></figure>
+      <figure class="fig"><img src="img/k_plan_q.jpg" alt="Stato di progetto quotato" data-zoom data-cap="Stato di progetto quotato · Studio LCR"><figcaption>Stato di progetto quotato<small>Studio LCR</small></figcaption></figure>
+    </div>
+    <figure class="fig" style="margin-top:1.25rem"><img src="img/k_confronto.jpg" alt="Stato di confronto: demolizioni e costruzioni" data-zoom data-cap="Stato di confronto · demolizioni e costruzioni" style="aspect-ratio:706/930;object-fit:contain;background:#fff;max-height:60vh"><figcaption>Stato di confronto<small>Demolizioni e costruzioni rispetto allo stato di fatto</small></figcaption></figure>
+  </section>
+
+  <section id="k-render">
+    <div class="sec-head">
+      <span class="eyebrow">Render</span>
+      <h2>Gli ambienti</h2>
+      <p class="sub">I render del concept, stanza per stanza, con le didascalie originali dell'architetto.</p>
+    </div>
+    <div class="rooms">
+      <article class="roomk"><div class="head"><h3>Ingresso e sala</h3><p>Boiserie grigio-verde, nicchia TV, divano in pelle scura</p></div>
+        <div class="shots"><img src="img/k12.jpg" alt="Ingresso e sala" data-zoom data-cap="Ingresso / sala · Studio LCR"><img src="img/k13.jpg" alt="Cucina e sala" data-zoom data-cap="Cucina / sala · Studio LCR"></div></article>
+      <article class="roomk"><div class="head"><h3>Cucina e sala da pranzo</h3><p>Basi e pensili grigio-verde, top e schienale in pietra scura, tavolo ovale con sedie scure</p></div>
+        <div class="shots"><img src="img/k09.jpg" alt="Cucina" data-zoom data-cap="Cucina · Studio LCR" class="wide"><img src="img/k10.jpg" alt="Cucina, dettaglio" data-zoom data-cap="Cucina · Studio LCR" class="wide"><img src="img/k11.jpg" alt="Cucina e sala da pranzo" data-zoom data-cap="Cucina / sala · Studio LCR"></div></article>
+      <article class="roomk"><div class="head"><h3>Camera 1</h3><p>Armadiatura laccata a tutta altezza, soffitto bordeaux, scrivania</p></div>
+        <div class="shots"><img src="img/k03.jpg" alt="Camera 1" data-zoom data-cap="Camera 1 · Studio LCR"><img src="img/k04.jpg" alt="Camera 1, armadiatura e scrivania" data-zoom data-cap="Camera 1 · Studio LCR" class="wide"></div></article>
+      <article class="roomk"><div class="head"><h3>Camera 2</h3><p>Soffitto blu profondo, testiera imbottita, armadiatura a parete</p></div>
+        <div class="shots"><img src="img/k07.jpg" alt="Camera 2" data-zoom data-cap="Camera 2 · Studio LCR"><img src="img/k08.jpg" alt="Camera 2, armadiatura" data-zoom data-cap="Camera 2 · Studio LCR" class="wide"></div></article>
+      <article class="roomk"><div class="head"><h3>Camera 3</h3><p>Scrittoio a parete, libreria, armadiatura grigio-verde</p></div>
+        <div class="shots"><img src="img/k16.jpg" alt="Camera 3" data-zoom data-cap="Camera 3 · Studio LCR"><img src="img/k17.jpg" alt="Camera 3, scrittoio" data-zoom data-cap="Camera 3 · Studio LCR"><img src="img/k18.jpg" alt="Camera 3, armadiatura" data-zoom data-cap="Camera 3 · Studio LCR"></div></article>
+      <article class="roomk"><div class="head"><h3>Bagno 1</h3><p>Vasca, mobile bordeaux, pareti chiare</p></div>
+        <div class="shots"><img src="img/k05.jpg" alt="Bagno 1" data-zoom data-cap="Bagno 1 · Studio LCR"><img src="img/k06.jpg" alt="Bagno 1, lavabo" data-zoom data-cap="Bagno 1 · Studio LCR"></div></article>
+      <article class="roomk"><div class="head"><h3>Bagno 2</h3><p>Doccia in vetro, mobile sospeso grigio-verde, specchio tondo</p></div>
+        <div class="shots"><img src="img/k14.jpg" alt="Bagno 2" data-zoom data-cap="Bagno 2 · Studio LCR"><img src="img/k15.jpg" alt="Bagno 2, doccia" data-zoom data-cap="Bagno 2 · Studio LCR"></div></article>
+    </div>
+    <p class="note">Render e planimetrie: Studio LCR, Arch. Luca Camporeale. Riprodotti nel sito per riferimento al concept.</p>
+  </section>
+
+  <div class="chapnext">
+    <a href="#home"><span>Indietro</span>Home</a>
+    <a href="#fissi"><span>Capitolo 1</span>Arredi fissi →</a>
+  </div>
+</div>
+
+<!-- ================= ARREDI FISSI ================= -->
+<div class="chapter" id="ch-fissi">
+  <div class="subnav"><div>
+    <button type="button" data-go="f-cucina">Cucina</button>
+    <button type="button" data-go="f-armadi">Armadi</button>
+    <button type="button" data-go="f-colore">Colore</button>
+    <button type="button" data-go="f-composizioni">Composizioni</button>
+    <button type="button" data-go="f-finiture">Finiture</button>
+  </div></div>
+
+  <section class="hero" id="f-top">
+    <div>
+      <span class="eyebrow">Capitolo 1 · Arredi fissi</span>
+      <h1>Cucina e armadi</h1>
+      <p class="lede">Cucina Binova Bluna e cinque armadi Lema Text su misura: la proposta di arredi fissi per la casa, con materiali, render e cartella colori per scegliere le finiture.</p>
+      <div class="meta">
+        <div><b>Cucina</b>Binova Bluna</div>
+        <div><b>Armadi su misura</b>Lema Text · n. 1–5</div>
+        <div><b>Concept</b>Arch. Luca Camporeale – Studio LCR</div>
+        <div><b>Stato</b><span class="status"><i></i>Progetto definito</span></div>
+      </div>
+    </div>
+    <div class="overview" style="margin-top:0">
+      <button type="button" data-go="f-cucina"><span class="k">Cucina</span><span class="v">Binova Bluna</span><span class="d">Laccato opaco a campione RAL · top e schienale in gres effetto marmo Verde Borgogna</span><span class="arrow">↓</span></button>
+      <button type="button" data-go="f-armadi"><span class="k">Armadi su misura</span><span class="v">Lema Text · n. 1–5</span><span class="d">Gola verticale a tutta altezza · ante e gole nello stesso laccato opaco, colore a scelta</span><span class="arrow">↓</span></button>
+    </div>
+  </section>
+
+  <section id="f-cucina">
+    <div class="sec-head">
+      <span class="eyebrow">Cucina / il modello</span>
+      <h2>Binova Bluna</h2>
+      <p class="sub">Superfici essenziali e composizioni su misura. Frontali laccati opachi a campione RAL, top e schienale in gres effetto marmo Verde Borgogna.</p>
+    </div>
+    <figure class="fig">
+      <img src="img/s03_16.jpg" alt="Cucina Binova Bluna, immagine di catalogo" data-zoom data-cap="Binova Bluna · immagine di progetto indicativa">
+      <figcaption>Finiture di progetto: laccato opaco a campione RAL · top e schienale in gres effetto marmo Verde Borgogna<small>Immagine di progetto indicativa. Finiture e materiali secondo specifiche BTWN.</small></figcaption>
+    </figure>
+    <div class="band">
+      <div>
+        <span class="eyebrow">Materiali</span>
+        <h3 style="margin-top:.4rem">Laccato a campione e Verde Borgogna</h3>
+        <div class="txt" style="margin-top:1rem">
+          <p>Il colore dei frontali incontra la venatura del gres.</p>
+          <p><b>Frontali</b><br>Binova Bluna · laccato opaco a campione RAL. Codice colore da concordare.</p>
+          <p><b>Top + schienale</b><br>Gres effetto marmo Verde Borgogna. Marchio, spessore e finitura della lastra da confermare.</p>
+        </div>
+      </div>
+      <div class="mat">
+        <figure class="fig tall"><img src="img/s04_10.jpg" alt="Lastra in gres effetto marmo Verde Borgogna, dettaglio verticale" data-zoom data-cap="Gres effetto marmo Verde Borgogna"><figcaption>Gres Verde Borgogna<small>Dettaglio lastra</small></figcaption></figure>
+        <figure class="fig"><img src="img/s04_11.jpg" alt="Gres effetto marmo Verde Borgogna, riferimento fotografico Marazzi" data-zoom data-cap="Verde Borgogna · riferimento fotografico Marazzi"><figcaption>Verde Borgogna<small>Riferimento fotografico Marazzi</small></figcaption></figure>
+        <figure class="fig"><img src="img/s04_19.jpg" alt="Ventaglio di campioni RAL sui toni del verde" data-zoom data-cap="Campioni RAL sui verdi"><figcaption>Campioni RAL sui verdi<small>Alcuni codici da definire</small></figcaption></figure>
+      </div>
+    </div>
+    <div class="sec-head" style="border:0;padding-top:3rem;margin-top:0">
+      <span class="eyebrow">Cucina Binova</span>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.2rem)">Volumi e superfici</h2>
+      <p class="sub">Bluna · laccato opaco a campione RAL. Render illustrativi con finiture di progetto.</p>
+    </div>
+    <div class="grid2">
+      <figure class="fig"><img src="img/s05_13.jpg" alt="Render della cucina, vista chiusa" data-zoom data-cap="Vista chiusa"><figcaption>Vista chiusa<small>Colonne chiuse · finestra su parete lavello</small></figcaption></figure>
+      <figure class="fig"><img src="img/s05_14.jpg" alt="Render della cucina con ante rientranti aperte" data-zoom data-cap="Ante rientranti aperte"><figcaption>Ante rientranti aperte<small>Colonna forni e dispensa a vista</small></figcaption></figure>
+    </div>
+    <div class="sec-head" style="border:0;padding-top:3rem;margin-top:0">
+      <span class="eyebrow">Cucina Binova</span>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.2rem)">Organizzazione e distribuzione</h2>
+      <p class="sub">Vani interni e pianta quotata.</p>
+    </div>
+    <div class="grid2">
+      <figure class="fig"><img src="img/s06_7.jpg" alt="Vista assonometrica della cucina con le attrezzature interne" data-zoom data-cap="Attrezzature interne · meccanismi d'angolo e cestoni"><figcaption>Attrezzature interne<small>Meccanismi d'angolo e cestoni</small></figcaption></figure>
+      <figure class="fig"><img src="img/s06_8.jpg" alt="Pianta quotata della cucina" data-zoom data-cap="Pianta · parete lavello 2500 mm"><figcaption>Pianta<small>Parete lavello 2500 mm</small></figcaption></figure>
+    </div>
+    <p class="note">Colori indicativi · finiture: laccato a campione RAL e gres Verde Borgogna.</p>
+    <div class="fromk"><span class="k">Dal concept</span><span>Nel render dell'architetto la cucina ha basi e pensili grigio-verde con top e schienale in pietra scura. La proposta Binova riprende la stessa impostazione: frontali laccati opachi sui verdi a campione RAL, top e schienale in gres effetto marmo Verde Borgogna. <a href="#concept">Vedi il concept →</a></span></div>
+  </section>
+
+  <section id="f-armadi">
+    <div class="sec-head">
+      <span class="eyebrow">Armadi / il modello</span>
+      <h2>Lema Text</h2>
+      <p class="sub">Armadio al centimetro. Gola verticale a tutta altezza, laccata in tinta con le ante.</p>
+    </div>
+    <div class="grid3">
+      <figure class="fig"><img src="img/s07_10.jpg" alt="Armadio Lema Text, immagine ufficiale di catalogo" data-zoom data-cap="Lema Text · immagine ufficiale"><figcaption>Lema Text<small>Immagine ufficiale · finiture di catalogo, indicative del modello</small></figcaption></figure>
+      <figure class="fig"><img src="img/s07_18.jpg" alt="Dettaglio della gola verticale a tutta altezza" data-zoom data-cap="Gola verticale a tutta altezza"><figcaption>Gola verticale<small>A tutta altezza</small></figcaption></figure>
+      <figure class="fig"><img src="img/s07_20.jpg" alt="Dettaglio interno dell'armadio Lema Text" data-zoom data-cap="Lema Text · interno"><figcaption>Interno<small>Attrezzature di catalogo</small></figcaption></figure>
+    </div>
+    <div class="band">
+      <div>
+        <span class="eyebrow">Text · armadio al centimetro</span>
+        <div class="txt" style="margin-top:.8rem">
+          <p><b>Gola verticale a tutta altezza.</b> Ante e gole nello stesso laccato opaco Lema.</p>
+          <p>Colore a scelta nella cartella LCT: lo scegli qui sotto e lo ritrovi su ogni armadio.</p>
+          <p>Luci interne escluse dalla fornitura.</p>
+        </div>
+      </div>
+    </div>
+    <div class="fromk"><span class="k">Dal concept</span><span>In tutte le camere del concept le armadiature sono laccate, a tutta altezza, senza maniglie a vista. Lema Text con gola verticale in tinta è il sistema scelto per restituire quelle superfici continue; il grigio-verde della moodboard ha i suoi corrispondenti nella cartella LCT (Salvia, Timo, Pistacchio). <a href="#concept">Vedi il concept →</a></span></div>
+  </section>
+
+  <section id="f-colore">
+    <div class="sec-head">
+      <span class="eyebrow">Lema / laccati opachi LCT</span>
+      <h2>Scegli il colore degli armadi</h2>
+      <p class="sub">Cartella colori Lema. Ante e gole nella stessa tinta. Tocca un campione per vederlo ingrandito e applicarlo a tutti gli armadi o a uno solo. Ogni armadio può avere il suo colore.</p>
+    </div>
+    <div class="palette">
+      <div id="swatches"></div>
+      <aside class="colmap" aria-live="polite">
+        <h4>Colore per armadio</h4>
+        <div id="colmapRows"></div>
+        <div class="all"><span id="colmapHint">Nessun colore scelto.</span><button type="button" class="btn ghost" style="padding:.5rem .8rem;font-size:.7rem" data-open-palette="all">Scegli per tutti</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="f-composizioni">
+    <div class="sec-head">
+      <span class="eyebrow">Lema Text</span>
+      <h2>Le cinque composizioni</h2>
+      <p class="sub">Render illustrativi. Configurazioni e quote nelle tavole tecniche. Interni rappresentati in Larice Grigio, finitura da confermare.</p>
+    </div>
+    <div class="armadi" id="armadiList"></div>
+  </section>
+
+  <section id="f-finiture">
+    <div class="sec-head">
+      <span class="eyebrow">Specifiche</span>
+      <h2>Finiture e materiali</h2>
+      <p class="sub">Specifiche di progetto e scelte delle finiture.</p>
+    </div>
+    <div class="specs">
+      <div class="spec">
+        <h3>Binova Bluna</h3>
+        <dl>
+          <div><dt>Frontali</dt><dd>Laccato opaco a campione RAL. Codice colore da concordare.</dd></div>
+          <div><dt>Top e schienale</dt><dd>Gres effetto marmo Verde Borgogna. Marchio, spessore e finitura da confermare.</dd></div>
+          <div><dt>Struttura e fondo lavello</dt><dd>Grigio Antracite 0EA. Fondo lavello in alluminio.</dd></div>
+          <div><dt>Elettrodomestici</dt><dd class="flag">Esclusi dalla fornitura.</dd></div>
+        </dl>
+      </div>
+      <div class="spec">
+        <h3>Lema Text</h3>
+        <dl>
+          <div><dt>Ante, fianchi esterni e zoccoli</dt><dd>Laccato opaco a scelta nella cartella LCT. Gole laccate nella stessa tinta delle ante.</dd></div>
+          <div><dt>Interni e attrezzature</dt><dd>Finitura interna da confermare. Larice Grigio rappresentato nei render. Dettagli metallici bronzo o sand da definire.</dd></div>
+          <div><dt>Illuminazione</dt><dd class="flag">Luci interne non comprese nella fornitura.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <div class="chapnext">
+    <a href="#concept"><span>Indietro</span>← Il concept</a>
+    <a href="#complementi"><span>Capitolo 2</span>Complementi e accessori →</a>
+  </div>
+</div>
+
+<!-- ================= COMPLEMENTI ================= -->
+<div class="chapter" id="ch-complementi">
+  <div class="subnav"><div>
+    <button type="button" data-go="c-soggiorno">Soggiorno</button>
+    <button type="button" data-go="c-tavolini">Tavolini</button>
+    <button type="button" data-go="c-dining">Dining</button>
+    <button type="button" data-go="c-master">Master</button>
+    <button type="button" data-go="c-cameretta">Cameretta</button>
+  </div></div>
+
+  <section class="hero" id="c-top">
+    <div>
+      <span class="eyebrow">Capitolo 2 · Complementi e accessori</span>
+      <h1>Living, dining e camere</h1>
+      <p class="lede">Una prima selezione di arredi Lema per soggiorno, zona pranzo, camera matrimoniale e cameretta. Nella planimetria gli arredi selezionati sono evidenziati in arancione. Non è ancora un progetto dell'architetto: è la nostra proposta sulla base dei suoi feedback, con alternative e prezzi di listino. Per ogni pezzo puoi dirci cosa ne pensi.</p>
+      <div class="meta">
+        <div><b>Selezione</b>BTWN, in base ai feedback dell'architetto</div>
+        <div><b>Concept</b>Arch. Luca Camporeale – Studio LCR</div>
+        <div><b>Stato</b><span class="status open"><i></i>Selezione preliminare</span></div>
+      </div>
+    </div>
+    <figure class="plan">
+      <div class="hot">
+        <img src="img/c02_20.jpg" alt="Planimetria con la distribuzione dei complementi" data-zoom data-cap="Planimetria · distribuzione generale dei complementi">
+        <button type="button" class="hs" style="left:17.2%;top:23.7%;width:12.8%;height:21.1%" data-go="c-dining" aria-label="Dining: Gullwing e Fred"><span>Gullwing + Fred</span></button>
+        <button type="button" class="hs" style="left:34.6%;top:23.5%;width:14%;height:21.1%" data-go="c-soggiorno" aria-label="Soggiorno: divano"><span>Venise / Glee</span></button>
+        <button type="button" class="hs" style="left:60.2%;top:25%;width:3%;height:14.7%" data-go="c-master" aria-label="Master: comò Modula"><span>Comò Modula</span></button>
+        <button type="button" class="hs" style="left:76%;top:23.7%;width:14%;height:12.2%" data-go="c-master" aria-label="Master: letto Nobu"><span>Letto Nobu</span></button>
+      </div>
+      <figcaption><span>Distribuzione generale</span><span>Selezione indicativa · finiture e configurazioni da definire</span></figcaption>
+      <div class="legend"><span><i></i>Arredi della selezione: tocca per andare alla scheda</span></div>
+    </figure>
+  </section>
+
+  <div class="overview">
+    <button type="button" data-go="c-soggiorno"><span class="k">Soggiorno</span><span class="v">Venise oppure Glee</span><span class="d">Divano modulare · tavolini Dolmen, Francis e Flowers</span><span class="arrow">↓</span></button>
+    <button type="button" data-go="c-dining"><span class="k">Dining</span><span class="v">Gullwing + Fred</span><span class="d">Tavolo 200 cm · sedie Fred</span><span class="arrow">↓</span></button>
+    <button type="button" data-go="c-master"><span class="k">Master</span><span class="v">Nobu + Modula</span><span class="d">Letto imbottito · comò notte · design Carlo Colombo</span><span class="arrow">↓</span></button>
+    <button type="button" data-go="c-cameretta"><span class="k">Cameretta</span><span class="v">Yaki, Novelist, Hati</span><span class="d">Divano letto · scrittoio · sedia</span><span class="arrow">↓</span></button>
+  </div>
+
+  <section id="c-soggiorno">
+    <div class="sec-head">
+      <span class="eyebrow">Soggiorno / divano</span>
+      <h2>Venise oppure Glee</h2>
+      <p class="sub">Due divani modulari Lema, stessa composizione di progetto (280 cm). Venise ha il terminale squadrato o curvilineo e due profondità di seduta; Glee ha volumi più morbidi e una composizione a terra. Scegli quello che preferisci.</p>
+    </div>
+    <div class="vs">
+      <article class="prod" data-item="venise">
+        <div class="media render"><img src="img/c04_17.jpg" alt="Render del divano Venise nella composizione di progetto" data-zoom data-cap="Venise · composizione cm 280 x 100/150"></div>
+        <div class="body">
+          <span class="k">Soggiorno / divano</span>
+          <h3>Venise<small>Lema · composizione modulare con terminale squadrato o curvilineo</small></h3>
+          <p class="d"><b>Progetto</b> · composizione cm 280 × 100/150. Due profondità di seduta. Terminale squadrato o curvilineo. Composizione da definire in pianta.</p>
+          <div class="grid3e" style="gap:2px">
+            <img src="img/c03_8.jpg" alt="Venise, immagine ufficiale Lema" data-zoom data-cap="Venise · immagine ufficiale Lema" style="aspect-ratio:1;object-fit:cover;cursor:zoom-in">
+            <img src="img/c03_22.jpg" alt="Venise, dettaglio" data-zoom data-cap="Venise · dettaglio" style="aspect-ratio:1;object-fit:cover;cursor:zoom-in">
+            <img src="img/c03_23.jpg" alt="Venise, dettaglio terminale" data-zoom data-cap="Venise · terminale" style="aspect-ratio:1;object-fit:cover;cursor:zoom-in">
+          </div>
+          <div class="fin">
+            <div><b>Tessuti disponibili in categoria 1 (TDA)</b><img src="img/c04_19.jpg" alt="Tessuti Nashira categoria 1" data-zoom data-cap="Tessuti categoria 1 (TDA) · Nashira"></div>
+            <span>Possibilità di scegliere più di 100 tessuti in categoria superiore.</span>
+          </div>
+          <div class="foot">
+            <span class="price"><small>Prezzo di listino a partire da</small>€ 5.914,00</span>
+            <a class="sheet" href="https://www.lemamobili.com/it/prodotti/venise/" target="_blank" rel="noopener">Scheda prodotto Venise ↗</a>
+          </div>
+          <label class="choose"><input type="radio" name="divano" value="venise"> Scelgo Venise</label>
+        </div>
+      </article>
+      <article class="prod" data-item="glee">
+        <div class="media render"><img src="img/c06_8.jpg" alt="Render del divano Glee nella composizione di progetto" data-zoom data-cap="Glee · composizione cm 280 x 100/158"></div>
+        <div class="body">
+          <span class="k">Soggiorno / alternativa</span>
+          <h3>Glee<small>Officinadesign Lema · volumi morbidi e composizione modulare a terra</small></h3>
+          <p class="d"><b>Progetto</b> · composizione cm 280 × 100/158. Composizione da definire in pianta.</p>
+          <div class="grid3e" style="gap:2px;grid-template-columns:2fr 1fr">
+            <img src="img/c05_8.jpg" alt="Glee, immagine ufficiale Lema" data-zoom data-cap="Glee · immagine ufficiale Lema" style="aspect-ratio:2/1;object-fit:cover;cursor:zoom-in">
+            <img src="img/c05_20.jpg" alt="Glee, dettaglio" data-zoom data-cap="Glee · dettaglio" style="aspect-ratio:1;object-fit:cover;cursor:zoom-in">
+          </div>
+          <div class="fin">
+            <div><b>Tessuti disponibili in categoria 1 (TDA)</b><img src="img/c06_19.jpg" alt="Tessuti Nashira categoria 1" data-zoom data-cap="Tessuti categoria 1 (TDA) · Nashira"></div>
+            <span>Possibilità di scegliere più di 100 tessuti in categoria superiore.</span>
+          </div>
+          <div class="foot">
+            <span class="price"><small>Prezzo di listino a partire da</small>€ 5.958,00</span>
+            <a class="sheet" href="https://www.lemamobili.com/it/prodotti/glee/" target="_blank" rel="noopener">Scheda prodotto Glee ↗</a>
+          </div>
+          <label class="choose"><input type="radio" name="divano" value="glee"> Scelgo Glee</label>
+        </div>
+      </article>
+    </div>
+    <p class="note">Immagini ufficiali Lema. Finiture e configurazioni da definire.</p>
+    <div class="fromk"><span class="k">Dal concept</span><span>Nel soggiorno del concept il divano è un volume basso e profondo in pelle scura, appoggiato alla boiserie grigio-verde. Venise e Glee sono due modi di ottenere quel volume: più architettonico il primo, più morbido il secondo. <a href="#concept">Vedi il concept →</a></span></div>
+  </section>
+
+  <section id="c-tavolini">
+    <div class="sec-head">
+      <span class="eyebrow">Soggiorno / tavolini</span>
+      <h2>Dolmen, Francis, Flowers</h2>
+      <p class="sub">Tre famiglie da combinare in base alla configurazione del divano. Dicci quali ti convincono.</p>
+    </div>
+    <div class="room r3">
+      <article class="prod" data-item="dolmen">
+        <div class="media"><img src="img/c07_23.jpg" alt="Tavolino Dolmen" data-zoom data-cap="Dolmen · immagine ufficiale Lema"></div>
+        <div class="body">
+          <span class="k">Tavolino</span><h3>Dolmen</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 1.270,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/tavolino-dolmen/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="dolmen"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="francis">
+        <div class="media"><img src="img/c07_26.jpg" alt="Tavolino Francis" data-zoom data-cap="Francis · immagine ufficiale Lema"></div>
+        <div class="body">
+          <span class="k">Tavolino</span><h3>Francis</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 769,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/tavolino-francis/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="francis"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="flowers">
+        <div class="media"><img src="img/c07_29.jpg" alt="Tavolino Flowers" data-zoom data-cap="Flowers · immagine ufficiale Lema"></div>
+        <div class="body">
+          <span class="k">Tavolino</span><h3>Flowers</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 958,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/tavolino-flowers/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="flowers"></div></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="c-dining">
+    <div class="sec-head">
+      <span class="eyebrow">Dining / tavolo e sedie</span>
+      <h2>Gullwing + Fred</h2>
+      <p class="sub">Tavolo Gullwing cm 200 × 105 con sedie Fred 51 × 55. Nel render: piano in marmo ricostruito bianco candoglia, struttura laccato LCT 405 Latte, sedie in frassino tinto rovere termotrattato con seduta in tessuto categoria 1.</p>
+    </div>
+    <figure class="fig">
+      <img src="img/c10_16.jpg" alt="Render del tavolo Gullwing con sei sedie Fred" data-zoom data-cap="Gullwing + Fred · render di progetto" style="aspect-ratio:16/9;object-fit:contain;background:#f7f7f6">
+      <figcaption>Progetto · tavolo cm 200 × 105 · sedia Fred 51 × 55<small>Immagini ufficiali Lema. Finiture e configurazioni da definire.</small></figcaption>
+    </figure>
+    <div class="room r2" style="margin-top:1.25rem">
+      <article class="prod" data-item="gullwing">
+        <div class="media two"><img src="img/c08_21.jpg" alt="Tavolo Gullwing, vista frontale" data-zoom data-cap="Gullwing · immagine ufficiale Lema" style="aspect-ratio:1;object-fit:contain;background:#fff"><img src="img/c08_22.jpg" alt="Tavolo Gullwing ambientato" data-zoom data-cap="Gullwing · ambientazione"></div>
+        <div class="body">
+          <span class="k">Dining / tavolo 01</span>
+          <h3>Gullwing 200 cm<small>Lema</small></h3>
+          <div class="fin">
+            <div><b>Finiture disponibili · piano</b>Rovere termotrattato, argille Polvere / Creta / Ardesia / Pece, marmi ricostruiti, gres porcellanato e marmi da campionario.</div>
+            <div><b>Finiture disponibili · base</b>Alluminio con verniciatura opaca, laccati opachi Lema e metallo verniciato Palladio M491.</div>
+            <div class="grid2" style="gap:.6rem"><div><b>Piano nel render</b><img src="img/c10_21.jpg" alt="Marmi ricostruiti: bianco candoglia, nero marquinia, bianco lapislazzuli, verde malachite" data-zoom data-cap="Piano · marmi ricostruiti"></div><div><b>Struttura nel render</b><img src="img/c10_28.jpg" alt="Laccato LCT 405 Latte" data-zoom data-cap="Struttura · laccato LCT 405 Latte" style="max-width:6rem"><span>Possibilità di scelta di tutta la cartella laccato opaco Lema.</span></div></div>
+          </div>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 4.367,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/tavolo-gullwing/" target="_blank" rel="noopener">Scheda prodotto e finiture ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="gullwing"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="fred">
+        <div class="media two"><img src="img/c09_25.jpg" alt="Sedia Fred, vista frontale" data-zoom data-cap="Fred · immagine ufficiale Lema" style="object-fit:contain;background:#fff"><img src="img/c09_21.jpg" alt="Sedia Fred ambientata" data-zoom data-cap="Fred · ambientazione"></div>
+        <div class="body">
+          <span class="k">Dining / sedia 01</span>
+          <h3>Fred<small>Lema</small></h3>
+          <div class="fin">
+            <div><b>Struttura e schienale</b>Frassino sbiancato oppure frassino tinto rovere termotrattato.</div>
+            <div><b>Seduta imbottita</b>Tessuti della collezione Lema. Pelli Basic, Super, Top, Cervo e Nabuk. Pelle sintetica Castore.</div>
+            <div><b>Scelta del rivestimento</b>Colori e fattibilità da campionario.</div>
+            <div class="grid2" style="gap:.6rem"><div><b>Struttura nel render</b><img src="img/c10_36.jpg" alt="Legno frassino tinto rovere termotrattato" data-zoom data-cap="Struttura · frassino tinto rovere termotrattato" style="max-width:6rem"></div><div><b>Seduta in tessuto categoria 1</b><img src="img/c10_42.jpg" alt="Tessuti Nashira categoria 1" data-zoom data-cap="Seduta · tessuti categoria 1"><span>Possibilità di scelta di altri tessuti in categorie superiori.</span></div></div>
+          </div>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 1.020,00 <span style="font-size:.8rem;font-weight:500">cad.</span></span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/sedia-fred/" target="_blank" rel="noopener">Scheda prodotto e finiture ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="fred"></div></div>
+        </div>
+      </article>
+    </div>
+    <p class="note">Fotografie ufficiali della collezione. Le dimensioni e le finiture illustrate possono differire dalla versione proposta.</p>
+    <div class="fromk"><span class="k">Dal concept</span><span>La sala da pranzo del concept ha un tavolo ovale chiaro con sedie scure in legno e seduta imbottita, sotto una sospensione lineare. Gullwing con piano in marmo ricostruito chiaro e Fred in frassino tinto rovere termotrattato riprendono esattamente quella coppia. <a href="#concept">Vedi il concept →</a></span></div>
+  </section>
+
+  <section id="c-master">
+    <div class="sec-head">
+      <span class="eyebrow">Master bedroom</span>
+      <h2>Nobu e Modula</h2>
+      <p class="sub">Letto imbottito dalle forme avvolgenti e comò notte 130 × 47. Entrambi design Carlo Colombo per Lema.</p>
+    </div>
+    <div class="room r2">
+      <article class="prod" data-item="nobu">
+        <div class="media two"><img src="img/c11_19.jpg" alt="Letto Nobu ambientato" data-zoom data-cap="Nobu · immagine ufficiale Lema"><img src="img/c11_20.jpg" alt="Letto Nobu, dettaglio testiera" data-zoom data-cap="Nobu · dettaglio"></div>
+        <div class="body">
+          <span class="k">Master / letto</span>
+          <h3>Letto Nobu<small>Lema · design Carlo Colombo</small></h3>
+          <p class="d">Tessuto categoria 1 · possibilità di scegliere altri tessuti in categorie superiori.</p>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 4.895,00<small style="text-transform:none;letter-spacing:0">Escluso rete e materasso</small></span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/letto-nobu/" target="_blank" rel="noopener">Scheda prodotto Nobu ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="nobu"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="modula">
+        <div class="media two"><img src="img/c12_7.jpg" alt="Comò Modula" data-zoom data-cap="Modula · immagine ufficiale Lema"><img src="img/c12_16.jpg" alt="Comò Modula ambientato" data-zoom data-cap="Modula · ambientazione"></div>
+        <div class="body">
+          <span class="k">Master / comò</span>
+          <h3>Comò Modula<small>Lema · design Carlo Colombo · comò notte 130 × 47</small></h3>
+          <p class="d">Laccato opaco disponibile in tutti i colori della gamma Lema.</p>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 3.305,00</span><a class="sheet" href="https://www.lemamobili.com/it/" target="_blank" rel="noopener">Lema ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="modula"></div></div>
+        </div>
+      </article>
+    </div>
+    <p class="note">Immagini ufficiali Lema. Finiture e configurazioni da definire.</p>
+  </section>
+
+  <section id="c-cameretta">
+    <div class="sec-head">
+      <span class="eyebrow">Cameretta</span>
+      <h2>Yaki, Novelist, Hati</h2>
+      <p class="sub">Divano letto, scrittoio e sedia per una stanza flessibile.</p>
+    </div>
+    <div class="room r3">
+      <article class="prod" data-item="yaki">
+        <div class="media two"><img src="img/c12_8.jpg" alt="Divano letto Yaki" data-zoom data-cap="Yaki · divano letto" style="aspect-ratio:1/2"><img src="img/c12_27.jpg" alt="Divano letto Yaki, aperto" data-zoom data-cap="Yaki · aperto" style="aspect-ratio:1/2"></div>
+        <div class="body">
+          <span class="k">Divano letto</span><h3>Yaki</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 4.447,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/yaki/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="yaki"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="novelist">
+        <div class="media"><img src="img/c12_28.jpg" alt="Scrittoio Novelist" data-zoom data-cap="Novelist · scrittoio" style="aspect-ratio:1"></div>
+        <div class="body">
+          <span class="k">Scrittoio</span><h3>Novelist</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 3.471,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/novelist/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="novelist"></div></div>
+        </div>
+      </article>
+      <article class="prod" data-item="hati">
+        <div class="media"><img src="img/c12_29.jpg" alt="Sedia Hati" data-zoom data-cap="Hati · sedia" style="aspect-ratio:1"></div>
+        <div class="body">
+          <span class="k">Sedia</span><h3>Hati</h3>
+          <div class="foot"><span class="price"><small>Prezzo di listino a partire da</small>€ 681,00</span><a class="sheet" href="https://www.lemamobili.com/it/prodotti/sedia-hati/" target="_blank" rel="noopener">Scheda prodotto ↗</a></div>
+          <div class="reactrow"><span class="lbl">Cosa ne pensi</span><div class="react" data-react="hati"></div></div>
+        </div>
+      </article>
+    </div>
+    <p class="note">Immagini ufficiali Lema. Finiture e configurazioni da definire. Prezzi di listino indicativi, a partire dalla versione base.</p>
+  </section>
+
+  <div class="chapnext">
+    <a href="#fissi"><span>Capitolo 1</span>← Arredi fissi</a>
+    <a href="#scelte"><span>Per chiudere</span>Le tue scelte →</a>
+  </div>
+</div>
+
+<!-- ================= SCELTE ================= -->
+<div class="chapter" id="ch-scelte">
+  <section id="scelte-top">
+    <div class="sec-head first">
+      <span class="eyebrow">Per chiudere</span>
+      <h2>Le tue scelte</h2>
+      <p class="sub">Qui trovi il riepilogo di quello che hai scelto o commentato nei due capitoli. Copialo e invialo al tuo referente BTWN. Le scelte restano salvate su questo dispositivo, puoi tornare quando vuoi.</p>
+    </div>
+    <div class="scelte">
+      <form class="form" id="form">
+        <div class="field"><label for="fNome">Nome</label><input id="fNome" type="text" autocomplete="name" placeholder="Il tuo nome"></div>
+        <div class="field"><label for="fRal">Cucina · colore frontali (RAL o preferenza)</label><input id="fRal" type="text" placeholder="es. RAL 6021, oppure «verde salvia chiaro»"></div>
+        <div class="field"><label for="fNote">Note e domande</label><textarea id="fNote" placeholder="Interni armadi, tessuti, tempi, tutto quello che vuoi chiederci."></textarea></div>
+        <p class="hint" style="color:var(--muted)">Il colore di ogni armadio si imposta nel capitolo <a href="#fissi">Arredi fissi</a>; divano e preferenze sui complementi nel capitolo <a href="#complementi">Complementi</a>.</p>
+      </form>
+      <div class="riepilogo">
+        <h3>Riepilogo</h3>
+        <pre id="summary"></pre>
+        <div class="btnrow">
+          <button class="btn" type="button" id="copyBtn">Copia riepilogo</button>
+          <button class="btn ghost" type="button" id="resetBtn">Azzera tutto</button>
+          <span class="hint" id="copyMsg"></span>
+        </div>
+        <p class="hint">Incollalo in una mail o in un messaggio al tuo referente BTWN.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <span class="mark"><b>[</b>BTWN<b>]</b></span>
+  <span>Between Contract &amp; Design · Via Turati 8, Milano · btwn.it</span>
+  <span>Rondoni 18 · Progetto d'arredo · Ottobre 2026</span>
+</footer>
+</main>
+
+<script>
+(function(){
+  var COLORS=[
+    {g:"Neutri, grigi e terre",c:"700",n:"Cigno",hex:"#f2f2f2",f:"img/s08_10.jpg"},
+    {g:"Neutri, grigi e terre",c:"750",n:"Carta",hex:"#f7f7f7",f:"img/s08_12.jpg"},
+    {g:"Neutri, grigi e terre",c:"405",n:"Latte",hex:"#f8f9f4",f:"img/s08_14.jpg"},
+    {g:"Neutri, grigi e terre",c:"707",n:"Canapa",hex:"#fbedc8",f:"img/s08_16.jpg"},
+    {g:"Neutri, grigi e terre",c:"801",n:"Calcare",hex:"#e1dcbe",f:"img/s08_18.jpg"},
+    {g:"Neutri, grigi e terre",c:"910",n:"Sabbia",hex:"#b6b19e",f:"img/s08_20.jpg"},
+    {g:"Neutri, grigi e terre",c:"803",n:"Ombra",hex:"#b2a696",f:"img/s08_22.jpg"},
+    {g:"Neutri, grigi e terre",c:"804",n:"Pepe",hex:"#938676",f:"img/s08_24.jpg"},
+    {g:"Neutri, grigi e terre",c:"913",n:"Ghiaia",hex:"#c2b6a6",f:"img/s08_26.jpg"},
+    {g:"Neutri, grigi e terre",c:"870",n:"Antimonio",hex:"#9e9b96",f:"img/s08_28.jpg"},
+    {g:"Neutri, grigi e terre",c:"471",n:"Fango",hex:"#6e6c5d",f:"img/s08_30.jpg"},
+    {g:"Neutri, grigi e terre",c:"920",n:"Basalto",hex:"#646560",f:"img/s08_32.jpg"},
+    {g:"Neutri, grigi e terre",c:"906",n:"Fumo",hex:"#574d44",f:"img/s08_34.jpg"},
+    {g:"Neutri, grigi e terre",c:"918",n:"Grafite",hex:"#26221f",f:"img/s08_36.jpg"},
+    {g:"Neutri, grigi e terre",c:"713",n:"Lavagna",hex:"#05090c",f:"img/s08_38.jpg"},
+    {g:"Neutri, grigi e terre",c:"461",n:"Cacao",hex:"#82705c",f:"img/s08_40.jpg"},
+    {g:"Neutri, grigi e terre",c:"805",n:"Terra",hex:"#5f554c",f:"img/s08_42.jpg"},
+    {g:"Neutri, grigi e terre",c:"934",n:"Moro",hex:"#40362d",f:"img/s08_44.jpg"},
+    {g:"Colori, verdi e blu",c:"845",n:"Mango",hex:"#b8320d",f:"img/s09_10.jpg"},
+    {g:"Colori, verdi e blu",c:"828",n:"Amarena",hex:"#710f10",f:"img/s09_12.jpg"},
+    {g:"Colori, verdi e blu",c:"477",n:"Bruciato",hex:"#551d20",f:"img/s09_14.jpg"},
+    {g:"Colori, verdi e blu",c:"478",n:"Terracotta",hex:"#996154",f:"img/s09_16.jpg"},
+    {g:"Colori, verdi e blu",c:"930",n:"Cameo",hex:"#b49b85",f:"img/s09_18.jpg"},
+    {g:"Colori, verdi e blu",c:"932",n:"Biscotto",hex:"#a78464",f:"img/s09_20.jpg"},
+    {g:"Colori, verdi e blu",c:"936",n:"India",hex:"#bf924d",f:"img/s09_22.jpg"},
+    {g:"Colori, verdi e blu",c:"922",n:"Curry",hex:"#a56630",f:"img/s09_24.jpg"},
+    {g:"Colori, verdi e blu",c:"928",n:"Pistacchio",hex:"#8a7f61",f:"img/s09_26.jpg"},
+    {g:"Colori, verdi e blu",c:"924",n:"Lauro",hex:"#20382b",f:"img/s09_28.jpg"},
+    {g:"Colori, verdi e blu",c:"479",n:"Assenzio",hex:"#415e59",f:"img/s09_30.jpg"},
+    {g:"Colori, verdi e blu",c:"835",n:"Salvia",hex:"#7e837d",f:"img/s09_32.jpg"},
+    {g:"Colori, verdi e blu",c:"480",n:"Timo",hex:"#828d87",f:"img/s09_34.jpg"},
+    {g:"Colori, verdi e blu",c:"476",n:"Avio",hex:"#556161",f:"img/s09_36.jpg"},
+    {g:"Colori, verdi e blu",c:"847",n:"Ottano",hex:"#356569",f:"img/s09_38.jpg"},
+    {g:"Colori, verdi e blu",c:"926",n:"Cobalto",hex:"#1d3944",f:"img/s09_40.jpg"},
+    {g:"Colori, verdi e blu",c:"469",n:"Oltremare",hex:"#2a2f42",f:"img/s09_42.jpg"}
+  ];
+  var ARMADI=[
+    {n:1,t:"Due vani con appendiabiti e cassettiera interna",a:"img/s10_14.jpg",b:"img/s10_15.jpg"},
+    {n:2,t:"Configurazione a U con ripiani e appendiabiti",a:"img/s11_14.jpg",b:"img/s11_15.jpg"},
+    {n:3,t:"Vani superiori e cassettiera interna",a:"img/s12_14.jpg",b:"img/s12_15.jpg"},
+    {n:4,t:"Configurazione articolata con passaggio",a:"img/s13_14.jpg",b:"img/s13_15.jpg"},
+    {n:5,t:"Vani con appendiabiti e cassettiera interna",a:"img/s14_14.jpg",b:"img/s14_15.jpg"}
+  ];
+  var ITEMS={dolmen:"Tavolino Dolmen",francis:"Tavolino Francis",flowers:"Tavolino Flowers",gullwing:"Tavolo Gullwing 200 cm",fred:"Sedia Fred",nobu:"Letto Nobu",modula:"Comò Modula",yaki:"Divano letto Yaki",novelist:"Scrittoio Novelist",hati:"Sedia Hati"};
+  var ROOM={dolmen:"Soggiorno",francis:"Soggiorno",flowers:"Soggiorno",gullwing:"Dining",fred:"Dining",nobu:"Master",modula:"Master",yaki:"Cameretta",novelist:"Cameretta",hati:"Cameretta"};
+  var REACT={si:"Mi piace",forse:"Da rivedere",no:"No"};
+  var KEY="rondoni18.scelte.v2";
+  var state={colors:{},nome:"",ral:"",note:"",divano:null,react:{}};
+  try{ var s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&typeof s==="object"){ state=Object.assign(state,s); state.react=state.react||{}; state.colors=state.colors||{}; if(s.color&&!Object.keys(state.colors).length){ ARMADI.forEach(function(a){ state.colors[a.n]=s.color; }); } } }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  function byCode(c){ for(var i=0;i<COLORS.length;i++) if(COLORS[i].c===c) return COLORS[i]; return null; }
+
+  /* ---------- routing ---------- */
+  var ROUTES=["home","concept","fissi","complementi","scelte"];
+  function route(){
+    var h=(location.hash||"#home").replace("#",""); if(ROUTES.indexOf(h)<0) h="home";
+    document.querySelectorAll(".chapter").forEach(function(c){ c.classList.toggle("on", c.id==="ch-"+h); });
+    document.querySelectorAll("nav.sec a").forEach(function(a){ a.classList.toggle("on", a.dataset.route===h); });
+    window.scrollTo({top:0,behavior:"auto"});
+    if(h==="scelte") renderSummary();
+  }
+  window.addEventListener("hashchange",route);
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-go]"); if(!b) return;
+    var t=document.getElementById(b.dataset.go); if(t) t.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ document.querySelectorAll(".subnav button").forEach(function(b){ b.classList.toggle("on",b.dataset.go===en.target.id); }); } }); },{rootMargin:"-30% 0px -60% 0px"});
+    document.querySelectorAll(".chapter section[id]").forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---------- palette (compact) ---------- */
+  function buildPalette(host, mini, onPick, pressed){
+    host.innerHTML="";
+    var groups={}, order=[];
+    COLORS.forEach(function(k){ if(!groups[k.g]){groups[k.g]=[];order.push(k.g);} groups[k.g].push(k); });
+    order.forEach(function(g){
+      var wrap=document.createElement("div"); wrap.className="swgroup";
+      var h=document.createElement("h4"); h.textContent=g; wrap.appendChild(h);
+      var grid=document.createElement("div"); grid.className="sw"+(mini?" mini":""); grid.setAttribute("role","group"); grid.setAttribute("aria-label",g);
+      groups[g].forEach(function(k){
+        var b=document.createElement("button"); b.type="button"; b.dataset.code=k.c; b.setAttribute("aria-pressed", pressed&&pressed()===k.c ? "true":"false"); b.setAttribute("aria-label",k.c+" "+k.n); b.title=k.c+" "+k.n;
+        var chip=document.createElement("span"); chip.className="chip"; chip.style.backgroundImage="url("+k.f+")"; chip.style.backgroundColor=k.hex;
+        var lbl=document.createElement("span"); lbl.className="lbl"; lbl.textContent=k.c+" "+k.n;
+        b.appendChild(chip); b.appendChild(lbl);
+        b.addEventListener("click",function(){ onPick(k); });
+        grid.appendChild(b);
+      });
+      wrap.appendChild(grid); host.appendChild(wrap);
+    });
+  }
+  buildPalette(document.getElementById("swatches"), false, function(k){ openPalette("all", k.c); });
+
+  /* ---------- palette modal ---------- */
+  var pm=null, pmTarget="all", pmPreview=null;
+  function targetLabel(t){ return t==="all" ? "tutti gli armadi" : "Armadio "+t; }
+  function openPalette(target, code){
+    pmTarget=target; pmPreview = code || (target==="all" ? null : (state.colors[target]||null));
+    closePalette();
+    pm=document.createElement("div"); pm.className="pm"; pm.setAttribute("role","dialog"); pm.setAttribute("aria-modal","true"); pm.setAttribute("aria-label","Scegli il colore");
+    pm.innerHTML='<div class="box"><div class="hd"><h3>Colore per '+targetLabel(target)+'<small>Laccati opachi Lema · cartella LCT · ante e gole nella stessa tinta</small></h3><button type="button" class="x" aria-label="Chiudi">×</button></div>'+
+      '<div class="bd"><div class="grid"></div><div class="prev"><div class="big"><div class="ph">Tocca un campione per vederlo ingrandito.</div></div><div class="info"><span class="v">—</span><span class="d"></span><div class="apply"></div></div></div></div></div>';
+    pm.querySelector(".x").addEventListener("click",closePalette);
+    pm.addEventListener("click",function(e){ if(e.target===pm) closePalette(); });
+    buildPalette(pm.querySelector(".grid"), false, function(k){ pmPreview=k.c; renderPm(); }, function(){ return pmPreview; });
+    document.body.appendChild(pm); document.body.style.overflow="hidden";
+    renderPm();
+  }
+  function closePalette(){ if(pm){ pm.remove(); pm=null; document.body.style.overflow=""; } }
+  function renderPm(){
+    if(!pm) return;
+    var k=byCode(pmPreview);
+    pm.querySelectorAll(".sw button").forEach(function(b){ b.setAttribute("aria-pressed", k&&b.dataset.code===k.c ? "true":"false"); });
+    var big=pm.querySelector(".big"), ph=pm.querySelector(".ph");
+    if(k){ big.style.backgroundImage="url("+k.f+")"; big.style.backgroundColor=k.hex; ph.hidden=true; pm.querySelector(".v").textContent=k.c+" "+k.n; pm.querySelector(".d").textContent=k.g; }
+    else { big.style.backgroundImage="none"; ph.hidden=false; pm.querySelector(".v").textContent="—"; pm.querySelector(".d").textContent=""; }
+    var ap=pm.querySelector(".apply"); ap.innerHTML="";
+    function mk(label,t,pri){ var b=document.createElement("button"); b.type="button"; b.textContent=label; if(pri) b.className="pri"; b.disabled=!k; b.addEventListener("click",function(){ applyColor(t,k.c); closePalette(); }); ap.appendChild(b); }
+    if(pmTarget==="all"){ mk("Applica a tutti","all",true); ARMADI.forEach(function(a){ mk("Solo "+a.n, a.n, false); }); }
+    else { mk("Applica all'Armadio "+pmTarget, pmTarget, true); mk("Applica a tutti","all",false); }
+  }
+  function applyColor(t,code){ if(t==="all"){ ARMADI.forEach(function(a){ state.colors[a.n]=code; }); } else state.colors[t]=code; save(); render(); }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-open-palette]"); if(!b) return;
+    var t=b.dataset.openPalette; openPalette(t==="all"?"all":parseInt(t,10), null);
+  });
+
+  /* ---------- armadi ---------- */
+  var list=document.getElementById("armadiList");
+  ARMADI.forEach(function(a){
+    var art=document.createElement("article"); art.className="arm"; art.id="armadio-"+a.n;
+    art.innerHTML=
+      '<div class="head"><span class="num">'+("0"+a.n)+'</span><h3>Armadio '+a.n+' · composizione su misura</h3><p>'+a.t+'</p></div>'+
+      '<div class="grid2">'+
+        '<figure class="fig"><img src="'+a.a+'" alt="Armadio '+a.n+', facciata" data-zoom data-cap="Armadio '+a.n+' · facciata, gola in tinta"><figcaption><span class="chipline"><i data-chip="'+a.n+'"></i><span data-facc="'+a.n+'">Facciata · gola in tinta</span></span><small>Laccato opaco Lema · colore a scelta</small></figcaption></figure>'+
+        '<figure class="fig"><img src="'+a.b+'" alt="Armadio '+a.n+', interni" data-zoom data-cap="Armadio '+a.n+' · interni, senza illuminazione"><figcaption>Interni · senza illuminazione<small>Larice Grigio illustrativo · finitura da confermare</small></figcaption></figure>'+
+      '</div>'+
+      '<div class="colsel"><div class="cur"><div class="c" data-cur-chip="'+a.n+'" data-open-palette="'+a.n+'" role="button" tabindex="0" aria-label="Ingrandisci il colore"></div><div class="t"><span>Ante e gole · armadio '+a.n+'</span><b data-cur-name="'+a.n+'">Colore da scegliere</b><small data-cur-group="'+a.n+'">Laccato opaco Lema · cartella LCT</small></div></div>'+
+      '<div class="minihost" data-mini="'+a.n+'"></div></div>';
+    list.appendChild(art);
+    buildPalette(art.querySelector('[data-mini="'+a.n+'"]'), true, function(k){ openPalette(a.n, k.c); }, function(){ return state.colors[a.n]||null; });
+    // the mini grid builder wraps groups; flatten headings for the card
+    art.querySelectorAll('[data-mini] .swgroup h4').forEach(function(h){ h.remove(); });
+  });
+  document.addEventListener("keydown",function(e){ if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.openPalette){ e.target.click(); } });
+
+  /* ---------- reactions & sofa ---------- */
+  document.querySelectorAll(".react[data-react]").forEach(function(box){
+    var id=box.dataset.react;
+    Object.keys(REACT).forEach(function(v){
+      var b=document.createElement("button"); b.type="button"; b.dataset.v=v; b.textContent=REACT[v]; b.setAttribute("aria-pressed","false");
+      b.addEventListener("click",function(){ state.react[id]= state.react[id]===v ? null : v; save(); render(); });
+      box.appendChild(b);
+    });
+  });
+  document.querySelectorAll('input[name="divano"]').forEach(function(r){ r.addEventListener("change",function(){ state.divano=r.value; save(); render(); }); });
+
+  /* ---------- form ---------- */
+  var fNome=document.getElementById("fNome"), fRal=document.getElementById("fRal"), fNote=document.getElementById("fNote");
+  fNome.value=state.nome; fRal.value=state.ral; fNote.value=state.note;
+  [fNome,fRal,fNote].forEach(function(el){ el.addEventListener("input",function(){ state.nome=fNome.value; state.ral=fRal.value; state.note=fNote.value; save(); renderSummary(); }); });
+  document.getElementById("form").addEventListener("submit",function(e){ e.preventDefault(); });
+
+  function summaryText(){
+    var L=["RONDONI 18 · Progetto d'arredo · le mie scelte",""];
+    if(state.nome) L.push("Nome: "+state.nome,"");
+    L.push("ARREDI FISSI");
+    var codes=ARMADI.map(function(a){ return state.colors[a.n]||null; });
+    var allSame=codes.every(function(c){ return c&&c===codes[0]; });
+    if(allSame){ var kk=byCode(codes[0]); L.push("· Armadi Lema Text, ante e gole (tutti): "+kk.c+" "+kk.n+" (laccato opaco LCT)"); }
+    else { ARMADI.forEach(function(a){ var kk=byCode(state.colors[a.n]); L.push("· Armadio "+a.n+", ante e gole: "+(kk?(kk.c+" "+kk.n):"da scegliere")); }); }
+    L.push("· Cucina Binova Bluna, frontali: "+(state.ral?state.ral:"laccato a campione RAL, codice da concordare"));
+    L.push("· Top e schienale cucina: gres effetto marmo Verde Borgogna","");
+    L.push("COMPLEMENTI");
+    L.push("· Divano: "+(state.divano==="venise"?"Venise":state.divano==="glee"?"Glee":"da scegliere (Venise o Glee)"));
+    var any=false;
+    Object.keys(ITEMS).forEach(function(id){ var v=state.react[id]; if(v){ any=true; L.push("· "+ROOM[id]+" · "+ITEMS[id]+": "+REACT[v]); } });
+    if(!any) L.push("· Nessuna preferenza ancora espressa sui complementi");
+    if(state.note) L.push("","Note: "+state.note);
+    return L.join("\n");
+  }
+  function renderSummary(){ document.getElementById("summary").textContent=summaryText(); }
+  function render(){
+    ARMADI.forEach(function(a){
+      var k=byCode(state.colors[a.n]);
+      var chip=document.querySelector('[data-chip="'+a.n+'"]'); if(chip){ chip.style.setProperty("--pick", k?k.hex:"#ddd"); chip.style.backgroundImage=k?"url("+k.f+")":"none"; chip.style.backgroundSize="cover"; }
+      var facc=document.querySelector('[data-facc="'+a.n+'"]'); if(facc) facc.textContent= k ? "Facciata · "+k.c+" "+k.n : "Facciata · gola in tinta";
+      var cur=document.querySelector('[data-cur-chip="'+a.n+'"]'); if(cur){ cur.style.backgroundImage=k?"url("+k.f+")":"none"; cur.style.backgroundColor=k?k.hex:""; }
+      var nm=document.querySelector('[data-cur-name="'+a.n+'"]'); if(nm) nm.textContent= k ? k.c+" "+k.n : "Colore da scegliere";
+      var gr=document.querySelector('[data-cur-group="'+a.n+'"]'); if(gr) gr.textContent= k ? k.g+" · laccato opaco LCT" : "Laccato opaco Lema · cartella LCT";
+      var mini=document.querySelector('[data-mini="'+a.n+'"]'); if(mini) mini.querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", k&&b.dataset.code===k.c ? "true":"false"); });
+    });
+    // overview palette: mark colours in use
+    var used={}; ARMADI.forEach(function(a){ if(state.colors[a.n]) used[state.colors[a.n]]=true; });
+    document.querySelectorAll("#swatches .sw button").forEach(function(b){ b.setAttribute("aria-pressed", used[b.dataset.code] ? "true":"false"); });
+    // colour map
+    var rows=document.getElementById("colmapRows"); rows.innerHTML="";
+    var n=0;
+    ARMADI.forEach(function(a){
+      var k=byCode(state.colors[a.n]); if(k) n++;
+      var r=document.createElement("div"); r.className="row";
+      r.innerHTML='<span class="n">'+("0"+a.n)+'</span><div style="display:flex;align-items:center;gap:.7rem;min-width:0"><span class="c"></span><span class="t"><b></b><small></small></span></div><button type="button" data-open-palette="'+a.n+'">'+(k?"Cambia":"Scegli")+'</button>';
+      var c=r.querySelector(".c"); if(k){ c.style.backgroundImage="url("+k.f+")"; c.style.backgroundColor=k.hex; }
+      r.querySelector("b").textContent= k ? k.c+" "+k.n : "Da scegliere"; r.querySelector("small").textContent= k ? k.g : a.t;
+      rows.appendChild(r);
+    });
+    document.getElementById("colmapHint").textContent = n===0 ? "Nessun colore scelto." : (n===ARMADI.length ? "Tutti gli armadi hanno un colore." : n+" su "+ARMADI.length+" armadi con colore.");
+    document.querySelectorAll(".react[data-react]").forEach(function(box){ var v=state.react[box.dataset.react]; box.querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", v===b.dataset.v ? "true":"false"); }); });
+    document.querySelectorAll('input[name="divano"]').forEach(function(r){ r.checked= state.divano===r.value; r.closest(".prod").classList.toggle("chosen", state.divano===r.value); });
+    renderSummary();
+  }
+  render(); route();
+
+  /* ---------- copy / reset ---------- */
+  var msg=document.getElementById("copyMsg");
+  document.getElementById("copyBtn").addEventListener("click",function(){
+    var t=summaryText();
+    function fallback(){ var pre=document.getElementById("summary"); var r=document.createRange(); r.selectNodeContents(pre); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); msg.textContent="Testo selezionato: copia con Ctrl/Cmd+C."; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ msg.textContent="Copiato."; setTimeout(function(){msg.textContent="";},2500); },fallback); } else fallback();
+  });
+  document.getElementById("resetBtn").addEventListener("click",function(){ state={colors:{},nome:"",ral:"",note:"",divano:null,react:{}}; save(); fNome.value=fRal.value=fNote.value=""; render(); });
+
+  /* ---------- lightbox ---------- */
+  var lb=null;
+  document.addEventListener("click",function(e){
+    var img=e.target.closest&&e.target.closest("img[data-zoom]"); if(!img) return;
+    lb=document.createElement("figure"); lb.className="lb"; lb.setAttribute("role","dialog"); lb.setAttribute("aria-label","Immagine ingrandita");
+    var i=document.createElement("img"); i.src=img.src; i.alt=img.alt; lb.appendChild(i);
+    var c=document.createElement("figcaption"); c.textContent=img.dataset.cap||img.alt; lb.appendChild(c);
+    lb.addEventListener("click",close); document.body.appendChild(lb); document.body.style.overflow="hidden";
+  });
+  function close(){ if(lb){ lb.remove(); lb=null; document.body.style.overflow=""; } }
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ close(); closePalette(); } });
+})();
+</script>
+
+</body>
+</html>
