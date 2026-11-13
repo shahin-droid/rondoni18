@@ -33,15 +33,20 @@ const initials=n=>(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].t
 
 /* ---------- Dominio BTWN ---------- */
 const FASI=['Analisi operazione','Audit progettuale','Strategia di servizio','Progettazione','Ingaggio cliente','Coordinamento esecutivo','Logistica e montaggio','Consegna e post-vendita','Feedback e dati'];
-const SV={mk:'Marketing e comunicazione',var:'Gestione varianti',lev:'Leve commerciali (Interior Design Pack)',cfg:'Configuratore',adv:'Advisory immobiliare'};
-const SERVIZI=[SV.mk,SV.var,SV.lev,SV.cfg,'Interior / Home Book','Fornitura arredi'];
-const SERV_MAP={'Varianti':SV.var,'Visualizzazione':SV.mk,'MyHabitat':SV.cfg,'Advisory immobiliare':SV.lev};
+const SV={arr:'Analisi di arredabilità',mk:'Marketing e comunicazione',var:'Gestione varianti',lev:'Leve commerciali (Interior Design Pack)',cfg:'Configuratore',adv:'Advisory immobiliare'};
+const SERVIZI=[SV.arr,SV.mk,SV.var,SV.lev,SV.cfg,'Interior / Home Book','Fornitura arredi'];
+const SERV_MAP={'Varianti':SV.var,'Visualizzazione':SV.mk,'MyHabitat':SV.cfg,'Advisory immobiliare':SV.arr};
 const TIPI_MK=['Render interni','Render esterni','Sito internet','Naming','Grafica e logo','Brochure commerciale','Contenuti sito','Altro'];
 const STATI_MK=['Da preventivare','Preventivato','In lavorazione','Viste preliminari','Revisione','Consegnato'];
 const ELEMENTI_PACK=['Cucina','Armadi','Mobile bagno','Pack misto','Voucher arredo'];
 const FORMULE_LEVE=[{v:'capitolato',l:'Capitolato: lo compra lo sviluppatore, il cliente poi personalizza'},{v:'scontato',l:'Pack scontato: venduto al cliente finale tramite agenzia'},{v:'voucher',l:'Voucher arredo: valore di listino venduto allo sviluppatore a sconto'}];
 const STATI_VARIANTE=['Nessuna variante','Cliente affidato a BTWN','Richieste raccolte','Fattibilità verificata con impresa','Preventivo varianti','Firmato dal cliente','Esecutivi all\'impresa','In cantiere','Completate'];
+const MODALITA_ARR=[{v:'commenti',l:'Analisi con commenti: segnaliamo dove vanno male, corregge lo studio'},{v:'voce',l:'Consulenza a voce allo studio di architettura'},{v:'correzione',l:'Ci date i DWG, li sistemiamo noi e li ritorniamo in DWG'}];
+const ESITI_ARR=['Da analizzare','Arredabile','Da correggere','Corretto'];
+const STATI_SEGN=['Segnalato','Corretto dallo studio','Corretto da BTWN','Accettato così'];
+const PROBLEMI_ARR=['Cucina disegnata come rettangolo, non verificata con moduli reali','Cucina: non ci sta la cassettiera','Cucina: non ci sta la lavastoviglie','Cucina: lavello in posizione sbagliata','Camera: spazio armadio insufficiente','Passaggi insufficienti tra gli arredi','Bagno: mobile o sanitari poco arredabili','Living: divano o tavolo non collocabili','Interferenze con impianti (prese, collettori, cavedi)'];
 const WF_B2B={
+  arr:[['ar_dwg',"Ricevuti i DWG dello studio di architettura"],['ar_modo',"Decisa la modalità: commenti, consulenza a voce o correzione dei DWG"],['ar_analisi',"Analisi di arredabilità di ogni tipologico con arredi reali"],['ar_segn',"Segnalazioni consegnate allo studio (o call di consulenza)"],['ar_corr',"Correzioni verificate, oppure DWG sistemati e ritornati"],['ar_ok',"Planimetrie arredabili, pronte a diventare commerciali"]],
   mk:[['mk_brief',"Brief e materiali ricevuti (DWG, capitolato, target, riferimenti)"],['mk_prev',"Preventivo dei lavori inviato allo sviluppatore"],['mk_firma',"Contratto firmato e acconto incassato"],['mk_prel',"Viste preliminari / bozze consegnate"],['mk_rev',"Revisioni concordate per iscritto"],['mk_cons',"Consegna finale"],['mk_saldo',"Saldo incassato"]],
   var:[['vr_accordo',"Accordo con lo sviluppatore firmato: chi paga le varianti"],['vr_listino',"Listino varianti dell'impresa ricevuto (se no, quota l'impresa)"],['vr_dwg',"DWG esecutivi e impiantistici ricevuti"],['vr_regole',"Allineamento con l'impresa: regole e tempi di cantiere"]],
   lev:[['lv_mat',"Materiale ricevuto: DWG del costruttore, capitolato, listino immobiliare"],['lv_target',"Target price capito"],['lv_analisi',"Analisi completata"],['lv_formula',"Formula decisa (capitolato, pack scontato, voucher)"],['lv_prog',"Progetto dei pack per ogni tipologico"],['lv_offerta',"Preventivo e offerta riservata allo sviluppatore"],['lv_accordo',"Accordo firmato"]],
@@ -155,7 +160,8 @@ function seed(){
   const oik=C({codice:'OIK',nome:'Oikos',luogo:'Burago',servizi:['Fornitura arredi'],fase:6,unitaTot:60,brand:'Miton · Electrolux',note:'Prime 30 consegne 2026.'});
   const har=C({codice:'HAR',nome:'Harmonia · 43 ville',luogo:'Carpianello',servizi:['Fornitura arredi','Interior / Home Book'],fase:4,unitaTot:43,brand:'Cesar · Electrolux',note:'Ville: maggiore personalizzazione.'});
   const par=C({codice:'PAR-ES',nome:'Paratico · esecutiva',luogo:"Lago d'Iseo",servizi:['Fornitura arredi'],fase:7,unitaTot:4,note:'Consegna compressa in 5 giorni.'});
-  const bdt=C({codice:'BDT',nome:'Paratico · Bosco dei Taxodi',luogo:"Lago d'Iseo",clienteId:tortato.id,servizi:['Advisory immobiliare'],fase:2,unitaTot:65,valore:26000,piano:'unica',note:'8.100 mq, ~65 app. + 2 lab. Ipotesi L1 16.500 € + L2 9.500 € (o forfait 18-20k).'});
+  const bdtTip=[{id:uid(),nome:'Bilo A',unita:24,mq:58,arredabilita:'Da correggere'},{id:uid(),nome:'Trilo A',unita:28,mq:84,arredabilita:'Arredabile'},{id:uid(),nome:'Trilo B',unita:13,mq:92,arredabilita:'Da analizzare'}];
+  const bdt=C({tipologici:bdtTip,arrModo:'commenti',arrForfait:16500,segnalazioni:[{id:uid(),tipologicoId:bdtTip[0].id,ambiente:'Cucina',problema:'Cucina: non ci sta la lavastoviglie',proposta:'Allungare la parete cucina di 30 cm spostando la porta',stato:'Segnalato'},{id:uid(),tipologicoId:bdtTip[0].id,ambiente:'Camera',problema:'Camera: spazio armadio insufficiente',proposta:'Armadio su parete corta, ruotare il letto',stato:'Segnalato'}],steps:{ar_dwg:D(-30),ar_modo:D(-28),ar_analisi:D(-10)},codice:'BDT',nome:'Paratico · Bosco dei Taxodi',luogo:"Lago d'Iseo",clienteId:tortato.id,servizi:['Advisory immobiliare'],fase:2,unitaTot:65,valore:26000,piano:'unica',note:'8.100 mq, ~65 app. + 2 lab. Ipotesi L1 16.500 € + L2 9.500 € (o forfait 18-20k).'});
   const gas=C({marketing:[{id:uid(),tipo:'Render interni',descrizione:'Viste indoor',qta:6,prezzo:1083.33,stato:'Viste preliminari'},{id:uid(),tipo:'Render esterni',descrizione:'Viste outdoor',qta:6,prezzo:1083.34,stato:'Viste preliminari'}],steps:{mk_brief:D(-40),mk_prev:D(-35),mk_firma:D(-30),mk_prel:D(-5)},codice:'GAS',nome:'Gasometro · Render 3D',luogo:'Milano – Politecnico',clienteId:tef.id,servizi:['Visualizzazione'],fase:4,valore:13000,piano:'render',consegna:D(20),note:'12 render, 13.000 € + IVA. Revisioni extra da quotare per iscritto.'});
   const ind=C({codice:'IND',nome:'Industrie Edili · 144 unità',clienteId:indEd.id,servizi:['Fornitura arredi'],stato:'Pipeline',unitaTot:144,valore:6480000,probabilita:20,note:'Valore medio app. ~700k€, potenziale arredo ~45k€/unità.'});
   const ler=C({codice:'LER',nome:'BPER Residenze Sant\'Anna',clienteId:lerca.id,servizi:['Fornitura arredi','Interior / Home Book'],stato:'Pipeline',unitaTot:85,probabilita:30,note:'Opportunità full-arredo. Valore da stimare.'});
@@ -246,6 +252,7 @@ function alerts(){
     if(c.tipo==='Privato'){(c.ripristini||[]).forEach(x=>{if(x.stato!=='Completato'&&x.data&&daysTo(x.data)<0)out.push({sev:2,icon:'alert',t:`${c.nome} · ripristino in ritardo`,s:`${x.descrizione} · ${x.azienda||''} · previsto ${fd(x.data)}`,go:`#/commessa/${c.id}/workflow`})});
       if(c.rilievo==='speciale'&&c.fase>=FASI_PRIVATO.indexOf('Ordine')+1&&!(c.steps&&c.steps.sp_obbligo))out.push({sev:3,icon:'alert',t:`${c.nome} · procedura speciale senza dichiarazione`,s:'Casa non rilevabile: serve la dichiarazione firmata del cliente prima di ordinare',go:`#/commessa/${c.id}/workflow`});const fo=FASI_PRIVATO.indexOf('Merce in magazzino')+1;if(c.fase>=fo&&c.fase<=fo+1&&!(c.steps&&c.steps.mont_quot))out.push({sev:1,icon:'box',t:`${c.nome} · montaggio non ancora quotato`,s:'Inviare Home Book e indicazioni di logistica al fornitore del servizio per la quotazione',go:`#/commessa/${c.id}/workflow`});return}
     if(c.fase>=2&&n<CL.length)out.push({sev:1,icon:'file',t:`${c.nome} · documenti ${n}/${CL.length}`,s:`Mancano ${CL.length-n} voci dalla checklist ${c.tipo==='Privato'?'cliente':'committente'}`,go:`#/commessa/${c.id}/documenti`});
+    if(c.servizi.includes(SV.arr)){const a=(c.segnalazioni||[]).filter(x=>x.stato==='Segnalato').length;if(a&&c.steps&&c.steps.ar_segn)out.push({sev:1,icon:'file',t:`${c.nome} · ${a} segnalazioni di arredabilità aperte`,s:'In attesa delle correzioni dello studio di architettura',go:`#/commessa/${c.id}/servizi`})}
     if(c.consegna&&c.servizi.includes(SV.var)&&daysTo(c.consegna)<-90)out.push({sev:1,icon:'clock',t:`${c.nome} · ritardo consegna ${Math.floor(-daysTo(c.consegna)/30)} mesi`,s:'Verificare indennizzo per ritardo previsto dall\'AQ varianti',go:`#/commessa/${c.id}`});
   });
   S.preventivi.forEach(p=>{const c=commessa(p.commessaId);if(!c||p.stato!=='Inviato'||!p.data)return;const d=daysTo(addDays(p.data,+p.validita||10));if(d<0)out.push({sev:1,icon:'calc',t:`${p.titolo} rev.${p.rev} · oltre la validità`,s:`${c.nome} · inviata il ${fd(p.data)}, validità ${p.validita||10} gg: sollecitare o aggiornare`,go:`#/preventivo/${p.id}`})});
@@ -326,10 +333,11 @@ function packCalc(c,r){const t=(c.tipologici||[]).find(x=>x.id===r.tipologicoId)
 function quotaServizi(c,tot){const v=+c.quotaVal||0;if(!v)return 0;if((c.quotaTipo||'perc')==='perc')return tot*v/100;return (c.tipologici||[]).reduce((a,t)=>a+(+t.unita||0),0)*v}
 function serviziTot(c){
   const on=k=>c.servizi.includes(SV[k]);
+  const arr=on('arr')?(+c.arrForfait||((+c.arrPrezzoTip||0)*(c.tipologici||[]).length)):0;
   const mk=on('mk')?(c.marketing||[]).reduce((a,x)=>a+(+x.qta||1)*(+x.prezzo||0),0):0;
   const lv=on('lev')?(c.pack||[]).reduce((a,r)=>{const x=packCalc(c,r);a.tot+=x.tot;a.marg+=x.margTot;return a},{tot:0,marg:0}):{tot:0,marg:0};
   const cfg=on('cfg')?(c.cfgVoci||[]).reduce((a,x)=>a+(+x.qta||1)*(+x.prezzo||0),0):0;
-  return{mk,lev:lv.tot+(on('lev')?quotaServizi(c,lv.tot):0),levMarg:lv.marg,cfg};
+  return{arr,mk,lev:lv.tot+(on('lev')?quotaServizi(c,lv.tot):0),levMarg:lv.marg,cfg};
 }
 function commessaNumeri(c){
   const us=unitaDi(c.id), rs=rateDi(c.id);
@@ -339,7 +347,7 @@ function commessaNumeri(c){
   const sv=serviziTot(c);
   const incassato=rs.filter(r=>r.stato==='Incassata').reduce((a,r)=>a+r.importo,0);
   const aperto=rs.filter(r=>r.stato!=='Incassata').reduce((a,r)=>a+r.importo,0);
-  const valore=c.valore!=null&&c.valore!==''?+c.valore:(pack+feeVar+feeCons+sv.mk+sv.lev+sv.cfg);
+  const valore=c.valore!=null&&c.valore!==''?+c.valore:(pack+feeVar+feeCons+sv.arr+sv.mk+sv.lev+sv.cfg);
   return{us,rs,pack,prezzi,feeVar,feeCons,incassato,aperto,valore,vf,sv};
 }
 
@@ -413,7 +421,7 @@ function vCommessa(r){
   const prevs=prevDi(c.id), ords=ordiniDi(c.id), priv=c.tipo==='Privato';
   const evs=S.eventi.filter(e=>e.commessaId===c.id);
   const WF=wfFor(c),wfDone=WF.reduce((a,ph)=>a+wfSteps(c,ph).filter(([k])=>c.steps&&c.steps[k]).length,0), wfTot=WF.reduce((a,ph)=>a+wfSteps(c,ph).length,0);
-  const tabs=[['panoramica','Panoramica'],['workflow',`Workflow ${wfDone}/${wfTot}`],...(priv?[]:[['servizi',`Servizi (${c.servizi.filter(x=>[SV.mk,SV.var,SV.lev,SV.cfg].includes(x)).length})`],['tipologici',`Tipologici (${(c.tipologici||[]).length})`]]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
+  const tabs=[['panoramica','Panoramica'],['workflow',`Workflow ${wfDone}/${wfTot}`],...(priv?[]:[['servizi',`Servizi (${c.servizi.filter(x=>[SV.arr,SV.mk,SV.var,SV.lev,SV.cfg].includes(x)).length})`],['tipologici',`Tipologici (${(c.tipologici||[]).length})`]]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
   let body='';
   if(tab==='panoramica'){
     body=`<div class="detail-grid"><div class="panel"><div class="panel-head"><h2>Scheda</h2><button class="small" data-act="editCommessa" data-id="${c.id}">${ic('edit')}Modifica</button></div><div class="panel-body">
@@ -432,7 +440,7 @@ function vCommessa(r){
       <div class="kv"><span>Valore commessa</span><b class="amount">${n.valore?eur(n.valore):'—'}</b></div>
       ${priv&&!n.us.length?'':`<div class="kv"><span>Unità registrate / a contratto</span><b>${n.us.length} / ${c.unitaTot||'—'}</b></div><div class="kv"><span>Valore pack arredi registrato</span><b class="amount">${eur(n.pack)}</b></div>`}
       ${n.us.length?`<div class="kv"><span>Valore medio pack / unità</span><b class="amount">${eur(n.pack/n.us.length)}</b></div>`:''}
-      ${n.sv.mk?`<div class="kv"><span>Marketing e comunicazione</span><b class="amount">${eur(n.sv.mk)}</b></div>`:''}${n.sv.lev?`<div class="kv"><span>Leve commerciali (pack)</span><b class="amount">${eur(n.sv.lev)}</b></div>`:''}${n.sv.cfg?`<div class="kv"><span>Configuratore</span><b class="amount">${eur(n.sv.cfg)}</b></div>`:''}
+      ${n.sv.arr?`<div class="kv"><span>Analisi di arredabilità</span><b class="amount">${eur(n.sv.arr)}</b></div>`:''}${n.sv.mk?`<div class="kv"><span>Marketing e comunicazione</span><b class="amount">${eur(n.sv.mk)}</b></div>`:''}${n.sv.lev?`<div class="kv"><span>Leve commerciali (pack)</span><b class="amount">${eur(n.sv.lev)}</b></div>`:''}${n.sv.cfg?`<div class="kv"><span>Configuratore</span><b class="amount">${eur(n.sv.cfg)}</b></div>`:''}
       ${c.servizi.includes(SV.var)?`<div class="kv"><span>Varianti: fee pagate dai clienti (${n.vf.cfg.feeCli}%)</span><b class="amount">${eur(n.feeVar)}</b></div><div class="kv"><span>Varianti: pagato dallo sviluppatore${n.vf.nOm?' (incl. '+n.vf.nOm+' omaggi)':''}</span><b class="amount">${eur(n.feeCons)}</b></div>`:''}
       <div class="kv"><span>Incassato</span><b class="amount" style="color:#4f7a3a">${eur(n.incassato)}</b></div>
       <div class="kv"><span>Da incassare</span><b class="amount">${eur(n.aperto)}</b></div>
@@ -863,7 +871,7 @@ function editTable(c,list,cols,calc,emptyTxt){
   const rows=c[list]||[];
   const cell=(r,col)=>{const v=r[col.f]??'';const base=`data-cl="${c.id}" data-ls="${list}" data-r="${r.id}" data-f="${col.f}"`;
     if(col.type==='select')return selectHtml(typeof col.opts==='function'?col.opts():col.opts,v,`class="inline-select" ${base}`);
-    return`<input class="grid-input" style="width:${col.w||100}px" ${col.type==='number'?'type="number" step="any"':''} ${base} value="${esc(v)}">`};
+    return`<input class="grid-input" style="width:${col.w||100}px" ${col.type==='number'?'type="number" step="any"':''} ${col.list?`list="${col.list}"`:''} ${base} value="${esc(v)}">`};
   return`<div class="table-wrap"><table class="edit-table"><thead><tr>${cols.map(x=>`<th>${x.l}</th>`).join('')}${(calc||[]).map(x=>`<th class="right-txt">${x.l}</th>`).join('')}<th></th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(x=>`<td>${cell(r,x)}</td>`).join('')}${(calc||[]).map(x=>`<td class="calc-cell">${x.fn(r)}</td>`).join('')}<td><button class="icon-btn danger" title="Elimina" data-act="delRow" data-cl="${c.id}" data-ls="${list}" data-r="${r.id}">${ic('trash')}</button></td></tr>`).join(''):`<tr><td colspan="${cols.length+(calc||[]).length+1}"><div class="subtle" style="padding:14px 0">${emptyTxt}</div></td></tr>`}</tbody></table></div>`;
 }
 const stepList=(c,steps)=>steps.map(([k,t])=>{const v=c.steps&&c.steps[k];return`<label class="check-row ${v?'done':''}"><input type="checkbox" data-change="step" data-id="${c.id}" data-k="${k}" data-f="0" ${v?'checked':''}><span style="flex:1">${esc(t)}</span>${v?`<span class="subtle">${fd(v)}</span>`:''}</label>`}).join('');
@@ -872,12 +880,24 @@ const tipOpts=c=>()=>[{v:'',l:'—'},...(c.tipologici||[]).map(t=>({v:t.id,l:t.n
 function tipologiciView(c){
   const tot=(c.tipologici||[]).reduce((a,t)=>a+(+t.unita||0),0);
   return`<div class="toolbar"><div class="subtle" style="flex:1">I tipologici dell'operazione (mono, bilo, trilo 1, trilo 2, quadri…): servono ai pack, alle varianti e al configuratore. ${tot?`<b>${tot} unità</b> in ${(c.tipologici||[]).length} tipologici${c.unitaTot&&tot!==+c.unitaTot?` · a contratto ${c.unitaTot}`:''}.`:''}</div><button class="primary" data-act="addRow" data-cl="${c.id}" data-ls="tipologici">${ic('plus')}Tipologico</button></div>
-  <div class="panel">${editTable(c,'tipologici',[{f:'nome',l:'Tipologico',w:140},{f:'unita',l:'N. unità',type:'number',w:70},{f:'mq',l:'Mq commerciali',type:'number',w:80},{f:'prezzo',l:'Prezzo medio vendita €',type:'number',w:110},{f:'planimetria',l:'Planimetria (link)',w:200}],[{l:'Unità registrate',fn:t=>unitaDi(c.id).filter(u=>u.tipologicoId===t.id).length}],'Nessun tipologico: aggiungili dalla tabella dell\'operazione.')}</div>`;
+  <div class="panel">${editTable(c,'tipologici',[{f:'nome',l:'Tipologico',w:140},{f:'unita',l:'N. unità',type:'number',w:70},{f:'mq',l:'Mq commerciali',type:'number',w:80},{f:'prezzo',l:'Prezzo medio vendita €',type:'number',w:110},{f:'planimetria',l:'Planimetria (link)',w:200},...(c.servizi.includes(SV.arr)?[{f:'arredabilita',l:'Arredabilità',type:'select',opts:ESITI_ARR}]:[])],[{l:'Unità registrate',fn:t=>unitaDi(c.id).filter(u=>u.tipologicoId===t.id).length}],'Nessun tipologico: aggiungili dalla tabella dell\'operazione.')}</div>`;
 }
 function serviziView(c,n){
   const on=k=>c.servizi.includes(SV[k]);
-  if(!['mk','var','lev','cfg'].some(on))return`<div class="panel">${empty('folder','Nessun servizio B2B attivo','Attiva i servizi dalla scheda della commessa: marketing e comunicazione, gestione varianti, leve commerciali, configuratore.',`<button class="primary" data-act="editCommessa" data-id="${c.id}">Scegli i servizi</button>`)}</div>`;
+  if(!['arr','mk','var','lev','cfg'].some(on))return`<div class="panel">${empty('folder','Nessun servizio B2B attivo','Attiva i servizi dalla scheda della commessa: analisi di arredabilità, marketing e comunicazione, gestione varianti, leve commerciali, configuratore.',`<button class="primary" data-act="editCommessa" data-id="${c.id}">Scegli i servizi</button>`)}</div>`;
   let h='';
+  if(on('arr')){const tips=c.tipologici||[],seg=c.segnalazioni||[];const es={};tips.forEach(t=>{const k=t.arredabilita||'Da analizzare';es[k]=(es[k]||0)+1});const aperte=seg.filter(x=>x.stato==='Segnalato').length;const tot=n.sv.arr;
+    h+=`<div class="panel"><div class="panel-head"><h2>Analisi di arredabilità</h2><div class="actions"><b class="amount">${eur(tot)}</b>${stepCount(c,WF_B2B.arr)}</div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Consulenza sul progetto dello studio di architettura, in parallelo e prima del marketing: le planimetrie che diventeranno commerciali devono essere arredabili con arredi reali e fruibili dal cliente finale.</p>
+    <div class="detail-grid"><div><label style="margin-bottom:10px">Modalità${selectHtml(MODALITA_ARR,c.arrModo||'commenti',`data-change="retro" data-id="${c.id}" data-k="arrModo"`)}</label>${stepList(c,WF_B2B.arr)}</div><div>
+      <div class="kv"><span>Tipologici</span><span>${tips.length?ESITI_ARR.filter(k=>es[k]).map(k=>`<span class="tag ${k==='Arredabile'||k==='Corretto'?'':k==='Da correggere'?'amber':'gray'}">${k} ${es[k]}</span>`).join(' '):`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/tipologici">Inserisci i tipologici</button>`}</span></div>
+      <div class="kv"><span>Segnalazioni aperte</span><b>${aperte} su ${seg.length}</b></div>
+      <div class="calc-grid" style="margin-top:10px"><label>Prezzo per tipologico €<input type="number" data-change="retro" data-id="${c.id}" data-k="arrPrezzoTip" value="${c.arrPrezzoTip??''}"></label><label>Oppure forfait €<input type="number" data-change="retro" data-id="${c.id}" data-k="arrForfait" value="${c.arrForfait??''}"></label></div>
+      <div class="kv"><span>Compenso</span><b class="amount">${eur(tot)}${!c.arrForfait&&c.arrPrezzoTip?` <span class="subtle">(${tips.length} tipologici)</span>`:''}</b></div>
+    </div></div>
+    <datalist id="dl-prob">${PROBLEMI_ARR.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+    <div class="toolbar" style="margin:16px 0 8px"><b style="flex:1">Segnalazioni</b><button class="small" data-act="addRow" data-cl="${c.id}" data-ls="segnalazioni">${ic('plus')}Segnalazione</button></div>
+    ${editTable(c,'segnalazioni',[{f:'tipologicoId',l:'Tipologico',type:'select',opts:tipOpts(c)},{f:'ambiente',l:'Ambiente',w:100},{f:'problema',l:'Problema',w:260,list:'dl-prob'},{f:'proposta',l:'Proposta di correzione',w:200},{f:'stato',l:'Stato',type:'select',opts:STATI_SEGN}],[],'Nessuna segnalazione.')}
+    </div></div>`}
   if(on('mk')){const tot=n.sv.mk;h+=`<div class="panel"><div class="panel-head"><h2>Marketing e comunicazione</h2><div class="actions"><b class="amount">${eur(tot)}</b>${stepCount(c,WF_B2B.mk)}</div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Render indoor e outdoor, sito internet, naming dell'operazione, grafica e loghi, brochure commerciali e contenuti.</p>
     <div class="detail-grid"><div>${stepList(c,WF_B2B.mk)}</div><div><div class="toolbar" style="margin:0 0 8px"><b style="flex:1">Lavori</b><button class="small" data-act="addRow" data-cl="${c.id}" data-ls="marketing">${ic('plus')}Lavoro</button></div>${editTable(c,'marketing',[{f:'tipo',l:'Lavoro',type:'select',opts:TIPI_MK},{f:'descrizione',l:'Descrizione',w:150},{f:'qta',l:'Q.tà',type:'number',w:50},{f:'prezzo',l:'Prezzo €',type:'number',w:80},{f:'stato',l:'Stato',type:'select',opts:STATI_MK}],[{l:'Totale',fn:x=>eur((+x.qta||1)*(+x.prezzo||0))}],'Nessun lavoro.')}</div></div></div></div>`}
   if(on('var')){const cfg=varCfg(c),vf=n.vf;const by={};n.us.forEach(u=>{const k=u.statoVar||(u.varianti?'Cliente affidato a BTWN':'Nessuna variante');by[k]=(by[k]||0)+1});
@@ -1003,7 +1023,7 @@ const A={
     onSave:o=>{const rows=o.righe.split('\n').map(x=>x.split('|').map(y=>y.trim())).filter(x=>x[0]);const rate=rows.map((x,i)=>[+x[0].replace(',','.'),x[1]||'Rata '+(i+1),x[2]||'',(PIANI[k]&&PIANI[k].rate[i]&&PIANI[k].rate[i][3])||(i===0?'firma':undefined)]);const sum=rate.reduce((a,r)=>a+r[0],0);if(rate.some(r=>isNaN(r[0]))||Math.abs(sum-100)>.01){$('#formErr').innerHTML=`<div class="error">Le percentuali sommano ${sum}: devono fare 100.</div>`;return false}S.piani=S.piani||{};S.piani[k]={nome:o.nome,rate}},
     onDelete:S.piani&&S.piani[k]?()=>{delete S.piani[k]}:null})},
   rilievoMode:d=>{const c=commessa(d.id);c.rilievo=d.v;save();render.keepScroll=true;render()},
-  addRow:d=>{const c=commessa(d.cl);c[d.ls]=c[d.ls]||[];const def={tipologici:{nome:''},marketing:{tipo:'Render interni',qta:1,stato:'Da preventivare'},pack:{elemento:'Cucina',tipologicoId:(c.tipologici||[])[0]?.id||''},cfgVoci:{voce:'',qta:1,fornisce:'BTWN'}}[d.ls]||{};c[d.ls].push({id:uid(),...def});save();render.keepScroll=true;render();const ins=document.querySelectorAll(`[data-ls="${d.ls}"][data-cl="${c.id}"] , input[data-ls="${d.ls}"]`);const last=[...document.querySelectorAll(`input[data-ls="${d.ls}"]`)].pop();if(last)last.focus()},
+  addRow:d=>{const c=commessa(d.cl);c[d.ls]=c[d.ls]||[];const def={tipologici:{nome:''},marketing:{tipo:'Render interni',qta:1,stato:'Da preventivare'},pack:{elemento:'Cucina',tipologicoId:(c.tipologici||[])[0]?.id||''},cfgVoci:{voce:'',qta:1,fornisce:'BTWN'},segnalazioni:{stato:'Segnalato',tipologicoId:(c.tipologici||[])[0]?.id||''}}[d.ls]||{};c[d.ls].push({id:uid(),...def});save();render.keepScroll=true;render();const ins=document.querySelectorAll(`[data-ls="${d.ls}"][data-cl="${c.id}"] , input[data-ls="${d.ls}"]`);const last=[...document.querySelectorAll(`input[data-ls="${d.ls}"]`)].pop();if(last)last.focus()},
   delRow:d=>{const c=commessa(d.cl);c[d.ls]=(c[d.ls]||[]).filter(x=>x.id!==d.r);save();render.keepScroll=true;render()},
   varCfg:d=>formVarCfg(commessa(d.id)),
   soglie:d=>{const c=commessa(d.id);const cur=fasceList(c).map(([l,sc])=>`${l} | ${sc}`).join('\n');openForm({title:'Politica commerciale · soglie',values:{righe:cur},intro:'Una soglia per riga: <b>fino a € | sconto %</b>, in ordine crescente. L\'ultima riga può essere <b>oltre | sconto %</b>. Esempio:<br>5000 | 20<br>10000 | 25<br>oltre | 30',fields:[{k:'righe',l:'Soglie',type:'textarea',wide:true,req:true}],
