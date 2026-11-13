@@ -212,6 +212,7 @@ function seed(){
   const ordini=[{id:uid(),commessaId:pc.id,preventivoId:p2.id,fornitore:'Binova',numero:'007517',data:D(-25),previsto:13000,importo:13420,arrivo:D(-3),stato:'Confermato',note:'Conferma sopra il costo previsto: verificare righe'},{id:uid(),commessaId:pc.id,preventivoId:p2.id,fornitore:'Lema',numero:'L-2231',data:D(-24),previsto:15200,importo:15200,arrivo:D(12),stato:'Confermato',note:''},{id:uid(),commessaId:pc.id,preventivoId:p2.id,fornitore:'Davide Groppi',numero:'',data:'',previsto:5500,importo:null,arrivo:'',stato:'Da ordinare',note:''},{id:uid(),commessaId:pc.id,preventivoId:p2.id,fornitore:'Gervasoni',numero:'G-889',data:D(-20),previsto:7500,importo:7500,arrivo:D(30),stato:'Ordinato',note:''}];
   genRate(rate,pc,null,'homebook',1100,D(-120));rate.slice(-1)[0].stato='Incassata';
   {const tot=righe.filter(r=>!r.esclusa).reduce((a,r)=>a+(r.qta||1)*r.listino*(1-r.scCli/100),0);const before=rate.length;genRate(rate,pc,null,'privati',Math.round(tot>=25000?tot-550:tot),D(-30));const pr=rate.slice(before);pr[0].stato='Incassata';pr[1].stato='Fatturata';pr[1].scadenza=D(-5);}
+  rate.filter(r=>r.stato!=='Prevista').sort((a,b)=>(a.scadenza||'').localeCompare(b.scadenza||'')).forEach((r,i)=>{r.numero=(i+1)+'/'+new Date().getFullYear();r.dataFattura=r.scadenza||D(-30);if(r.stato==='Incassata')r.dataIncasso=addDays(r.dataFattura,12)});
   return{version:1,demo:true,preventivi,ordini,azienda:{ragione:'Between Contract & Design S.a.s.',piva:'08284490961',sede:'Via Turati 8, Milano',pec:'btwn@pec.it'},users:[{id:uid(),nome:'Shahin Firouzabadi',ruolo:'Amministratore'}],clienti,commesse,unita,rate,eventi,fornitori};
 }
 function genRate(list,c,u,pianoKey,base,startDate,percOverride){
@@ -226,7 +227,7 @@ function genRate(list,c,u,pianoKey,base,startDate,percOverride){
 }
 
 /* ---------- Stato ---------- */
-let S, ui={view:'dashboard',commesseMode:'lista',q:'',filtroStato:'Attive',agendaPast:false,rateFiltro:'Aperte'};
+let S, ui={view:'dashboard',commesseMode:'lista',q:'',filtroStato:'Attive',agendaPast:false,rateFiltro:'Da incassare'};
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}if(!S||!S.commesse){S=seed();save(true)}S.preventivi=S.preventivi||[];S.ordini=S.ordini||[];S.clienti.forEach(x=>{if(TIPO_CLI_MAP[x.tipo])x.tipo=TIPO_CLI_MAP[x.tipo]});S.unita.forEach(u=>{if(VAR_OLD[u.statoVar])u.statoVar=VAR_OLD[u.statoVar]});S.commesse.forEach(c=>{if(c.arrModo&&c.arrLivello===undefined){c.arrLivello='';if(c.arrForfait)c.arrPrezzi={l1:+c.arrForfait}}});S.commesse.forEach(c=>{if(c.tipo!=='Privato'&&!c.wfv2){c.wfv2=1;const m=(c.servizi||[]).some(x=>x==='Fornitura arredi'||x===SV.lev)?[1,2,5,6,9,13,15,16,17]:[1,2,3,3,3,3,3,4,4];c.fase=m[(c.fase||1)-1]||1}c.servizi=(c.servizi||[]).map(x=>SERV_MAP[x]||(x==='Fornitura arredi'&&c.tipo!=='Privato'?SV.lev:x))});}
 function save(silent){try{localStorage.setItem(KEY,JSON.stringify(S));if(!silent)flash()}catch(e){toast('Impossibile salvare: spazio del browser esaurito')}}
 let flashT;function flash(){const el=$('#savestate');if(el){el.innerHTML='<span class="dot"></span>Salvato';clearTimeout(flashT);flashT=setTimeout(()=>el.innerHTML='<span class="dot"></span>Dati salvati in locale',1500)}}
@@ -275,7 +276,7 @@ function alerts(){
 }
 
 /* ---------- Router & shell ---------- */
-const NAV=[['dashboard','home','Panoramica'],['commesse','folder','Commesse'],['vendite','calc','Preventivi e ordini'],['clienti','users','Clienti'],['agenda','cal','Agenda'],['economia','euro','Economia'],['fornitori','box','Brand e fornitori'],['impostazioni','gear','Impostazioni']];
+const NAV=[['dashboard','home','Panoramica'],['commesse','folder','Commesse'],['vendite','calc','Preventivi e ordini'],['clienti','users','Clienti'],['agenda','cal','Agenda'],['economia','euro','Economia'],['impostazioni','gear','Impostazioni']];
 function route(){const h=location.hash.replace(/^#\/?/,'').split('/');return{view:h[0]||'dashboard',id:h[1],tab:h[2]}}
 function go(h){if(location.hash===h)render();else location.hash=h}
 function render(){
@@ -283,7 +284,7 @@ function render(){
   const r=route();ui.view=r.view;
   const views={vendite:vVendite,preventivo:vPreventivo,dashboard:vDashboard,commesse:vCommesse,commessa:vCommessa,clienti:vClienti,agenda:vAgenda,economia:vEconomia,fornitori:vFornitori,impostazioni:vImpostazioni};
   const fn=views[r.view]||vDashboard;
-  const navKey=r.view==='commessa'||r.view==='preventivo'?'commesse':r.view;
+  const navKey=r.view==='commessa'||r.view==='preventivo'?'commesse':r.view==='fornitori'?'impostazioni':r.view;
   const crumbs={vendite:'Preventivi e ordini',dashboard:'Panoramica',commesse:'Commesse',commessa:'Commesse',clienti:'Clienti',agenda:'Agenda',economia:'Economia',fornitori:'Brand e fornitori',impostazioni:'Impostazioni'};
   const ae=document.activeElement, fk=ae&&ae.dataset&&ae.dataset.r&&ae.dataset.f?[ae.dataset.r,ae.dataset.f]:null;
   const u=me(), nAl=alerts().length;
@@ -350,6 +351,15 @@ function serviziTot(c){
   const cfg=on('cfg')?(c.cfgVoci||[]).reduce((a,x)=>a+(+x.qta||1)*(+x.prezzo||0),0):0;
   return{arr,mk,lev:lv.tot+(on('lev')?quotaServizi(c,lv.tot):0),levMarg:lv.marg,cfg};
 }
+function valoreAcquisito(c){
+  if(!['Attiva','Chiusa','Sospesa'].includes(c.stato))return 0;
+  const rs=rateDi(c.id).reduce((a,r)=>a+(+r.importo||0),0);let v;
+  if(c.tipo==='Privato'){const acc=prevDi(c.id).find(p=>p.stato==='Accettato');v=(acc?prevCalc(acc).netto:0)+(c.steps&&c.steps.hb_firma?(+c.hbFee||HB_FEE):0)}
+  else{const n0=commessaNumeri(c);v=n0.valore||0}
+  return Math.max(v,rs);
+}
+function costiCommessa(c){const o=ordiniDi(c.id).reduce((a,x)=>a+(+x.importo||+x.previsto||0),0);const e=(c.esterni||[]).reduce((a,x)=>a+(+x.importo||0),0);const l=+(c.logistica&&c.logistica.importo)||0;return{ordini:o,esterni:e,logistica:l,tot:o+e+l}}
+function quadro(c){const rs=rateDi(c.id);const acq=valoreAcquisito(c);const fatt=rs.filter(r=>r.stato!=='Prevista').reduce((a,r)=>a+(+r.importo||0),0);const inc=rs.filter(r=>r.stato==='Incassata').reduce((a,r)=>a+(+r.importo||0),0);const sca=rs.filter(r=>r.stato==='Fatturata'&&r.scadenza&&daysTo(r.scadenza)<0).reduce((a,r)=>a+(+r.importo||0),0);const co=costiCommessa(c);return{acq,fatt,inc,daInc:fatt-inc,sca,daFatt:Math.max(0,acq-fatt),costi:co.tot,co,marg:acq-co.tot}}
 function commessaNumeri(c){
   const us=unitaDi(c.id), rs=rateDi(c.id);
   const pack=us.reduce((a,u)=>a+(+u.pack||0),0);
@@ -385,12 +395,6 @@ function vDashboard(){
   <div class="head"><div><div class="eyebrow">${fdLong(today())}</div><h1>${h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${esc(u.nome.split(' ')[0])}</h1><p>${att.length} commesse attive · ${unitaAtt.length} unità in gestione · ${al.length} cose da guardare</p></div>
   <div class="actions"><button data-act="newEvento">${ic('cal')}Appuntamento</button><button data-act="newCliente">${ic('users')}Cliente</button></div></div>
   ${S.demo?`<div class="attention"><div><b>Stai vedendo dati dimostrativi</b><small>Commesse e brand vengono dal profilo BTWN; unità, acquirenti, importi delle rate e appuntamenti sono di esempio.</small></div><div class="actions"><button class="small" data-act="clearDemo">Svuota esempi</button><button class="small ghost" data-act="keepDemo">Tieni</button></div></div>`:''}
-  <div class="cards">
-    <div class="card dark"><div class="card-label">Commesse attive ${ic('folder')}</div><div class="metric">${att.length}</div><div class="card-foot">${att.reduce((a,c)=>a+(+c.unitaTot||0),0)} unità complessive a contratto</div></div>
-    <div class="card"><div class="card-label">Pipeline ponderata ${ic('arrow')}</div><div class="metric amount">${eur(pond)}</div><div class="card-foot">${pipe.length} opportunità · ${eur(lordo)} lordo</div></div>
-    <div class="card"><div class="card-label">Da incassare entro 30 gg ${ic('euro')}</div><div class="metric amount">${eur(in30.reduce((a,r)=>a+r.importo,0))}</div><div class="card-foot">${scad.length?`<span style="color:var(--red)">${scad.length} rate scadute · ${eur(scad.reduce((a,r)=>a+r.importo,0))}</span>`:'Nessuna rata scaduta'}</div></div>
-    <div class="card"><div class="card-label">Unità in gestione ${ic('home2')}</div><div class="metric">${unitaAtt.length}</div><div class="card-foot">${unitaAtt.filter(u=>STATI_UNITA.indexOf(u.stato)<3).length} prima dell'ordine · ${unitaAtt.filter(u=>u.varianti).length} con varianti</div></div>
-  </div>
   <div class="grid-main"><div>
     ${(()=>{const pa=prossimeAttivita();return`<div class="panel"><div class="panel-head"><h2>Prossime attività</h2><span class="subtle">spunta quando è fatto</span></div>${pa.length?`<div class="mini-list">${pa.slice(0,12).map(a=>`<label class="check-row" style="align-items:flex-start"><input type="checkbox" data-change="step" data-id="${a.c.id}" data-k="${a.k}" data-f="${a.f}" style="margin-top:2px"><span style="flex:1"><b style="font-weight:600">${esc(a.t)}</b><br><span class="subtle"><button class="link" style="font-weight:500" data-act="nav" data-h="#/commessa/${a.c.id}/${a.f?'workflow':'servizi'}">${esc(a.c.nome)}</button> · ${esc(a.where)}${a.more?' · poi altre '+a.more:''}</span></span></label>`).join('')}${pa.length>12?`<div class="subtle" style="padding-top:10px">e altre ${pa.length-12}…</div>`:''}</div>`:empty('check','Niente in sospeso','Tutte le fasi correnti sono complete.')}</div>`})()}
     <div class="panel"><div class="panel-head"><h2>Commesse attive</h2><button class="small" data-act="nav" data-h="#/commesse">Tutte ${ic('arrow')}</button></div>
@@ -407,6 +411,12 @@ function vDashboard(){
     ${ev.length?ev.map(eventoRow).join(''):empty('cal','Nessun appuntamento','')}
     </div>
   </div></div>
+  <div class="cards">
+    <div class="card dark"><div class="card-label">Commesse attive ${ic('folder')}</div><div class="metric">${att.length}</div><div class="card-foot">${att.reduce((a,c)=>a+(+c.unitaTot||0),0)} unità complessive a contratto</div></div>
+    <div class="card"><div class="card-label">Pipeline ponderata ${ic('arrow')}</div><div class="metric amount">${eur(pond)}</div><div class="card-foot">${pipe.length} opportunità · ${eur(lordo)} lordo</div></div>
+    <div class="card"><div class="card-label">Da incassare entro 30 gg ${ic('euro')}</div><div class="metric amount">${eur(in30.reduce((a,r)=>a+r.importo,0))}</div><div class="card-foot">${scad.length?`<span style="color:var(--red)">${scad.length} rate scadute · ${eur(scad.reduce((a,r)=>a+r.importo,0))}</span>`:'Nessuna rata scaduta'}</div></div>
+    <div class="card"><div class="card-label">Unità in gestione ${ic('home2')}</div><div class="metric">${unitaAtt.length}</div><div class="card-foot">${unitaAtt.filter(u=>STATI_UNITA.indexOf(u.stato)<3).length} prima dell'ordine · ${unitaAtt.filter(u=>u.varianti).length} con varianti</div></div>
+  </div>
   <div class="footer"><span>BTWN · Between Contract &amp; Design</span><span>Bussola v1 · dati locali</span></div>`;
 }
 
@@ -441,7 +451,7 @@ function vCommessa(r){
   const prevs=prevDi(c.id), ords=ordiniDi(c.id), priv=c.tipo==='Privato';
   const evs=S.eventi.filter(e=>e.commessaId===c.id);
   const WF=wfFor(c),wfDone=WF.reduce((a,ph)=>a+wfSteps(c,ph).filter(([k])=>c.steps&&c.steps[k]).length,0), wfTot=WF.reduce((a,ph)=>a+wfSteps(c,ph).length,0);
-  const tabs=[['panoramica','Panoramica'],['workflow',`Workflow ${wfDone}/${wfTot}`],...(priv?[]:[['servizi',`Servizi (${c.servizi.filter(x=>[SV.arr,SV.mk,SV.var,SV.lev,SV.cfg].includes(x)).length})`],['tipologici',`Tipologici (${(c.tipologici||[]).length})`]]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
+  const tabs=[['panoramica','Panoramica'],['workflow',`Workflow ${wfDone}/${wfTot}`],...(priv?[]:[['servizi',`Servizi (${c.servizi.filter(x=>[SV.arr,SV.mk,SV.var,SV.lev,SV.cfg].includes(x)).length})`]]),...(!priv&&((c.tipologici||[]).length||[SV.arr,SV.var,SV.lev,SV.cfg].some(x=>c.servizi.includes(x)))?[['tipologici',`Tipologici (${(c.tipologici||[]).length})`]]:[]),...(n.us.length||(!priv&&(c.servizi.includes(SV.var)||c.servizi.includes(SV.lev)))?[['unita',`Unità (${n.us.length})`]]:[]),...(priv||prevs.length?[['preventivi',`Preventivi (${prevs.length})`]]:[]),...(priv||ords.length||c.servizi.includes(SV.lev)?[['ordini',`Ordini (${ords.length})`]]:[]),['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
   let body='';
   if(tab==='panoramica'){
     body=`<div class="detail-grid"><div class="panel"><div class="panel-head"><h2>Scheda</h2><button class="small" data-act="editCommessa" data-id="${c.id}">${ic('edit')}Modifica</button></div><div class="panel-body">
@@ -462,8 +472,7 @@ function vCommessa(r){
       ${n.us.length?`<div class="kv"><span>Valore medio pack / unità</span><b class="amount">${eur(n.pack/n.us.length)}</b></div>`:''}
       ${n.sv.arr?`<div class="kv"><span>Analisi di arredabilità</span><b class="amount">${eur(n.sv.arr)}</b></div>`:''}${n.sv.mk?`<div class="kv"><span>Marketing e comunicazione</span><b class="amount">${eur(n.sv.mk)}</b></div>`:''}${n.sv.lev?`<div class="kv"><span>Leve commerciali (pack)</span><b class="amount">${eur(n.sv.lev)}</b></div>`:''}${n.sv.cfg?`<div class="kv"><span>Configuratore</span><b class="amount">${eur(n.sv.cfg)}</b></div>`:''}
       ${c.servizi.includes(SV.var)?`<div class="kv"><span>Varianti: pagato dai clienti</span><b class="amount">${eur(n.feeVar)}</b></div><div class="kv"><span>Varianti: pagato dallo sviluppatore</span><b class="amount">${eur(n.feeCons)}</b></div>`:''}
-      <div class="kv"><span>Incassato</span><b class="amount" style="color:#4f7a3a">${eur(n.incassato)}</b></div>
-      <div class="kv"><span>Da incassare</span><b class="amount">${eur(n.aperto)}</b></div>
+      ${(()=>{const q=quadro(c);return`<div class="kv"><span>Lavoro acquisito</span><b class="amount">${eur(q.acq)}</b></div><div class="kv"><span>Fatturato · incassato</span><b class="amount">${eur(q.fatt)} · <span style="color:#4f7a3a">${eur(q.inc)}</span></b></div><div class="kv"><span>Da incassare · da fatturare</span><b class="amount">${eur(q.daInc)} · ${eur(q.daFatt)}</b></div>${q.costi?`<div class="kv"><span>Costi registrati (ordini, agenzie, logistica)</span><b class="amount">${eur(q.costi)}</b></div><div class="kv"><span>Margine</span><b class="amount">${eur(q.marg)} · ${q.acq?(q.marg/q.acq*100).toFixed(1):0}%</b></div>`:''}`})()}
       <div class="kv"><span>Stato unità</span><span>${STATI_UNITA.map(s=>{const k=n.us.filter(u=>u.stato===s).length;return k?`${tagUnita(s)} ${k}`:''}).filter(Boolean).join(' &nbsp;')||'—'}</span></div>
     </div></div></div>`;
   }
@@ -472,7 +481,7 @@ function vCommessa(r){
     <div class="panel">${n.us.length?`<div class="table-wrap"><table><thead><tr><th>Unità</th><th>Acquirente</th><th>Stato</th><th class="right-txt">Prezzo vendita</th><th class="right-txt">Pack arredi</th><th>Varianti</th>${c.servizi.includes(SV.lev)?'<th class="right-txt">Differenziale listino</th>':''}<th>Rogito</th><th>Limite ordine</th><th></th></tr></thead><tbody>${n.us.sort((a,b)=>a.codice.localeCompare(b.codice,'it',{numeric:true})).map(u=>{const lim=u.rogito?addDays(u.rogito,-120):'';const dl=lim?daysTo(lim):null;const pre=STATI_UNITA.indexOf(u.stato)<3;return`<tr><td><button class="link" data-act="editUnita" data-id="${u.id}">${esc(u.codice)}</button></td><td>${u.acquirente?esc(u.acquirente):'<span class="tag amber">da comunicare</span>'}<small>${u.preliminare?'preliminare '+fd(u.preliminare):''}</small></td><td>${selectHtml(STATI_UNITA,u.stato,`class="inline-select" data-change="statoUnita" data-id="${u.id}"`)}</td><td class="amount right-txt">${u.prezzo?eur(u.prezzo):'—'}</td><td class="amount right-txt">${u.pack?eur(u.pack):'—'}</td><td>${c.servizi.includes(SV.var)?selectHtml(statiVarianteFor(c),u.statoVar||(u.varianti?V_PRE[0]:SV_NESSUNA),`class="inline-select" data-change="statoVar" data-id="${u.id}"`)+(u.varianti&&n.vf.feeU?`<small>gestione ${eur(n.vf.feeU(u))} · ${n.vf.qs===1?'sviluppatore':n.vf.qs===0?'cliente':'misto'}${u.importoVar?' · varianti impresa '+eur(u.importoVar):''}</small>`:''):(u.varianti?'<span class="tag blue">Sì</span>':'<span class="muted">No</span>')}</td>${c.servizi.includes(SV.lev)?(()=>{const x=diffUnita(c,u);return`<td class="amount right-txt">${x?`${eur(x.d)}<small>${x.d>0?(x.sc==null?'<span class="warn">imposta la politica commerciale</span>':'sconto '+x.sc+'% · '+eur(x.netto)+(diffCfg(c).paga==='cliente'?' dal cliente':' via sviluppatore')):x.d<0?'in negativo: nessun rimborso né credito':'nessun extra'}</small>`:`<span class="muted">${listinoCapitolato(c,u)?'capitolato '+eur(listinoCapitolato(c,u)):'—'}</span>`}</td>`})():''}<td>${fd(u.rogito)}</td><td>${lim?`${fd(lim)}${pre?`<small style="color:${dl<0?'var(--red)':dl<=30?'var(--orange)':'inherit'}">${dl<0?'superato da '+(-dl)+' gg':'tra '+dl+' gg'}</small>`:'<small>ordine confermato</small>'}`:'—'}</td><td><div class="actions"><button class="icon-btn" title="Genera rate" data-act="genRate" data-id="${c.id}" data-u="${u.id}">${ic('euro')}</button><button class="icon-btn" title="Modifica" data-act="editUnita" data-id="${u.id}">${ic('edit')}</button></div></td></tr>`}).join('')}</tbody></table></div>`:empty('home2','Nessuna unità','Aggiungi le unità della commessa una per una o in blocco.',`<button class="primary" data-act="bulkUnita" data-id="${c.id}">Genera unità</button>`)}</div>`;
   }
   if(tab==='pagamenti'){
-    body=`<div class="cards three"><div class="card"><div class="card-label">Incassato</div><div class="metric amount">${eur(n.incassato)}</div></div><div class="card"><div class="card-label">Fatturato da incassare</div><div class="metric amount">${eur(n.rs.filter(r=>r.stato==='Fatturata').reduce((a,r)=>a+r.importo,0))}</div></div><div class="card"><div class="card-label">Previsto</div><div class="metric amount">${eur(n.rs.filter(r=>r.stato==='Prevista').reduce((a,r)=>a+r.importo,0))}</div></div></div>
+    const q=quadro(c);body=`<div class="cards"><div class="card dark"><div class="card-label">Lavoro acquisito</div><div class="metric amount">${eur(q.acq)}</div></div><div class="card"><div class="card-label">Fatturato</div><div class="metric amount">${eur(q.fatt)}</div><div class="card-foot">incassato ${eur(q.inc)}</div></div><div class="card"><div class="card-label">Da incassare</div><div class="metric amount">${eur(q.daInc)}</div><div class="card-foot">${q.sca?`<span style="color:var(--red)">${eur(q.sca)} scaduti</span>`:'nessuna scaduta'}</div></div><div class="card"><div class="card-label">Da fatturare</div><div class="metric amount">${eur(q.daFatt)}</div></div></div>
     <div class="toolbar"><div style="flex:1"></div><button data-act="genRate" data-id="${c.id}">${ic('calc')}Genera piano rate</button><button class="primary" data-act="newRata" data-id="${c.id}">${ic('plus')}Nuova rata</button></div>
     <div class="panel">${rateTable(n.rs,false)}</div>`;
   }
@@ -501,10 +510,14 @@ function vCommessa(r){
   <div class="tabs">${tabs.map(([k,l])=>`<button class="${tab===k?'active':''}" data-act="nav" data-h="#/commessa/${c.id}/${k}">${l}</button>`).join('')}</div>${body}`;
 }
 
+const ivaR=r=>r.iva==null||r.iva===''?22:+r.iva;
+const totR=r=>(+r.importo||0)*(1+ivaR(r)/100);
+function nextNumero(){const y=new Date().getFullYear();let mx=0;S.rate.forEach(r=>{const m=String(r.numero||'').match(/^(\d+)\s*\/\s*(\d{4})$/);if(m&&+m[2]===y)mx=Math.max(mx,+m[1])});return(mx+1)+'/'+y}
 function rateTable(rs,showCommessa){
   if(!rs.length)return empty('euro','Nessuna rata','Genera il piano dal modello contrattuale o aggiungi una rata.');
   rs=[...rs].sort((a,b)=>(a.scadenza||'9999').localeCompare(b.scadenza||'9999'));
-  return`<div class="table-wrap"><table><thead><tr><th>Rata</th>${showCommessa?'<th>Commessa</th>':''}<th>Unità</th><th>%</th><th class="right-txt">Importo</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody>${rs.map(r=>{const u=r.unitaId&&byId('unita',r.unitaId),c=commessa(r.commessaId);return`<tr><td>${esc(r.descrizione)}<small>${esc(r.quando||'')}</small></td>${showCommessa?`<td>${c?`<button class="link" data-act="nav" data-h="#/commessa/${c.id}/pagamenti">${esc(c.nome)}</button>`:'—'}</td>`:''}<td>${u?esc(u.codice):'—'}</td><td>${r.perc?r.perc+'%':'—'}</td><td class="amount right-txt">${eur2(r.importo)}</td><td>${fd(r.scadenza)}${r.scadenza&&r.stato!=='Incassata'?`<small>${daysTo(r.scadenza)<0?'scaduta da '+(-daysTo(r.scadenza))+' gg':'tra '+daysTo(r.scadenza)+' gg'}</small>`:''}</td><td>${selectHtml(STATI_RATA,r.stato,`class="inline-select" data-change="statoRata" data-id="${r.id}"`)} ${r.stato!=='Incassata'&&r.scadenza&&daysTo(r.scadenza)<0?'<span class="tag red">scaduta</span>':''}</td><td><button class="icon-btn" data-act="editRata" data-id="${r.id}" title="Modifica">${ic('edit')}</button></td></tr>`}).join('')}</tbody></table></div>`;
+  return`<div class="table-wrap"><table><thead><tr><th>Rata</th>${showCommessa?'<th>Commessa</th>':''}<th>Fattura</th><th class="right-txt">Imponibile</th><th class="right-txt">Totale IVA incl.</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody>${rs.map(r=>{const u=r.unitaId&&byId('unita',r.unitaId),c=commessa(r.commessaId);const late=r.stato!=='Incassata'&&r.scadenza&&daysTo(r.scadenza)<0;
+    return`<tr><td>${esc(r.descrizione)}${u?' · '+esc(u.codice):''}<small>${esc(r.controparte||r.quando||'')}</small></td>${showCommessa?`<td>${c?`<button class="link" data-act="nav" data-h="#/commessa/${c.id}/pagamenti">${esc(c.nome)}</button>`:'—'}</td>`:''}<td>${r.numero?`n. ${esc(r.numero)}<small>${fd(r.dataFattura)}</small>`:'<span class="muted">—</span>'}</td><td class="amount right-txt">${eur2(r.importo)}</td><td class="amount right-txt">${eur2(totR(r))}<small>IVA ${ivaR(r)}%</small></td><td>${fd(r.scadenza)}${r.scadenza&&r.stato!=='Incassata'?`<small style="${late?'color:var(--red)':''}">${daysTo(r.scadenza)<0?'scaduta da '+(-daysTo(r.scadenza))+' gg':'tra '+daysTo(r.scadenza)+' gg'}</small>`:''}</td><td>${r.stato==='Incassata'?`<span class="tag">Incassata</span><small>${fd(r.dataIncasso)}</small>`:r.stato==='Fatturata'?`<span class="tag ${late?'red':'amber'}">Da incassare</span>`:`<span class="tag gray">Da emettere</span>`}</td><td><div class="actions">${r.stato==='Prevista'?`<button class="small" data-act="emetti" data-id="${r.id}">Emetti fattura</button>`:r.stato==='Fatturata'?`<button class="small lime" data-act="incassa" data-id="${r.id}">Incassata</button>`:''}<button class="icon-btn" data-act="editRata" data-id="${r.id}" title="Modifica">${ic('edit')}</button></div></td></tr>`}).join('')}</tbody></table></div>`;
 }
 
 /* ---------- Clienti ---------- */
@@ -532,28 +545,30 @@ function vAgenda(){
 
 /* ---------- Economia ---------- */
 function vEconomia(){
-  const rs=S.rate.filter(r=>commessa(r.commessaId));
-  const sum=f=>rs.filter(f).reduce((a,r)=>a+r.importo,0);
-  const filt={Aperte:r=>r.stato!=='Incassata',Scadute:r=>r.stato!=='Incassata'&&r.scadenza&&daysTo(r.scadenza)<0,Incassate:r=>r.stato==='Incassata',Tutte:()=>true};
-  return`<div class="head"><div><div class="eyebrow">Incassi e fee</div><h1>Economia</h1><p>Rate dei piani di pagamento e incassi.</p></div></div>
-  <div class="cards"><div class="card dark"><div class="card-label">Incassato</div><div class="metric amount">${eur(sum(r=>r.stato==='Incassata'))}</div><div class="card-foot">su tutte le commesse</div></div>
-  <div class="card"><div class="card-label">Fatturato da incassare</div><div class="metric amount">${eur(sum(r=>r.stato==='Fatturata'))}</div><div class="card-foot">${rs.filter(r=>r.stato==='Fatturata').length} rate</div></div>
-  <div class="card"><div class="card-label">Previsto</div><div class="metric amount">${eur(sum(r=>r.stato==='Prevista'))}</div><div class="card-foot">da fatturare al raggiungimento delle milestone</div></div>
-  <div class="card"><div class="card-label">Scaduto</div><div class="metric amount" style="color:var(--red)">${eur(sum(filt.Scadute))}</div><div class="card-foot">oltre 60 gg: diffida ex art. 1454 c.c.</div></div></div>
-  <div class="detail-grid">
-    <div class="panel"><div class="panel-head"><h2>Sconto cliente finale</h2><span class="subtle">margine obiettivo ~28%</span></div><div class="panel-body">
-      <div class="calc-grid"><label>Importo a listino (€)<input type="number" id="sc-listino" value="18000" min="0" step="500"></label><label>Costo d'acquisto (€, facoltativo)<input type="number" id="sc-costo" placeholder="es. 9500" min="0"></label></div>
-      <div class="calculation" id="sc-out"></div>
-      <div class="note">Scontistica: 20% sotto 10.000 €, 25% tra 10.000 e 25.000 €, 30% oltre 25.000 €.</div>
-    </div></div>
+  const cs=S.commesse.filter(c=>['Attiva','Chiusa','Sospesa'].includes(c.stato));
+  const Q=cs.map(c=>({c,q:quadro(c)})).filter(x=>x.q.acq||x.q.fatt);
+  const T=Q.reduce((a,{q})=>{for(const k of ['acq','fatt','inc','daInc','sca','daFatt','costi','marg'])a[k]=(a[k]||0)+q[k];return a},{});
+  const rs=S.rate.filter(r=>commessa(r.commessaId));const y=new Date().getFullYear();
+  const mese=d=>d?d.slice(0,7):'';
+  const months=[...Array(12)].map((_,i)=>`${y}-${String(i+1).padStart(2,'0')}`);
+  const M=months.map(m=>({m,f:rs.filter(r=>r.stato!=='Prevista'&&mese(r.dataFattura||r.scadenza)===m).reduce((a,r)=>a+(+r.importo||0),0),i:rs.filter(r=>r.stato==='Incassata'&&mese(r.dataIncasso||r.scadenza)===m).reduce((a,r)=>a+(+r.importo||0),0),p:rs.filter(r=>r.stato!=='Incassata'&&mese(r.scadenza)===m).reduce((a,r)=>a+(+r.importo||0),0)}));
+  const fy=M.reduce((a,x)=>a+x.f,0),iy=M.reduce((a,x)=>a+x.i,0);
+  const filt={'Da emettere':r=>r.stato==='Prevista','Da incassare':r=>r.stato==='Fatturata','Incassate':r=>r.stato==='Incassata','Tutte':()=>true};
+  if(!filt[ui.rateFiltro])ui.rateFiltro='Da incassare';
+  return`<div class="head"><div><div class="eyebrow">Quadro economico</div><h1>Economia</h1><p>Lavoro acquisito, fatture emesse, soldi ricevuti e da ricevere, fatture da emettere.</p></div><button data-act="exportCsv">${ic('download')}Fatture in CSV</button></div>
+  <div class="cards" style="grid-template-columns:repeat(5,minmax(0,1fr))">
+    <div class="card dark"><div class="card-label">Lavoro acquisito</div><div class="metric amount">${eur(T.acq)}</div><div class="card-foot">${Q.length} commesse firmate o accettate</div></div>
+    <div class="card"><div class="card-label">Fatturato ${y}</div><div class="metric amount">${eur(fy)}</div><div class="card-foot">fatture emesse nell'anno</div></div>
+    <div class="card"><div class="card-label">Incassato ${y}</div><div class="metric amount" style="color:#4f7a3a">${eur(iy)}</div><div class="card-foot">soldi ricevuti nell'anno</div></div>
+    <div class="card"><div class="card-label">Da incassare</div><div class="metric amount">${eur(T.daInc)}</div><div class="card-foot">${T.sca?`<span style="color:var(--red)">${eur(T.sca)} scaduti</span>`:'nessuna fattura scaduta'}</div></div>
+    <div class="card"><div class="card-label">Da fatturare</div><div class="metric amount">${eur(T.daFatt)}</div><div class="card-foot">lavoro acquisito non ancora fatturato</div></div>
   </div>
-  <div class="table-title"><h2>Rate</h2><div class="seg">${Object.keys(filt).map(k=>`<button class="${ui.rateFiltro===k?'active':''}" data-act="rateFiltro" data-v="${k}">${k}</button>`).join('')}</div></div>
+  <div class="panel"><div class="panel-head"><h2>Per commessa</h2><span class="subtle">imponibili, IVA esclusa</span></div><div class="table-wrap"><table><thead><tr><th>Commessa</th><th class="right-txt">Acquisito</th><th class="right-txt">Fatturato</th><th class="right-txt">Incassato</th><th class="right-txt">Da incassare</th><th class="right-txt">Da fatturare</th><th class="right-txt">Costi registrati</th><th class="right-txt">Margine</th></tr></thead><tbody>${Q.sort((a,b)=>b.q.acq-a.q.acq).map(({c,q})=>`<tr><td><button class="link" data-act="nav" data-h="#/commessa/${c.id}/pagamenti">${esc(c.nome)}</button><small>${esc(c.tipo==='Privato'?'Cliente privato':'Operazione')} · ${esc(c.stato)}</small></td><td class="amount right-txt">${eur(q.acq)}</td><td class="amount right-txt">${eur(q.fatt)}</td><td class="amount right-txt">${eur(q.inc)}</td><td class="amount right-txt ${q.sca?'warn':''}">${eur(q.daInc)}</td><td class="amount right-txt">${eur(q.daFatt)}</td><td class="amount right-txt">${q.costi?eur(q.costi):'<span class="muted">—</span>'}</td><td class="amount right-txt">${q.costi?`${eur(q.marg)}<small>${q.acq?(q.marg/q.acq*100).toFixed(1)+'%':''}</small>`:'<span class="muted">—</span>'}</td></tr>`).join('')}<tr><td><b>Totale</b></td><td class="amount right-txt"><b>${eur(T.acq)}</b></td><td class="amount right-txt"><b>${eur(T.fatt)}</b></td><td class="amount right-txt"><b>${eur(T.inc)}</b></td><td class="amount right-txt"><b>${eur(T.daInc)}</b></td><td class="amount right-txt"><b>${eur(T.daFatt)}</b></td><td class="amount right-txt"><b>${eur(T.costi)}</b></td><td></td></tr></tbody></table></div></div>
+  <div class="panel"><div class="panel-head"><h2>Mese per mese · ${y}</h2><span class="subtle">fatturato per data fattura, incassato per data incasso, in scadenza per data prevista</span></div><div class="table-wrap"><table><thead><tr><th>Mese</th><th class="right-txt">Fatturato</th><th class="right-txt">Incassato</th><th class="right-txt">In scadenza (non incassato)</th></tr></thead><tbody>${M.map(x=>`<tr${x.m===today().slice(0,7)?' style="background:#f6f9f2"':''}><td>${new Date(x.m+'-15').toLocaleDateString('it-IT',{month:'long'})}</td><td class="amount right-txt">${x.f?eur(x.f):'<span class="muted">—</span>'}</td><td class="amount right-txt">${x.i?eur(x.i):'<span class="muted">—</span>'}</td><td class="amount right-txt">${x.p?eur(x.p):'<span class="muted">—</span>'}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="table-title"><h2>Fatture</h2><div class="seg">${Object.keys(filt).map(k=>`<button class="${ui.rateFiltro===k?'active':''}" data-act="rateFiltro" data-v="${k}">${k} (${rs.filter(filt[k]).length})</button>`).join('')}</div></div>
   <div class="panel">${rateTable(rs.filter(filt[ui.rateFiltro]),true)}</div>`;
 }
-function wireEconomia(){
-  const sc=()=>{const l=+$('#sc-listino').value||0,c=+$('#sc-costo').value||0,s=sconto(l),net=l*(1-s);$('#sc-out').innerHTML=`<div>Sconto applicabile<strong>${Math.round(s*100)}%</strong></div><div>Prezzo al cliente<strong>${eur2(net)}</strong></div>${c?`<div>Margine<strong style="color:${(net-c)/net<.28?'var(--orange)':'inherit'}">${eur2(net-c)} · ${net?Math.round((net-c)/net*1000)/10:0}%</strong></div>`:''}`};
-  if($('#sc-listino')){['#sc-listino','#sc-costo'].forEach(s=>$(s).oninput=sc);sc()}
-}
+function wireEconomia(){}
 
 /* ---------- Fornitori ---------- */
 function vFornitori(){
@@ -573,7 +588,8 @@ function vImpostazioni(){
     <div class="panel"><div class="panel-head"><h2>Team</h2><button class="small" data-act="newUser">${ic('plus')}Aggiungi</button></div>
       ${S.users.map(u=>`<div class="user-row"><span class="avatar">${esc(initials(u.nome))}</span><div><b>${esc(u.nome)}</b><small>${esc(u.ruolo||'')}${u.id===me().id?' · tu':''}</small></div><button class="icon-btn" data-act="editUser" data-id="${u.id}">${ic('edit')}</button></div>`).join('')}
     </div></div>
-  <div><div class="panel"><div class="panel-head"><h2>Piani di pagamento</h2></div><div class="mini-list">${Object.keys(Object.assign({},PIANI,S.piani||{})).map(k=>{const pl=pianoGet(k);return`<div class="mini-row"><div><b>${esc(pl.nome)}</b>${S.piani&&S.piani[k]?' <span class="tag blue">personalizzato</span>':''}<div class="subtle">${pl.rate.map(r=>r[0]+'% '+esc(r[1].toLowerCase())).join(' · ')}</div></div><button class="icon-btn" data-act="editPiano" data-k="${k}">${ic('edit')}</button></div>`}).join('')}</div></div>
+  <div><div class="panel"><div class="panel-head"><h2>Brand e fornitori</h2><button class="small" data-act="nav" data-h="#/fornitori">${ic('box')}Apri</button></div><div class="panel-body"><p class="subtle" style="margin:0">${S.fornitori.length} brand con sconti d'acquisto e cliente predefiniti per i preventivi.</p></div></div>
+  <div class="panel"><div class="panel-head"><h2>Piani di pagamento</h2></div><div class="mini-list">${Object.keys(Object.assign({},PIANI,S.piani||{})).map(k=>{const pl=pianoGet(k);return`<div class="mini-row"><div><b>${esc(pl.nome)}</b>${S.piani&&S.piani[k]?' <span class="tag blue">personalizzato</span>':''}<div class="subtle">${pl.rate.map(r=>r[0]+'% '+esc(r[1].toLowerCase())).join(' · ')}</div></div><button class="icon-btn" data-act="editPiano" data-k="${k}">${ic('edit')}</button></div>`}).join('')}</div></div>
   <div class="panel"><div class="panel-head"><h2>Backup e dati</h2></div><div class="panel-body">
     <p class="subtle" style="margin-top:0">I dati sono salvati solo in questo browser. Esporta un backup regolarmente e importalo per spostare i dati su un altro computer.</p>
     <div class="actions" style="margin-top:16px"><button data-act="export">${ic('download')}Esporta backup</button><button data-act="import">${ic('upload')}Importa backup</button><button data-act="exportCsv">${ic('file')}Rate in CSV</button></div>
@@ -662,8 +678,9 @@ function formRata(r,cid){
   openForm({title:isNew?'Nuova rata':'Modifica rata',values:r,fields:[
     {k:'descrizione',l:'Descrizione',req:true,wide:true},{k:'quando',l:'Condizione / milestone',wide:true},
     {k:'unitaId',l:'Unità',type:'select',opts:[{v:'',l:'—'},...us.map(u=>({v:u.id,l:u.codice}))]},{k:'perc',l:'Percentuale (%)',type:'number'},
-    {k:'importo',l:'Importo imponibile (€)',type:'number',req:true},{k:'scadenza',l:'Scadenza',type:'date'},{k:'stato',l:'Stato',type:'select',opts:STATI_RATA}],
-    calc:o=>`<div>Imponibile<strong>${eur2(o.importo)}</strong></div><div>IVA 22%<strong>${eur2((o.importo||0)*.22)}</strong></div><div>Totale<strong>${eur2((o.importo||0)*1.22)}</strong></div>`,
+    {k:'importo',l:'Importo imponibile (€)',type:'number',req:true},{k:'iva',l:'IVA %',type:'number',def:22},{k:'scadenza',l:'Scadenza prevista',type:'date'},{k:'controparte',l:'Chi paga (intestatario fattura)',ph:'es. cliente, sviluppatore'},
+    {k:'stato',l:'Stato',type:'select',opts:[{v:'Prevista',l:'Da emettere'},{v:'Fatturata',l:'Fattura emessa, da incassare'},{v:'Incassata',l:'Incassata'}]},{k:'numero',l:'N. fattura'},{k:'dataFattura',l:'Data fattura',type:'date'},{k:'dataIncasso',l:'Data incasso',type:'date'}],
+    calc:o=>`<div>Imponibile<strong>${eur2(o.importo)}</strong></div><div>IVA ${o.iva==null||o.iva===''?22:o.iva}%<strong>${eur2((o.importo||0)*(o.iva==null||o.iva===''?22:+o.iva)/100)}</strong></div><div>Totale<strong>${eur2((o.importo||0)*(1+(o.iva==null||o.iva===''?22:+o.iva)/100))}</strong></div>`,
     onSave:o=>{if(isNew)S.rate.push({id:uid(),commessaId:cid,...o});else Object.assign(r,o)},
     onDelete:isNew?null:()=>{S.rate=S.rate.filter(x=>x.id!==r.id)}});
 }
@@ -1070,6 +1087,8 @@ const A={
   addRow:d=>{const c=commessa(d.cl);c[d.ls]=c[d.ls]||[];const def={tipologici:{nome:''},marketing:{tipo:'Render interni',qta:1,stato:'Da preventivare'},pack:{elemento:'Cucina',tipologicoId:(c.tipologici||[])[0]?.id||''},cfgVoci:{voce:'',qta:1,fornisce:'BTWN'},segnalazioni:{stato:'Segnalato',tipologicoId:(c.tipologici||[])[0]?.id||''}}[d.ls]||{};c[d.ls].push({id:uid(),...def});save();render.keepScroll=true;render();const ins=document.querySelectorAll(`[data-ls="${d.ls}"][data-cl="${c.id}"] , input[data-ls="${d.ls}"]`);const last=[...document.querySelectorAll(`input[data-ls="${d.ls}"]`)].pop();if(last)last.focus()},
   delRow:d=>{const c=commessa(d.cl);c[d.ls]=(c[d.ls]||[]).filter(x=>x.id!==d.r);save();render.keepScroll=true;render()},
   varCfg:d=>formVarCfg(commessa(d.id)),
+  emetti:d=>{const r=byId('rate',d.id),c=commessa(r.commessaId),cl=c&&cliente(c.clienteId);openForm({title:'Emetti fattura · '+r.descrizione,values:{numero:nextNumero(),dataFattura:today(),controparte:r.controparte||(cl?cl.nome:''),importo:r.importo,iva:ivaR(r),scadenza:r.scadenza||today()},intro:c?esc(c.nome):'',fields:[{k:'numero',l:'N. fattura',req:true},{k:'dataFattura',l:'Data fattura',type:'date',req:true},{k:'controparte',l:'Intestatario',wide:true},{k:'importo',l:'Imponibile €',type:'number',req:true},{k:'iva',l:'IVA %',type:'number'},{k:'scadenza',l:'Scadenza pagamento',type:'date'}],calc:o=>`<div>Totale fattura<strong>${eur2((+o.importo||0)*(1+(o.iva==null||o.iva===''?22:+o.iva)/100))}</strong></div>`,onSave:o=>{Object.assign(r,o,{stato:'Fatturata'})}})},
+  incassa:d=>{const r=byId('rate',d.id);openForm({title:'Registra incasso · fattura '+(r.numero||''),values:{dataIncasso:today()},intro:`${esc(r.descrizione)} · ${eur2(totR(r))} IVA inclusa`,fields:[{k:'dataIncasso',l:'Data incasso',type:'date',req:true}],onSave:o=>{r.dataIncasso=o.dataIncasso;r.stato='Incassata'}})},
   stampaLivelli:d=>stampaLivelli(commessa(d.id)),
   soglie:d=>{const c=commessa(d.id);const cur=fasceList(c).map(([l,sc])=>`${l} | ${sc}`).join('\n');openForm({title:'Politica commerciale · soglie',values:{righe:cur},intro:'Una soglia per riga: <b>fino a € | sconto %</b>, in ordine crescente. L\'ultima riga può essere <b>oltre | sconto %</b>. Esempio:<br>5000 | 20<br>10000 | 25<br>oltre | 30',fields:[{k:'righe',l:'Soglie',type:'textarea',wide:true,req:true}],
     onSave:o=>{const rows=o.righe.split('\n').map(x=>x.split('|').map(y=>y.trim().replace(/\./g,'').replace(',','.'))).filter(x=>x[0]);let prev=-1,bad='';rows.forEach(([l,sc],i)=>{if(isNaN(+sc)||sc==='')bad='Sconto non valido alla riga '+(i+1);else if(l.toLowerCase()==='oltre'){if(i!==rows.length-1)bad='"oltre" deve essere l\'ultima riga'}else if(isNaN(+l)||+l<=prev)bad='Le soglie devono essere numeri crescenti (riga '+(i+1)+')';else prev=+l});if(bad){$('#formErr').innerHTML=`<div class="error">${bad}</div>`;return false}c.diffCfg=Object.assign(diffCfg(c),{fasce:rows.map(([l,sc])=>(l.toLowerCase()==='oltre'?'oltre':l)+':'+sc).join(';')})}})},
@@ -1089,7 +1108,7 @@ const A={
   clearDemo:()=>{if(!confirm('Rimuovere unità, rate e appuntamenti di esempio? Commesse, clienti e brand restano.'))return;S.unita=[];S.rate=[];S.eventi=[];S.demo=false;save();render();toast('Esempi rimossi')},
   keepDemo:()=>{S.demo=false;save();render()},
   export:()=>download(`btwn-bussola-backup-${today()}.json`,JSON.stringify(S,null,2),'application/json'),
-  exportCsv:()=>{const rows=[['Commessa','Unità','Rata','Condizione','%','Importo','Scadenza','Stato']];S.rate.forEach(r=>{const c=commessa(r.commessaId),u=r.unitaId&&byId('unita',r.unitaId);rows.push([c?c.nome:'',u?u.codice:'',r.descrizione,r.quando||'',r.perc??'',String(r.importo).replace('.',','),r.scadenza||'',r.stato])});download(`btwn-rate-${today()}.csv`,'﻿'+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\n'),'text/csv')},
+  exportCsv:()=>{const rows=[['Commessa','Rata','Intestatario','N. fattura','Data fattura','Imponibile','IVA %','Totale','Scadenza','Stato','Data incasso']];S.rate.forEach(r=>{const c=commessa(r.commessaId);if(!c)return;rows.push([c.nome,r.descrizione,r.controparte||'',r.numero||'',r.dataFattura||'',String(r.importo).replace('.',','),ivaR(r),String(Math.round(totR(r)*100)/100).replace('.',','),r.scadenza||'',r.stato==='Prevista'?'Da emettere':r.stato==='Fatturata'?'Da incassare':'Incassata',r.dataIncasso||''])});download(`btwn-fatture-${today()}.csv`,'\ufeff'+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\n'),'text/csv')},
   import:()=>{const i=document.createElement('input');i.type='file';i.accept='.json,application/json';i.onchange=()=>{const f=i.files[0];if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!d.commesse||!d.users)throw new Error();if(!confirm('Sostituire tutti i dati attuali con il backup?'))return;S=d;save();if(!me())localStorage.setItem(SESSION,S.users[0].id);render();toast('Backup importato')}).catch(()=>toast('File di backup non valido'))};i.click()},
   resetDemo:()=>{if(confirm('Sostituire tutti i dati con quelli dimostrativi?')){const name=me().nome;S=seed();const u=S.users.find(x=>x.nome===name)||S.users[0];localStorage.setItem(SESSION,u.id);save();go('#/dashboard');toast('Dati dimostrativi ripristinati')}},
   wipe:()=>{if(confirm('Cancellare TUTTI i dati? Esporta prima un backup.')&&confirm('Confermi la cancellazione?')){const u=me();S={version:1,demo:false,azienda:S.azienda,users:[u],clienti:[],commesse:[],unita:[],rate:[],eventi:[],fornitori:[]};save();go('#/dashboard');toast('Dati cancellati')}}
