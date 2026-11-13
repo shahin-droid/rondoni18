@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>BTWN Bussola · Mappa del gestionale</title>
+<style>
+:root{--ink:#213e3b;--muted:#6c7b77;--bg:#f3f5f1;--green:#173d39;--lime:#d9ef92;--line:#dfe6dc;--soft:#eef4e7;--amber:#fcf0dc;--amberink:#9b6a2c;--blue:#e8eff7;--blueink:#466a8c;--red:#fae9e7;--redink:#a8453f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:36px 28px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-bottom:2px solid var(--green);padding-bottom:16px;margin-bottom:28px}
+.brand{font-size:30px;font-weight:800;letter-spacing:-1.6px}.brand span{color:#8fb04a}
+h1{font-size:26px;margin:4px 0 0;letter-spacing:-.6px}h2{font-size:17px;margin:0 0 4px;letter-spacing:-.3px}h3{font-size:13px;margin:0 0 6px}
+.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+p{margin:6px 0;color:var(--muted)}
+section{margin:30px 0}
+.sec-title{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}.num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--green);color:var(--lime);font-weight:800;font-size:13px;flex-shrink:0}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card.dark{background:var(--green);color:#fff;border-color:var(--green)}.card.dark p,.card.dark li{color:#c9dad3}.card.dark h3{color:var(--lime)}
+.card.soft{background:var(--soft)}
+ul{margin:4px 0 0;padding-left:18px}li{margin:2px 0;font-size:13px}
+.tag{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;background:var(--soft);color:#486346;margin:1px 2px 1px 0}
+.tag.a{background:var(--amber);color:var(--amberink)}.tag.b{background:var(--blue);color:var(--blueink)}.tag.r{background:var(--red);color:var(--redink)}
+/* flusso */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:st}@media(max-width:900px){.flow{grid-template-columns:1fr 1fr}}
+.step{min-width:150px;flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px;position:relative}
+.step>b{display:block;font-size:13px;margin-bottom:4px}.step>b::before{counter-increment:st;content:counter(st);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#d9ef92;color:#173d39;font-size:11px;margin-right:6px}.step small b{color:var(--ink)}.step small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4}
+.arrow{flex:0 0 26px;display:grid;place-items:center;color:#8fb04a;font-weight:900;font-size:18px}
+.step.hl{border-color:#305e47;box-shadow:0 0 0 2px #dce9d6}
+/* fasi */
+.phases{display:flex;flex-wrap:wrap;gap:6px}.ph{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px}.ph i{font-style:normal;color:#8fb04a;font-weight:800;margin-right:4px}
+.ph.opt{border-style:dashed;color:var(--muted)}
+.legend{font-size:11px;color:var(--muted);margin-top:8px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.split{grid-template-columns:1fr}}
+.box{border:2px solid var(--green);border-radius:16px;padding:16px;background:#fff}
+.box>h2{display:flex;align-items:center;gap:8px}
+.mini{font-size:12px;color:var(--muted)}
+footer{margin-top:40px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+@media print{body{background:#fff}.wrap{padding:0}section{break-inside:avoid}}
+</style></head><body><div class="wrap">
+
+<header><div><div class="brand">BT<span>W</span>N</div><div class="eyebrow">Bussola · gestionale</div><h1>Mappa del gestionale</h1></div><p style="max-width:440px;text-align:right">Come è organizzato oggi: chi vede cosa, le pagine, la commessa al centro, il percorso dei dati dal fornitore all'incasso, gli avvisi e i documenti che escono verso clienti e fornitori.</p></header>
+
+<!-- 1 -->
+<section><div class="sec-title"><span class="num">1</span><div><h2>Chi entra e cosa vede</h2><p>Si entra scegliendo il profilo; il profilo amministratore ha un PIN.</p></div></div>
+<div class="grid g2">
+ <div class="card dark"><h3>Amministratore (tu)</h3><ul><li>Vede e modifica tutto</li><li>Solo lui vede: <b>Economia</b>, margini, costi, sconti d'acquisto, compensi, incassi, pipeline</li><li>Gestisce team, PIN, piani di pagamento, margine obiettivo (30%), backup</li></ul></div>
+ <div class="card"><h3>Collaboratore (i ragazzi)</h3><ul><li>Workflow, prossime attività, agenda, documenti</li><li>Preventivi: listino, sconto cliente, offerta (senza costi e margini)</li><li>Ordini: stato, conferme, arrivo merce (senza importi)</li><li>Fornitori: contatti, tempi, listini (senza condizioni economiche)</li></ul></div>
+</div>
+<p class="mini">Oggi i dati vivono nel browser: ruoli e PIN separano le viste, la protezione vera arriva con il database online.</p></section>
+
+<!-- 2 -->
+<section><div class="sec-title"><span class="num">2</span><div><h2>Le pagine</h2><p>Il menu a sinistra.</p></div></div>
+<div class="grid g4">
+ <div class="card soft"><h3>Panoramica</h3><ul><li><b>Prossime attività</b> da spuntare</li><li><b>Da guardare</b>: avvisi</li><li>Appuntamenti 14 giorni</li><li>Numeri e pipeline <span class="tag">admin</span></li></ul></div>
+ <div class="card"><h3>Commesse</h3><ul><li>Lista o vista per fasi</li><li>Nuova commessa = <b>configurazione guidata</b></li><li>Ogni commessa ha le sue schede (punto 3)</li></ul></div>
+ <div class="card"><h3>Preventivi e ordini</h3><ul><li>Tutti i preventivi aperti e accettati</li><li>Tutti gli ordini ai fornitori</li><li>Merce in arrivo</li></ul></div>
+ <div class="card"><h3>Clienti</h3><ul><li>Sviluppatori, agenzie / advisor, imprese, progettisti, clienti finali</li><li>Contatti e commesse collegate</li></ul></div>
+ <div class="card"><h3>Agenda</h3><ul><li>Rilievi, sopralluoghi, montaggi, consegne, call</li><li>Ogni appuntamento → <b>Outlook</b> (.ics)</li></ul></div>
+ <div class="card"><h3>Economia <span class="tag">admin</span></h3><ul><li>Acquisito, fatturato, incassato, da incassare, da fatturare</li><li>Per commessa con costi e margine</li><li>Mese per mese · fatture · CSV</li></ul></div>
+ <div class="card"><h3>Impostazioni</h3><ul><li><b>Brand e fornitori</b> (schede)</li><li>Margine obiettivo, piani di pagamento</li><li>Team e PIN, dati aziendali, backup</li></ul></div>
+ <div class="card"><h3>Scheda fornitore</h3><ul><li>Sconto d'acquisto: "52" o "40+10+5"</li><li>Listino IVA inclusa / esclusa</li><li>Sconto cliente abituale, pagamento, consegna, trasporto</li><li>Contatti, listini PDF, ordini</li></ul></div>
+</div></section>
+
+<!-- 3 -->
+<section><div class="sec-title"><span class="num">3</span><div><h2>La commessa: il centro di tutto</h2><p>Si crea con la <b>configurazione guidata</b> (tipo di lavoro → cliente e dati → servizi o condizioni → impostazioni → riepilogo). Dopo, si lavora solo su workflow, attività e documenti.</p></div></div>
+<div class="split">
+ <div class="box"><h2><span class="tag b">B2C</span> Cliente privato</h2><p>Home Book + progetto + fornitura chiavi in mano.</p>
+  <h3 style="margin-top:10px">Workflow · 16 fasi</h3>
+  <div class="phases">
+   <span class="ph"><i>1</i>Contatto e presentazione del servizio</span><span class="ph"><i>2</i>Contratto Home Book</span><span class="ph"><i>3</i>DWG ricevuto</span><span class="ph"><i>4</i>Raccolta informazioni e budget</span><span class="ph"><i>5</i>Progettazione</span><span class="ph"><i>6</i>Presentazione Home Book</span><span class="ph"><i>7</i>Modifiche o accettazione</span><span class="ph"><i>8</i>Firma contratto</span><span class="ph"><i>9</i>Schemi impianti</span><span class="ph"><i>10</i>Rilievo</span><span class="ph"><i>11</i>Ordine</span><span class="ph"><i>12</i>Merce in magazzino</span><span class="ph"><i>13</i>Consegna</span><span class="ph"><i>14</i>Verbale di fine lavori</span><span class="ph opt"><i>15</i>Riordino e ripristino</span><span class="ph"><i>16</i>Finito</span>
+  </div>
+  <p class="legend">Tratteggiata = solo se serve. Rilievo: casa rilevabile oppure procedura speciale (eccezione, con dichiarazione del cliente).</p>
+  <h3 style="margin-top:10px">Schede</h3><span class="tag">Panoramica</span><span class="tag">Workflow</span><span class="tag">Preventivi</span><span class="tag">Ordini</span><span class="tag">Pagamenti <small>admin</small></span><span class="tag">Documenti</span><span class="tag">Agenda</span>
+  <h3 style="margin-top:10px">Regole</h3><ul><li>Home Book 1.100 € + IVA; quanto ridare si decide all'accettazione</li><li>Rate di default 20 / 40 / 40 (firma / ordine / merce in magazzino), personalizzabili</li><li>Montaggio quotato dopo, sull'arredo confermato</li></ul>
+ </div>
+ <div class="box"><h2><span class="tag a">B2B</span> Operazione immobiliare</h2><p>Sviluppatore (o agenzia / advisor) e i servizi che gli vendiamo.</p>
+  <h3 style="margin-top:10px">Workflow · Interior Pack, 17 fasi</h3>
+  <div class="phases">
+   <span class="ph"><i>1</i>Contatto con il B2B</span><span class="ph"><i>2</i>Presentazione servizi</span><span class="ph"><i>3</i>Arredo a capitolato</span><span class="ph"><i>4</i>Parte documentale</span><span class="ph"><i>5</i>Capitolati arredi</span><span class="ph"><i>6</i>Progetti e preventivi</span><span class="ph"><i>7</i>Offerta allo sviluppatore</span><span class="ph"><i>8</i>Accordo quadro</span><span class="ph"><i>9</i>Personalizzazioni clienti</span><span class="ph"><i>10</i>Schemi impianti al cantiere</span><span class="ph"><i>11</i>Retroplanning</span><span class="ph"><i>12</i>Rilievo</span><span class="ph"><i>13</i>Ordine</span><span class="ph"><i>14</i>Merce in magazzino</span><span class="ph"><i>15</i>Logistica e montaggio</span><span class="ph"><i>16</i>Verbale di consegna</span><span class="ph"><i>17</i>Finito</span>
+  </div>
+  <p class="legend">Senza Interior Pack: 4 fasi provvisorie (contatto → presentazione → servizi in corso → finito).</p>
+  <h3 style="margin-top:10px">Schede</h3><span class="tag">Panoramica</span><span class="tag">Workflow</span><span class="tag">Servizi</span><span class="tag">Tipologici</span><span class="tag">Unità</span><span class="tag">Ordini</span><span class="tag">Pagamenti <small>admin</small></span><span class="tag">Documenti</span><span class="tag">Agenda</span>
+  <h3 style="margin-top:10px">I 5 servizi (scheda Servizi)</h3>
+  <ul><li><b>Analisi di arredabilità</b> · 3 livelli, segnalazioni allo studio, proposta stampabile</li><li><b>Marketing e comunicazione</b> · render, sito, naming, brochure</li><li><b>Gestione varianti</b> · parte 1 (cliente → esecutivi), parte 2 (cantiere); 4 strade di chi paga; percorso di ogni cliente</li><li><b>Leve commerciali</b> · pack per tipologico: capitolato, pack scontato, voucher; differenziale di listino con soglie</li><li><b>Configuratore</b> · pre-lancio o MyHabitat, lavoro di back-end</li></ul>
+ </div>
+</div></section>
+
+<!-- 4 -->
+<section><div class="sec-title"><span class="num">4</span><div><h2>Il percorso dei soldi e della merce</h2><p>Dalla scheda fornitore all'incasso, in 8 passaggi: ogni passaggio prende i dati dal precedente, così non si riscrive nulla due volte.</p></div></div>
+<div class="flow">
+ <div class="step"><b>Scheda fornitore</b><small>sconto d'acquisto (anche 40+10+5), sconto cliente abituale, listino IVA incl./escl.</small></div>
+ <div class="step hl"><b>Preventivo</b><small>righe per ambiente; brand da menu → sconti in automatico; costo, offerta, <b>margine per riga</b>, sconto max per restare al 30%; revisioni</small></div>
+ <div class="step"><b>Verso il cliente</b><small>offerta stampabile (solo totale / per ambiente / per voce / listino e sconto); <b>pagina cliente</b> con foto e alternative; mail Outlook pronta</small></div>
+ <div class="step hl"><b>Accettazione</b><small>genera le <b>rate</b> (es. 20/40/40) e <b>un ordine per brand</b> con il costo atteso</small></div>
+ <div class="step hl"><b>Conferma d'ordine</b><small>carichi il PDF: il gestionale legge n°, <b>data di carico</b>, <b>arrivo a magazzino</b>, importo e lo <b>confronta con il preventivo</b> (segnala ogni differenza)</small></div>
+ <div class="step"><b>Merce in magazzino</b><small>avviso pochi giorni prima: chiedere il saldo; la merce esce quando è pagata</small></div>
+ <div class="step"><b>Fatture e incassi</b><small>"Emetti fattura" (numero proposto), "Incassata" (data)</small></div>
+ <div class="step"><b>Economia</b> <span class="tag">admin</span><small>acquisito, fatturato, incassato, da incassare, da fatturare, costi registrati, margine</small></div>
+</div>
+<div class="grid g3" style="margin-top:12px">
+ <div class="card"><h3>Costi che entrano nel margine della commessa</h3><ul><li>ordini ai fornitori (confermato o previsto)</li><li>fatture delle agenzie esterne di progettazione</li><li>contratto di logistica</li><li>credito Home Book restituito</li></ul></div>
+ <div class="card"><h3>Listini IVA inclusa (es. Lema)</h3><ul><li>sconto sul listino ivato, IVA aggiunta in fattura (come il foglio VAGE)</li><li>sotto l'offerta: "il cliente vede −X%"</li><li>articoli di catalogo: pulsante "sconto visibile al cliente"</li></ul></div>
+ <div class="card"><h3>B2B: varianti e pack</h3><ul><li>varianti: compenso di gestione a BTWN, le opere le incassa l'impresa</li><li>pack: valore per tipologico × unità, quota servizi</li><li>differenziale di listino: soglie della politica commerciale; se negativo, nessun rimborso</li></ul></div>
+</div></section>
+
+<!-- 5 -->
+<section><div class="sec-title"><span class="num">5</span><div><h2>Gli avvisi automatici ("Da guardare")</h2><p>Compaiono in Panoramica; quelli economici solo all'amministratore.</p></div></div>
+<div class="grid g3">
+ <div class="card"><span class="tag r">urgente</span><ul><li>conferma d'ordine diversa dal preventivo (anche "sembra IVA inclusa")</li><li>procedura speciale di rilievo senza dichiarazione firmata</li><li>acconto all'ordine oltre il limite dei 120 giorni dal rogito (B2B)</li><li>rate scadute da oltre 60 giorni</li></ul></div>
+ <div class="card"><span class="tag a">da fare</span><ul><li>merce attesa e non arrivata · merce in arrivo: chiedere il saldo</li><li>montaggio non ancora quotato a merce arrivata</li><li>ripristino in ritardo</li><li>acquirente da contattare dopo il preliminare</li><li>rate scadute o da fatturare</li></ul></div>
+ <div class="card"><span class="tag b">promemoria</span><ul><li>offerta inviata oltre la validità (10 giorni)</li><li>segnalazioni di arredabilità aperte</li><li>documenti mancanti dalla checklist del committente</li></ul></div>
+</div></section>
+
+<!-- 6 -->
+<section><div class="sec-title"><span class="num">6</span><div><h2>Cosa esce dal gestionale</h2><p>Documenti generati, pronti da inviare o stampare.</p></div></div>
+<div class="grid g4">
+ <div class="card"><h3>Al cliente</h3><ul><li>offerta arredi (PDF)</li><li>pagina cliente (file HTML con foto)</li><li>presentazioni e documenti caricati</li><li>tutto via <b>mail Outlook pronta</b> (.eml con allegato)</li></ul></div>
+ <div class="card"><h3>Allo sviluppatore / studio</h3><ul><li>proposta dei tre livelli di arredabilità</li><li>segnalazioni sui layout</li></ul></div>
+ <div class="card"><h3>Per te e lo studio</h3><ul><li>appuntamenti in Outlook (.ics)</li><li>elenco fatture in CSV per il commercialista</li><li>backup completo (dati + file)</li></ul></div>
+ <div class="card soft"><h3>Possibile prossimo</h3><ul><li><b>contratto Home Book già compilato</b> (nome, indirizzo, CF, compenso, % di sconto) dal testo del vostro incarico</li><li>importazione fatture da OneClick</li><li>assistente AI (in attesa)</li></ul></div>
+</div></section>
+
+<!-- 7 -->
+<section><div class="sec-title"><span class="num">7</span><div><h2>Dove stanno i dati</h2></div></div>
+<div class="grid g3">
+ <div class="card"><h3>Oggi</h3><p>Nel browser del computer che usi: dati nella memoria del browser, foto e PDF in un archivio interno. Funziona senza server e senza internet (tranne invii e calendario).</p></div>
+ <div class="card"><h3>Per spostarli</h3><p>Impostazioni → Esporta backup / Importa backup (file unico con dati e allegati).</p></div>
+ <div class="card"><h3>Il passo successivo</h3><p>Database online con accessi personali: dati condivisi tra te e i ragazzi, protezione vera dei ruoli, mail inviate direttamente, assistente AI.</p></div>
+</div></section>
+
+<footer>BTWN · Between Contract &amp; Design · Bussola — mappa aggiornata alla versione corrente del gestionale.</footer>
+</div></body></html>

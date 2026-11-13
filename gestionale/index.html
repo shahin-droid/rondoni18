@@ -629,6 +629,7 @@ function vImpostazioni(){
   const a=S.azienda||{};
   return`<div class="head"><div><div class="eyebrow">Configurazione</div><h1>Impostazioni</h1><p>Dati aziendali, team e backup.</p></div></div>
   <div class="detail-grid"><div>
+    <div class="panel"><div class="panel-head"><h2>Mappa del gestionale</h2><a href="mappa.html" target="_blank" rel="noopener" style="text-decoration:none"><button class="small" type="button">${ic('file')}Apri la mappa</button></a></div><div class="panel-body"><p class="subtle" style="margin:0">Come è organizzato: ruoli, pagine, commessa, percorso dal fornitore all'incasso, avvisi e documenti.</p></div></div>
     <div class="panel adm"><div class="panel-head"><h2>Margine obiettivo</h2></div><div class="panel-body"><div class="calc-grid"><label>Margine obiettivo sul prezzo di vendita (%)<input type="number" data-change="margObj" value="${margObj()}"></label></div><p class="subtle">Sotto questa soglia margini e sconti diventano arancioni; nel preventivo compare lo sconto cliente massimo per restarci sopra.</p></div></div>
     <div class="panel"><div class="panel-head"><h2>Dati aziendali</h2><button class="small adm" data-act="editAzienda">${ic('edit')}Modifica</button></div><div class="panel-body">
       <div class="kv"><span>Ragione sociale</span><b>${esc(a.ragione||'—')}</b></div><div class="kv"><span>P.IVA</span><b>${esc(a.piva||'—')}</b></div><div class="kv"><span>Sede</span><b>${esc(a.sede||'—')}</b></div><div class="kv"><span>PEC</span><b>${esc(a.pec||'—')}</b></div>
