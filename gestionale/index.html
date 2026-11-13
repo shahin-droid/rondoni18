@@ -44,23 +44,34 @@ const CHECKLIST_PRIVATO=['Incarico Home Book firmato','Compenso Home Book incass
 const checklistFor=c=>c.tipo==='Privato'?CHECKLIST_PRIVATO:CHECKLIST;
 /* Workflow cliente privato B2C: fasi e passaggi (dal flusso BTWN) */
 const WF_PRIVATO=[
-  ['Contatto',['Segnalazione ricevuta','Primo contatto (telefono, mail o video call)','Presentazione del servizio BTWN (btwn.it/privati)']],
-  ['Brief e budget',['DWG della casa ricevuto','Call o appuntamento: come progettare gli arredi','Budget definito']],
-  ['Incarico Home Book',['Contratto Home Book firmato','Fattura Home Book emessa','Pagamento Home Book ricevuto']],
-  ['Progettazione',['Progettazione interna degli arredi','Progetti affidati alle agenzie esterne dei brand','Progetti esterni ricevuti e fatture di servizio registrate']],
-  ['Preventivo e Home Book',['Parte economica completata (listino, sconti, costo merce, sconto cliente, offerta)','Presentazione Home Book preparata','Call o appuntamento di presentazione fissato']],
-  ['Presentazione',['Progetto e offerta arredi presentati (montaggio escluso)','Esito: modifiche richieste (nuova revisione e nuova call) oppure offerta accettata']],
-  ['Contratto',['Contratto di fornitura firmato','Credito Home Book deciso (50%, altra % o nessuno)','Fattura di acconto emessa','Acconto incassato']],
-  ['Schemi impianti',['Schemi impianti riferiti agli arredi inviati (cliente, architetto o impresa)']],
-  ['Rilievo',['Rilievo eseguito (se la casa è rilevabile)','Progetto e preventivo adeguati al rilievo','Progetto aggiornato rifirmato dal cliente']],
-  ['Ordine',['Via libera del cliente all\'ordine','Ordini inviati ai fornitori','Conferme d\'ordine verificate','Fattura di ulteriore acconto emessa e incassata','Montaggio: Home Book e logistica inviati al fornitore del servizio','Montaggio quotato e accettato dal cliente']],
-  ['Merce e saldo',['Merce arrivata in magazzino','Fattura di saldo emessa','Saldo incassato']],
-  ['Consegna',['Consegna e montaggio pianificati con il cliente','Consegna e montaggio eseguiti']],
-  ['Fine lavori',['Verbale di fine lavori firmato','Eventuali riordini e sistemazioni annotati nel verbale']],
-  ['Ripristini',['Riordini richiesti alle aziende','Merce di ripristino arrivata','Intervento di ripristino fissato con il cliente','Ripristino completato']],
-  ['Chiusa',['Cliente salutato, commessa chiusa']]
+  {id:'contatto',f:'Contatto con il cliente',st:[['contatto',"Contatto con il cliente al telefono, via mail o video call"]]},
+  {id:'servizio',f:'Presentazione del servizio',st:[['presentazione',"Ci presentiamo e raccontiamo il servizio che possiamo offrirgli (btwn.it/privati)"]]},
+  {id:'dwg',f:'Ricezione DWG',st:[['dwg',"Ricevuto il DWG della casa"]]},
+  {id:'incontro',f:'Come progettare',st:[['incontro',"Video call o appuntamento di persona per decidere come progettare gli arredi"]]},
+  {id:'budget',f:'Definizione budget',st:[['budget',"Budget definito"]]},
+  {id:'homebook',f:'Contratto Home Book',st:[['hb_firma',"Il cliente firma il contratto Home Book"],['hb_pagato',"Home Book pagato"]]},
+  {id:'progettazione',f:'Progettazione',st:[['prog_interna',"Progettazione interna dei nostri arredi"],['prog_agenzie',"Arredi fatti sviluppare dalle agenzie esterne che trattano il brand",1],['prog_fatture',"Fatture di servizio delle agenzie ricevute",1]]},
+  {id:'economica',f:'Parte economica',st:[['economica',"Parte economica preparata: listino, sconti, costo merce, sconto cliente, offerta prodotto, offerta con IVA"]]},
+  {id:'hbpres',f:'Presentazione Home Book',st:[['hb_pres',"Presentazione del progetto Home Book preparata"]]},
+  {id:'appuntamento',f:'Call o appuntamento',st:[['app_fissato',"Fissata call o appuntamento con il cliente"]]},
+  {id:'presentazione',f:'Presentazione progetto e offerta',st:[['presentato',"Presentati progetto e offerta arredi"],['montaggio_np',"Montaggio non presentato: verrà calcolato sull'arredo confermato"]]},
+  {id:'esito',f:'Modifiche o accettazione',st:[['modifiche',"Il cliente chiede modifiche: riprogettiamo, ripreventiviamo e rifissiamo nuova call",1],['accetta',"Il cliente accetta progetto e offerta"],['hb_reso',"Deciso quanto ridare dell'Home Book (50%, altra percentuale o nulla)"]]},
+  {id:'firma',f:'Firma contratto',st:[['firma',"Il cliente conferma e firma il contratto"],['fatt_acconto',"Emessa fattura di acconto"],['acconto',"Acconto incassato"]]},
+  {id:'impianti',f:'Schemi impianti',st:[['impianti',"Inviati gli schemi degli impianti riferiti all'arredo al cliente, al suo architetto o all'impresa"]]},
+  {id:'rilievo',f:'Rilievo',st:[]},
+  {id:'ordine',f:'Ordine',st:[['ok_ordine',"Il cliente ci dice di ordinare"],['ordinato',"Ordine inviato alle aziende"],['acc2_rich',"Chiesto ulteriore acconto"],['acc2',"Ulteriore acconto incassato"],['mont_rich',"Montaggio: inviati Home Book e indicazioni di logistica al nostro fornitore del servizio per la quotazione"],['mont_quot',"Montaggio quotato al cliente"]]},
+  {id:'magazzino',f:'Merce in magazzino',st:[['arrivata',"Merce arrivata in magazzino"],['saldo_rich',"Chiesto il saldo"],['saldo',"Saldo incassato"]]},
+  {id:'consegna',f:'Consegna',st:[['cons_pian',"Consegna pianificata"],['cons_fatta',"Consegna effettuata"]]},
+  {id:'verbale',f:'Verbale di fine lavori',st:[['verbale',"Verbale di fine lavori firmato"],['verbale_note',"Cose da riordinare o sistemare segnate nel verbale",1]]},
+  {id:'ripristino',f:'Riordino e ripristino',st:[['rip_aziende',"Ci attiviamo con le aziende"],['rip_arrivo',"Arrivata la merce mancante o il riordino"],['rip_app',"Fissato con il cliente l'intervento a casa sua"],['rip_fatto',"Ripristino e attività completate"]]},
+  {id:'finito',f:'Finito',st:[['finito',"Tutto ok: salutiamo e siamo a posto"]]}
 ];
-const FASI_PRIVATO=WF_PRIVATO.map(x=>x[0]);
+const RILIEVO_STEPS={
+  rilevabile:[['ril_uscita',"La casa è rilevabile: usciamo a fare il rilievo"],['ril_adegua',"Adeguati progetto e preventivo al rilievo"],['ril_rifirma',"Il cliente rifirma progetto e preventivo aggiornati"]],
+  speciale:[['sp_disegni',"Casa non rilevabile: inviati i disegni tecnici"],['sp_obbligo',"Il cliente si obbliga in solido a farli rispettare (dichiarazione firmata)"],['sp_spese',"Accettato per iscritto: se la merce non ci sta, le spese sono a carico del cliente"]]
+};
+const wfSteps=(c,ph)=>ph.id==='rilievo'?RILIEVO_STEPS[c.rilievo==='speciale'?'speciale':'rilevabile']:ph.st;
+const FASI_PRIVATO=WF_PRIVATO.map(x=>x.f);
 const fasiFor=c=>c&&c.tipo==='Privato'?FASI_PRIVATO:FASI;
 const STATI_RIPRISTINO=['Da richiedere','Richiesto all\'azienda','Merce arrivata','Intervento fissato','Completato'];
 const TIPI_COMMESSA=[{v:'Operazione',l:'Operazione immobiliare (B2B)'},{v:'Privato',l:'Cliente privato (Home Book + fornitura)'}];
@@ -71,12 +82,14 @@ const MARGINE_OBIETTIVO=28, HB_FEE=1100, HB_SOGLIA=25000;
 const PIANI={
   tgo5:{nome:'DesignPack · 5 rate (The Green One)',rate:[[5,"Acconto iniziale","Entro 30gg DFFM, avvio personalizzazione"],[30,"Acconto al rilievo","Entro 30gg DFFM, approvazione rilievo"],[40,"Acconto all'ordine","A vista fattura, conferma d'ordine",'ordine'],[15,"Acconto alla consegna","Alla consegna materiali in cantiere"],[10,"Saldo finale","Dopo verbale di ultimazione lavori"]]},
   v3:{nome:'DesignPack · 4 rate (template V3)',rate:[[15,"Acconto iniziale","A vista fattura, avvio personalizzazione"],[35,"Acconto al rilievo","A vista fattura, approvazione rilievo"],[45,"Acconto all'ordine","A vista fattura, conferma d'ordine",'ordine'],[5,"Saldo finale","Dopo verbale di ultimazione lavori"]]},
-  render:{nome:'Servizi professionali · 50/50',rate:[[50,"Acconto alla firma","Alla firma del contratto",'firma'],[50,"Saldo alla consegna","Alla consegna degli elaborati"]]},
-  privati:{nome:'Fornitura privati · 20/40/40',rate:[[20,"Acconto alla firma","Alla firma del contratto",'firma'],[40,"Acconto all'ordine","All'invio dell'ordine in produzione"],[40,"Saldo","A merce pronta in magazzino"]]},
+  render:{nome:'Servizi professionali',rate:[[50,"Acconto alla firma","Alla firma del contratto",'firma'],[50,"Saldo alla consegna","Alla consegna degli elaborati"]]},
+  privati:{nome:'Fornitura privati',rate:[[20,"Acconto alla firma","Alla firma del contratto",'firma'],[40,"Acconto all'ordine","All'invio dell'ordine in produzione"],[40,"Saldo","A merce pronta in magazzino"]]},
   homebook:{nome:'Incarico Home Book',rate:[[100,"Incarico Home Book Interior","Alla sottoscrizione dell'incarico",'firma']]},
   unica:{nome:'Rata unica',rate:[[100,"Compenso","A vista fattura",'firma']]}
 };
 const FEE={varianti:.005,consulenza:.002};
+const pianoGet=k=>{const o=S&&S.piani&&S.piani[k];return o||PIANI[k]};
+const parsePerc=(txt,n)=>{if(!txt)return null;const a=String(txt).split(/[\/;,\s]+/).filter(Boolean).map(x=>+x.replace(',','.'));if(a.length!==n||a.some(isNaN))return null;const sum=a.reduce((x,y)=>x+y,0);return Math.abs(sum-100)<.01?a:null};
 const sconto=v=>v<10000?.20:v<=25000?.25:.30;
 const indennizzo=m=>m<=3?0:m<=6?.002:m<=9?.0015:null;
 
@@ -118,8 +131,8 @@ function seed(){
   const fornitori=[F('Cesar','Cucine'),F('Miton','Cucine'),F('Binova','Cucine'),F('Ernestomeda','Cucine'),F('Veneta Cucine','Cucine'),F('Caccaro','Sistemi / armadiature'),F('Lema','Sistemi / armadiature'),F('Molteni','Sistemi / armadiature'),F('Nova Mobili','Sistemi / armadiature'),F('Flou','Notte / imbottiti'),F('Felis','Notte / imbottiti'),F('Davide Groppi','Illuminazione'),F('Oluce','Illuminazione'),F('Calligaris','Arredo / soft living'),F('Ditre Italia','Notte / imbottiti'),F('Gervasoni','Arredo / soft living'),F('Carpet Edition','Tappeti'),F('AEG / Electrolux','Elettrodomestici',{note:'Garanzia estesa 5 anni inclusa nel pack.'}),F('Beko','Elettrodomestici'),F('UniFor','Contract uffici',{provvigione:15}),F('Citterio','Contract uffici',{provvigione:15})];
   // cliente privato dimostrativo (valori inventati)
   const priv=cl('Cliente privato demo','Cliente finale',{citta:'Milano',note:'Esempio: Home Book + fornitura chiavi in mano.'});clienti.push(priv);
-  const steps={};[[0,3],[1,3],[2,3],[3,3],[4,3],[5,2],[6,4],[7,1],[8,3]].forEach(([f,n])=>{for(let i=0;i<n;i++)steps[f+'.'+i]=D(-120+f*10)});steps['9.0']=D(-26);steps['9.1']=D(-25);
-  const pc=C({steps,budget:70000,segnalatoDa:'Agenzia immobiliare',canale:'Telefono',esterni:[{agenzia:'Agenzia rivenditrice Binova (esempio)',brand:'Binova',oggetto:'Progetto cucina',importo:450,fattura:'12/26',data:D(-95)}],tipo:'Privato',codice:'PRV-A2',nome:'Appartamento demo · interior chiavi in mano',luogo:'Milano',clienteId:priv.id,servizi:['Interior / Home Book','Fornitura arredi'],fase:10,piano:'privati',hbFee:1100,inizio:D(-120),consegna:D(25),docs:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}});commesse.push(pc);
+  const steps={};WF_PRIVATO.slice(0,15).forEach((ph,fi)=>(ph.id==='rilievo'?RILIEVO_STEPS.rilevabile:ph.st).forEach(([k])=>{if(k!=='modifiche')steps[k]=D(-130+fi*7)}));steps.ok_ordine=D(-26);steps.ordinato=D(-25);steps.acc2_rich=D(-25);
+  const pc=C({steps,budget:70000,segnalatoDa:'Agenzia immobiliare',canale:'Telefono',esterni:[{agenzia:'Agenzia rivenditrice Binova (esempio)',brand:'Binova',oggetto:'Progetto cucina',importo:450,fattura:'12/26',data:D(-95)}],tipo:'Privato',codice:'PRV-A2',nome:'Appartamento demo · interior chiavi in mano',luogo:'Milano',clienteId:priv.id,servizi:['Interior / Home Book','Fornitura arredi'],fase:16,piano:'privati',hbFee:1100,inizio:D(-120),consegna:D(25),docs:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}});commesse.push(pc);
   const R=(ambiente,oggetto,brand,modello,descrizione,listino,scAcq,scCli,qta=1)=>({id:uid(),ambiente,oggetto,brand,modello,descrizione,qta,listino,scAcq,scCli,acquista:'BTWN'});
   const righe=[R('Cucina','Cucina ad angolo con penisola','Binova','','Ante laccato opaco; top e schienale in gres; lavello sottotop con miscelatore',26000,50,30),R('Cucina','Kit elettrodomestici','AEG / Electrolux','','Frigo combinato, lavastoviglie 60, piano induzione, forno',4200,40,20),R('Zona pranzo','Tavolo','Lema','','Piano in marmo; 200×100 cm',5600,50,30),R('Zona pranzo','Sedie','Lema','','Struttura in rovere; seduta in tessuto',4800,50,30,6),R('Living','Divano','Lema','Venise','Composizione modulare cm 280; terminale squadrato o curvilineo; tessuto categoria 1',9000,50,30),R('Living','Divano','Lema','Glee','Volumi morbidi, composizione modulare a terra cm 280',9100,50,30),R('Camera matrimoniale','Armadio su misura','Lema','','Ante laccato opaco; apertura battente; LED interno',12000,50,30),R('Illuminazione','Mix luci','Davide Groppi','','Sospensioni, faretti e applique per tutta la casa',10000,45,30),R('Outdoor','Set outdoor','Gervasoni','','Divano, 2 poltrone, tavolo e 6 sedie con fodere',15000,50,25),Object.assign(R('Servizi','Montaggio arredi','BTWN','','Trasporto, montaggio e smaltimento imballi · da quotare sull\'arredo confermato',3500,0,-25),{esclusa:true})];
   righe[3].listino=800;
@@ -136,9 +149,10 @@ function seed(){
   {const tot=righe.filter(r=>!r.esclusa).reduce((a,r)=>a+(r.qta||1)*r.listino*(1-r.scCli/100),0);const before=rate.length;genRate(rate,pc,null,'privati',Math.round(tot>=25000?tot-550:tot),D(-30));const pr=rate.slice(before);pr[0].stato='Incassata';pr[1].stato='Fatturata';pr[1].scadenza=D(-5);}
   return{version:1,demo:true,preventivi,ordini,azienda:{ragione:'Between Contract & Design S.a.s.',piva:'08284490961',sede:'Via Turati 8, Milano',pec:'btwn@pec.it'},users:[{id:uid(),nome:'Shahin Firouzabadi',ruolo:'Amministratore'}],clienti,commesse,unita,rate,eventi,fornitori};
 }
-function genRate(list,c,u,pianoKey,base,startDate){
-  const p=PIANI[pianoKey];if(!p)return;
-  p.rate.forEach(([perc,desc,quando,trigger])=>{
+function genRate(list,c,u,pianoKey,base,startDate,percOverride){
+  const p=pianoGet(pianoKey);if(!p)return;
+  const ov=parsePerc(percOverride,p.rate.length);
+  p.rate.forEach(([perc0,desc,quando,trigger],ri)=>{const perc=ov?ov[ri]:perc0;
     let scad='';
     if(trigger==='ordine'&&u&&u.rogito)scad=addDays(u.rogito,-120);
     if(trigger==='firma')scad=startDate||today();
@@ -183,7 +197,7 @@ function alerts(){
     if(c.stato!=='Attiva')return;
     const CL=checklistFor(c);const n=CL.filter((_,i)=>c.docs&&c.docs[i]).length;
     if(c.tipo==='Privato'){(c.ripristini||[]).forEach(x=>{if(x.stato!=='Completato'&&x.data&&daysTo(x.data)<0)out.push({sev:2,icon:'alert',t:`${c.nome} · ripristino in ritardo`,s:`${x.descrizione} · ${x.azienda||''} · previsto ${fd(x.data)}`,go:`#/commessa/${c.id}/workflow`})});
-      if(c.fase>=11&&c.fase<=12&&!(c.steps&&c.steps['9.5']))out.push({sev:1,icon:'box',t:`${c.nome} · montaggio non ancora quotato`,s:'Inviare Home Book e logistica al fornitore del servizio di montaggio',go:`#/commessa/${c.id}/workflow`});return}
+      if(c.rilievo==='speciale'&&c.fase>=FASI_PRIVATO.indexOf('Ordine')+1&&!(c.steps&&c.steps.sp_obbligo))out.push({sev:3,icon:'alert',t:`${c.nome} · procedura speciale senza dichiarazione`,s:'Casa non rilevabile: serve la dichiarazione firmata del cliente prima di ordinare',go:`#/commessa/${c.id}/workflow`});const fo=FASI_PRIVATO.indexOf('Merce in magazzino')+1;if(c.fase>=fo&&c.fase<=fo+1&&!(c.steps&&c.steps.mont_quot))out.push({sev:1,icon:'box',t:`${c.nome} · montaggio non ancora quotato`,s:'Inviare Home Book e indicazioni di logistica al fornitore del servizio per la quotazione',go:`#/commessa/${c.id}/workflow`});return}
     if(c.fase>=2&&n<CL.length)out.push({sev:1,icon:'file',t:`${c.nome} · documenti ${n}/${CL.length}`,s:`Mancano ${CL.length-n} voci dalla checklist ${c.tipo==='Privato'?'cliente':'committente'}`,go:`#/commessa/${c.id}/documenti`});
     if(c.consegna&&c.servizi.includes('Varianti')&&daysTo(c.consegna)<-90)out.push({sev:1,icon:'clock',t:`${c.nome} · ritardo consegna ${Math.floor(-daysTo(c.consegna)/30)} mesi`,s:'Verificare indennizzo per ritardo previsto dall\'AQ varianti',go:`#/commessa/${c.id}`});
   });
@@ -326,7 +340,7 @@ function vCommessa(r){
   const nDocs=CL.filter((_,i)=>c.docs&&c.docs[i]).length;
   const prevs=prevDi(c.id), ords=ordiniDi(c.id), priv=c.tipo==='Privato';
   const evs=S.eventi.filter(e=>e.commessaId===c.id);
-  const wfDone=priv?WF_PRIVATO.reduce((a,[f,st],fi)=>a+st.filter((_,si)=>c.steps&&c.steps[fi+'.'+si]).length,0):0, wfTot=WF_PRIVATO.reduce((a,x)=>a+x[1].length,0);
+  const wfDone=priv?WF_PRIVATO.reduce((a,ph)=>a+wfSteps(c,ph).filter(([k])=>c.steps&&c.steps[k]).length,0):0, wfTot=WF_PRIVATO.reduce((a,ph)=>a+wfSteps(c,ph).length,0);
   const tabs=[['panoramica','Panoramica'],...(priv?[['workflow',`Workflow ${wfDone}/${wfTot}`]]:[]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
   let body='';
   if(tab==='panoramica'){
@@ -336,7 +350,7 @@ function vCommessa(r){
       <div class="kv"><span>Luogo</span><b>${esc(c.luogo||'—')}</b></div>
       <div class="kv"><span>Servizi</span><b style="text-align:right">${c.servizi.map(esc).join(', ')||'—'}</b></div>
       <div class="kv"><span>Brand</span><b>${esc(c.brand||'—')}</b></div>
-      <div class="kv"><span>Piano di pagamento</span><b>${esc(PIANI[c.piano]?.nome||'—')}</b></div>
+      <div class="kv"><span>Piano di pagamento</span><b>${esc(pianoGet(c.piano)?.nome||'—')}</b></div>
       <div class="kv"><span>Inizio / consegna prevista</span><b>${fd(c.inizio)} → ${fd(c.consegna)}</b></div>
       ${c.stato==='Pipeline'?`<div class="kv"><span>Probabilità</span><b>${c.probabilita||0}%</b></div>`:''}
       ${c.note?`<div class="note">${esc(c.note).replace(/\n/g,'<br>')}</div>`:''}
@@ -460,7 +474,8 @@ function vImpostazioni(){
     <div class="panel"><div class="panel-head"><h2>Team</h2><button class="small" data-act="newUser">${ic('plus')}Aggiungi</button></div>
       ${S.users.map(u=>`<div class="user-row"><span class="avatar">${esc(initials(u.nome))}</span><div><b>${esc(u.nome)}</b><small>${esc(u.ruolo||'')}${u.id===me().id?' · tu':''}</small></div><button class="icon-btn" data-act="editUser" data-id="${u.id}">${ic('edit')}</button></div>`).join('')}
     </div></div>
-  <div><div class="panel"><div class="panel-head"><h2>Backup e dati</h2></div><div class="panel-body">
+  <div><div class="panel"><div class="panel-head"><h2>Piani di pagamento</h2></div><div class="mini-list">${Object.keys(Object.assign({},PIANI,S.piani||{})).map(k=>{const pl=pianoGet(k);return`<div class="mini-row"><div><b>${esc(pl.nome)}</b>${S.piani&&S.piani[k]?' <span class="tag blue">personalizzato</span>':''}<div class="subtle">${pl.rate.map(r=>r[0]+'% '+esc(r[1].toLowerCase())).join(' · ')}</div></div><button class="icon-btn" data-act="editPiano" data-k="${k}">${ic('edit')}</button></div>`}).join('')}</div></div>
+  <div class="panel"><div class="panel-head"><h2>Backup e dati</h2></div><div class="panel-body">
     <p class="subtle" style="margin-top:0">I dati sono salvati solo in questo browser. Esporta un backup regolarmente e importalo per spostare i dati su un altro computer.</p>
     <div class="actions" style="margin-top:16px"><button data-act="export">${ic('download')}Esporta backup</button><button data-act="import">${ic('upload')}Importa backup</button><button data-act="exportCsv">${ic('file')}Rate in CSV</button></div>
     <div class="note">${S.commesse.length} commesse · ${S.unita.length} unità · ${S.rate.length} rate · ${S.clienti.length} clienti · ${S.eventi.length} appuntamenti</div>
@@ -492,7 +507,7 @@ function openForm({title,fields,values={},onSave,calc,onDelete,intro}){
 }
 const clientiOpts=()=>[{v:'',l:'— nessuno —'},...S.clienti.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(c=>({v:c.id,l:c.nome}))];
 const commesseOpts=()=>[{v:'',l:'— nessuna —'},...S.commesse.filter(c=>c.stato!=='Persa').map(c=>({v:c.id,l:(c.codice?c.codice+' · ':'')+c.nome}))];
-const pianiOpts=()=>Object.entries(PIANI).map(([k,p])=>({v:k,l:p.nome}));
+const pianiOpts=()=>Object.keys(Object.assign({},PIANI,S.piani||{})).map(k=>({v:k,l:pianoGet(k).nome}));
 
 function formCommessa(c){
   const isNew=!c;c=c||{tipo:'Operazione',servizi:[],fase:1,stato:'Attiva',probabilita:100,piano:'tgo5',docs:{},files:[]};
@@ -508,7 +523,7 @@ function formCommessa(c){
     {k:'segnalatoDa',l:'Segnalato da',ph:'es. agenzia, architetto, cliente'},{k:'canale',l:'Primo contatto',type:'select',opts:['','Telefono','Email','Video call','Di persona']},
     {k:'inizio',l:'Data inizio',type:'date'},{k:'consegna',l:'Consegna prevista',type:'date'},
     {k:'note',l:'Note',type:'textarea',wide:true}],
-    calc:o=>{const p=PIANI[o.piano];const w=(o.valore||0)*(o.probabilita||0)/100;return`<div>Piano<strong style="font-size:13px">${p?p.rate.map(r=>r[0]+'%').join(' · '):'—'}</strong></div>${o.stato==='Pipeline'?`<div>Valore ponderato<strong>${eur(w)}</strong></div>`:''}${o.valore&&o.unitaTot?`<div>Valore medio / unità<strong>${eur(o.valore/o.unitaTot)}</strong></div>`:''}`},
+    calc:o=>{const p=pianoGet(o.piano);const w=(o.valore||0)*(o.probabilita||0)/100;return`<div>Piano<strong style="font-size:13px">${p?p.rate.map(r=>r[0]+'%').join(' · '):'—'}</strong></div>${o.stato==='Pipeline'?`<div>Valore ponderato<strong>${eur(w)}</strong></div>`:''}${o.valore&&o.unitaTot?`<div>Valore medio / unità<strong>${eur(o.valore/o.unitaTot)}</strong></div>`:''}`},
     onSave:o=>{o.fase=+o.fase;if(o.fase>fasiFor(o).length)o.fase=1;if(isNew&&o.tipo==='Privato'&&o.piano==='tgo5')o.piano='privati';if(o.tipo==='Privato'&&o.hbFee==null)o.hbFee=HB_FEE;if(isNew){const n={id:uid(),docs:{},files:[],...o};S.commesse.push(n);setTimeout(()=>go('#/commessa/'+n.id),0)}else Object.assign(c,o)},
     onDelete:isNew?null:()=>{S.commesse=S.commesse.filter(x=>x.id!==c.id);const uids=new Set(unitaDi(c.id).map(u=>u.id));S.unita=S.unita.filter(u=>!uids.has(u.id));S.rate=S.rate.filter(r=>r.commessaId!==c.id);S.preventivi=S.preventivi.filter(p=>p.commessaId!==c.id);S.ordini=S.ordini.filter(o=>o.commessaId!==c.id);S.eventi.forEach(e=>{if(e.commessaId===c.id)e.commessaId=''});setTimeout(()=>go('#/commesse'),0)}});
 }
@@ -538,7 +553,7 @@ function formGenRate(cid,unitaId){
   openForm({title:'Genera piano rate',intro:`Crea le rate dal modello contrattuale. La rata all'ordine viene datata 120 giorni prima del rogito, se presente.`,values:{piano:c.piano||'tgo5',unitaId:unitaId||'',base:u?u.pack:c.valore,data:today()},fields:[
     {k:'piano',l:'Modello',type:'select',opts:pianiOpts()},{k:'unitaId',l:'Unità',type:'select',opts:[{v:'',l:'Commessa (nessuna unità)'},{v:'*',l:`Tutte le unità senza rate (${us.filter(x=>!S.rate.some(r=>r.unitaId===x.id)).length})`},...us.map(x=>({v:x.id,l:x.codice+(x.acquirente?' · '+x.acquirente:'')}))]},
     {k:'base',l:'Importo base (€) — per "tutte" usa il pack di ogni unità',type:'number'},{k:'data',l:'Data firma / avvio',type:'date'}],
-    calc:o=>{const p=PIANI[o.piano];return p?p.rate.map(([perc,d])=>`<div>${esc(d)} · ${perc}%<strong>${o.unitaId==='*'?'—':eur2((o.base||0)*perc/100)}</strong></div>`).join(''):''},
+    calc:o=>{const p=pianoGet(o.piano);return p?p.rate.map(([perc,d])=>`<div>${esc(d)} · ${perc}%<strong>${o.unitaId==='*'?'—':eur2((o.base||0)*perc/100)}</strong></div>`).join(''):''},
     onSave:o=>{if(o.unitaId==='*'){let k=0;us.filter(x=>!S.rate.some(r=>r.unitaId===x.id)).forEach(x=>{if(x.pack){genRate(S.rate,c,x,o.piano,x.pack,o.data);k++}});toast(k+' piani generati');return}
       if(!o.base){$('#formErr').innerHTML='<div class="error">Inserisci l\'importo base</div>';return false}
       genRate(S.rate,c,o.unitaId?byId('unita',o.unitaId):null,o.piano,o.base,o.data);if(location.hash.indexOf('/pagamenti')<0)setTimeout(()=>go(`#/commessa/${cid}/pagamenti`),0)}});
@@ -603,7 +618,7 @@ function vPreventivo(r){
   const dl=`<datalist id="dl-brand">${S.fornitori.map(f=>`<option value="${esc(f.nome)}">`).join('')}<option value="BTWN"></datalist><datalist id="dl-amb">${AMBIENTI.map(a=>`<option value="${a}">`).join('')}</datalist>`;
   const inp=(row,f,w,num)=>`<input class="grid-input" style="width:${w}px" ${num?'type="number" step="any"':''} ${f==='brand'?'list="dl-brand"':f==='ambiente'?'list="dl-amb"':''} data-pr="${p.id}" data-r="${row.id}" data-f="${f}" value="${esc(row[f]??'')}" aria-label="${f}">`;
   const rows=(p.righe||[]).map((row,i)=>{const x=rigaCalc(row,p);const m=x.offerta?x.marg/x.offerta*100:0;return`<tr style="${row.esclusa?'opacity:.5':''}" title="${row.esclusa?'Alternativa esclusa dal totale':''}"><td>${inp(row,'ambiente',100)}</td><td>${inp(row,'oggetto',120)}</td><td>${inp(row,'brand',95)}</td><td>${inp(row,'modello',75)}</td><td>${inp(row,'descrizione',160)}</td><td>${inp(row,'qta',48,1)}</td><td>${inp(row,'listino',80,1)}</td><td>${inp(row,'scAcq',58,1)}</td><td class="calc-cell">${eur(x.costo)}</td><td>${inp(row,'scCli',58,1)}</td><td class="calc-cell"><b>${eur(x.offerta)}</b></td><td class="calc-cell ${x.offerta?mClass(m):''}">${eur(x.marg)}<small>${x.offerta?m.toFixed(1)+'%':''}</small></td><td>${selectHtml(['BTWN','Partner'],row.acquista||'BTWN',`class="inline-select" data-pr="${p.id}" data-r="${row.id}" data-f="acquista"`)}</td><td><div class="actions"><button class="icon-btn" title="Scheda cliente: foto, link, alternative" data-act="schedaRiga" data-p="${p.id}" data-r="${row.id}" style="${row.img||row.link||row.scelta?'color:#4f7a3a':''}">${ic('file')}</button><button class="icon-btn" title="Duplica riga" data-act="dupRiga" data-p="${p.id}" data-r="${row.id}">${ic('plus')}</button><button class="icon-btn danger" title="Elimina riga" data-act="delRiga" data-p="${p.id}" data-r="${row.id}">${ic('trash')}</button></div></td></tr>`}).join('');
-  return`${dl}<div class="head"><div><div class="eyebrow">${c?esc(c.nome):''}${cl?' · '+esc(cl.nome):''}</div><h1>${esc(p.titolo)} <span class="muted" style="font-weight:500">rev. ${p.rev}</span></h1><p>${fd(p.data)} · validità ${p.validita||10} gg · ${esc(PIANI[p.piano]?.nome||'')}</p>${sibl.length?`<div class="rev-links">${sibl.map(x=>`<button class="small" data-act="nav" data-h="#/preventivo/${x.id}">rev. ${x.rev} ${tagPrev(x.stato)}</button>`).join('')}</div>`:''}</div>
+  return`${dl}<div class="head"><div><div class="eyebrow">${c?esc(c.nome):''}${cl?' · '+esc(cl.nome):''}</div><h1>${esc(p.titolo)} <span class="muted" style="font-weight:500">rev. ${p.rev}</span></h1><p>${fd(p.data)} · validità ${p.validita||10} gg · ${esc(pianoGet(p.piano)?.nome||'')}${p.ratePerc?' · rate '+esc(p.ratePerc):''}</p>${sibl.length?`<div class="rev-links">${sibl.map(x=>`<button class="small" data-act="nav" data-h="#/preventivo/${x.id}">rev. ${x.rev} ${tagPrev(x.stato)}</button>`).join('')}</div>`:''}</div>
   <div class="actions">${selectHtml(STATI_PREV,p.stato,`data-change="prevStato" data-id="${p.id}"`)}<button data-act="editPrev" data-id="${p.id}">${ic('edit')}Impostazioni</button><button data-act="printPrev" data-id="${p.id}">${ic('file')}Offerta cliente</button><button data-act="paginaCliente" data-id="${p.id}">${ic('home2')}Pagina cliente</button>${p.pagina?`<button data-act="scaricaPagina" data-id="${p.id}">${ic('download')}Scarica pagina</button>`:''}<button data-act="revPrev" data-id="${p.id}">${ic('plus')}Nuova revisione</button>${p.stato!=='Accettato'?`<button class="lime" data-act="accettaPrev" data-id="${p.id}">${ic('check')}Accettato</button>`:''}</div></div>
   <div class="cards">
     <div class="card"><div class="card-label">Listino</div><div class="metric amount">${eur(t.L)}</div><div class="card-foot">${(p.righe||[]).length} righe</div></div>
@@ -621,17 +636,17 @@ function formPrev(p,cid){
   p=p||{titolo:'Offerta arredi',data:today(),stato:'Bozza',validita:10,iva:22,quotaPartner:50,piano:c&&c.tipo==='Privato'?'privati':(c&&c.piano)||'privati',creditoHBperc:c&&c.tipo==='Privato'?50:0,consegna:"10/12 settimane dall'ordine a valle del rilievo misure",noteOfferta:'Il montaggio verrà quotato sull\'arredo confermato. Per trasporto, montaggio e allacciamenti seguirà un contratto a parte.',mostraSubtotali:false};
   openForm({title:isNew?'Nuovo preventivo':'Impostazioni preventivo',values:p,intro:c?esc(c.nome):'',fields:[
     {k:'titolo',l:'Titolo',req:true,wide:true},{k:'data',l:'Data',type:'date'},{k:'validita',l:'Validità offerta (giorni)',type:'number'},
-    {k:'piano',l:'Termini di pagamento',type:'select',opts:pianiOpts()},{k:'iva',l:'IVA %',type:'number'},
+    {k:'piano',l:'Termini di pagamento',type:'select',opts:pianiOpts()},{k:'ratePerc',l:'Percentuali per questo cliente (es. 30/40/30)',ph:'vuoto = quelle del piano'},{k:'iva',l:'IVA %',type:'number'},
     {k:'consegna',l:'Tempi di consegna',wide:true},{k:'noteOfferta',l:"Nota in calce all'offerta",type:'textarea',wide:true},
     {k:'quotaPartner',l:'Quota margine BTWN sulle righe "Partner" (%)',type:'number'},{k:'creditoHBperc',l:'Credito Home Book restituito (% del compenso: 50, altra % o 0)',type:'number'},
     {k:'mostraSubtotali',l:"Mostra i subtotali per ambiente nell'offerta",type:'checkbox'},
     {k:'note',l:'Note interne (non stampate)',type:'textarea',wide:true}],
-    onSave:o=>{if(isNew){const n={id:uid(),commessaId:cid,rev:1,stato:'Bozza',righe:[],...o};S.preventivi.push(n);setTimeout(()=>go('#/preventivo/'+n.id),0)}else Object.assign(p,o)}});
+    onSave:o=>{const pl=pianoGet(o.piano);if(o.ratePerc&&!parsePerc(o.ratePerc,pl.rate.length)){$('#formErr').innerHTML=`<div class="error">Percentuali non valide: servono ${pl.rate.length} valori che sommano 100 (es. ${pl.rate.map(r=>r[0]).join('/')})</div>`;return false}if(isNew){const n={id:uid(),commessaId:cid,rev:1,stato:'Bozza',righe:[],...o};S.preventivi.push(n);setTimeout(()=>go('#/preventivo/'+n.id),0)}else Object.assign(p,o)}});
 }
 function stampaOfferta(p){
   const c=commessa(p.commessaId), cl=c&&cliente(c.clienteId), t=prevCalc(p), a=S.azienda||{};
   const groups=[];(p.righe||[]).filter(r=>!r.esclusa).forEach(r=>{const g=(r.ambiente||'Altro').trim();let G=groups.find(x=>x.n.toLowerCase()===g.toLowerCase());if(!G){G={n:g,r:[]};groups.push(G)}G.r.push(r)});
-  const piano=PIANI[p.piano];
+  const piano=pianoGet(p.piano);const ovp=parsePerc(p.ratePerc,piano?piano.rate.length:0);
   const sec=groups.map((G,i)=>`<section><h2>${i+1}. ${esc(G.n.toUpperCase())}</h2><ul>${G.r.map(r=>{const head=[r.qta&&+r.qta!==1?'N.'+r.qta:'N.1',r.oggetto,r.brand&&r.brand!=='BTWN'?r.brand:'',r.modello?'mod. '+r.modello:''].filter(Boolean).join(' ');const det=(r.descrizione||'').split(/\n|;/).map(x=>x.trim()).filter(Boolean);return`<li>${esc(head)}.${det.length?`<ul>${det.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>`:''}</li>`}).join('')}</ul>${p.mostraSubtotali?`<p class="sub">Subtotale ${esc(G.n)}: ${eur2(G.r.reduce((s,r)=>s+rigaCalc(r,p).offerta,0))}</p>`:''}</section>`).join('');
   const foot=`<footer><span>${esc(a.sede||'')}<br>P.IVA ${esc(a.piva||'')}</span><span>${esc(a.pec||'')}</span></footer>`;
   const html=`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Offerta ${esc(cl?cl.nome:c?c.nome:'')} rev.${p.rev}</title><style>body{font:13px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;color:#213e3b;max-width:760px;margin:40px auto;padding:0 30px}.brand{font-size:30px;font-weight:750;letter-spacing:-1.8px}.brand span{color:#8fb04a}.top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #173d39;padding-bottom:18px;margin-bottom:26px}.meta{text-align:right;font-size:12px}.meta b{display:block;font-size:13px}h2{font-size:14px;letter-spacing:.5px;margin:26px 0 6px;color:#173d39}ul{margin:0;padding-left:18px}ul ul{list-style:circle;color:#4a5f5a}li{margin:2px 0}.tot{margin-top:34px;padding:18px 20px;background:#eef4e7;border-radius:8px;font-size:16px;display:flex;justify-content:space-between;font-weight:700}.small{font-size:12px;color:#4a5f5a}.sub{font-size:12px;text-align:right;color:#4a5f5a;margin:6px 0 0}.cond{margin-top:30px;font-size:12px}.cond h3{font-size:12px;letter-spacing:1px;text-transform:uppercase}.sign{display:flex;justify-content:space-between;margin-top:60px;font-size:12px}.sign div{border-top:1px solid #213e3b;width:42%;padding-top:6px}footer{display:flex;justify-content:space-between;font-size:10px;color:#73817d;margin-top:50px;border-top:1px solid #e3e9e1;padding-top:10px}.noprint{position:fixed;top:14px;right:14px}.noprint button{background:#173d39;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer}@media print{.noprint{display:none}body{margin:0 auto}section{break-inside:avoid}}</style></head><body>
@@ -641,7 +656,7 @@ function stampaOfferta(p){
   <div class="tot"><span>TOTALE OFFERTA PRODOTTO</span><span>${eur2(t.netto)} IVA esclusa</span></div>
   ${t.credito?`<p class="small">Il totale include lo sconto del ${t.creditoPerc}% del compenso Home Book (−${eur2(t.credito)}).</p>`:''}
   ${p.noteOfferta?`<p class="small">${esc(p.noteOfferta).replace(/\n/g,'<br>')}</p>`:''}
-  <div class="cond"><h3>Condizioni generali</h3><p>Resta escluso il costo per l'eventuale utilizzo della piattaforma aerea per il sollevamento al piano della merce qualora fosse necessario.<br>Il progetto e il preventivo potranno subire modifiche a seguito di rilievo esecutivo pre-ordine.<br>${p.consegna?'Tempi di consegna: '+esc(p.consegna)+'.<br>':''}Offerta valida ${p.validita||10} giorni dalla data di emissione. Si applicano le Condizioni Generali di Vendita BTWN.</p>${piano?`<p><b>Termini di pagamento:</b><br>${piano.rate.map(r=>`${r[0]}% ${esc(r[2].charAt(0).toLowerCase()+r[2].slice(1))}`).join('<br>')}</p>`:''}</div>
+  <div class="cond"><h3>Condizioni generali</h3><p>Resta escluso il costo per l'eventuale utilizzo della piattaforma aerea per il sollevamento al piano della merce qualora fosse necessario.<br>Il progetto e il preventivo potranno subire modifiche a seguito di rilievo esecutivo pre-ordine.<br>${p.consegna?'Tempi di consegna: '+esc(p.consegna)+'.<br>':''}Offerta valida ${p.validita||10} giorni dalla data di emissione. Si applicano le Condizioni Generali di Vendita BTWN.</p>${piano?`<p><b>Termini di pagamento:</b><br>${piano.rate.map((r,ri)=>`${ovp?ovp[ri]:r[0]}% ${esc(r[2].charAt(0).toLowerCase()+r[2].slice(1))}`).join('<br>')}</p>`:''}</div>
   <div class="sign"><div>Firma cliente</div><div>Data</div></div>${foot}</body></html>`;
   const w=window.open('','_blank');if(!w){toast('Consenti i pop-up per aprire l\'offerta');return}w.document.write(html);w.document.close();
 }
@@ -739,17 +754,18 @@ function scaricaPagina(p){const slug=((p.pagina&&p.pagina.titolo)||'pagina-clien
 /* ---------- Workflow cliente privato ---------- */
 function workflowView(c){
   c.steps=c.steps||{};
-  const lnk=(fi)=>({3:`<button class="small" data-act="newEsterno" data-id="${c.id}">${ic('plus')}Progettazione esterna</button>`,4:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/preventivi">${ic('calc')}Preventivi</button>`,5:`<button class="small" data-act="newEvento" data-c="${c.id}">${ic('cal')}Fissa appuntamento</button>`,6:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/pagamenti">${ic('euro')}Rate</button>`,9:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/ordini">${ic('box')}Ordini</button>`,12:`<button class="small" data-act="newRipristino" data-id="${c.id}">${ic('plus')}Voce di ripristino</button>`,13:`<button class="small" data-act="newRipristino" data-id="${c.id}">${ic('plus')}Voce di ripristino</button>`})[fi]||'';
   const est=c.esterni||[], rip=c.ripristini||[];
-  const extra=fi=>{
-    if(fi===3)return est.length?`<div class="table-wrap" style="margin-top:6px"><table><thead><tr><th>Agenzia</th><th>Brand</th><th>Fattura</th><th class="right-txt">Importo</th><th></th></tr></thead><tbody>${est.map((x,i)=>`<tr><td>${esc(x.agenzia)}</td><td>${esc(x.brand||'—')}</td><td>${esc(x.fattura||'—')}<small>${fd(x.data)}</small></td><td class="amount right-txt">${eur2(x.importo)}</td><td><button class="icon-btn" data-act="editEsterno" data-id="${c.id}" data-i="${i}">${ic('edit')}</button></td></tr>`).join('')}</tbody></table></div>`:'';
-    if(fi===12||fi===13)return rip.length?`<div class="table-wrap" style="margin-top:6px"><table><thead><tr><th>Da sistemare</th><th>Azienda</th><th>Stato</th><th>Intervento</th><th></th></tr></thead><tbody>${rip.map((x,i)=>`<tr><td>${esc(x.descrizione)}</td><td>${esc(x.azienda||'—')}</td><td>${selectHtml(STATI_RIPRISTINO,x.stato,`class="inline-select" data-change="ripStato" data-id="${c.id}" data-i="${i}"`)}</td><td>${fd(x.data)}</td><td><button class="icon-btn" data-act="editRipristino" data-id="${c.id}" data-i="${i}">${ic('edit')}</button></td></tr>`).join('')}</tbody></table></div>`:'';
+  const lnk={progettazione:`<button class="small" data-act="newEsterno" data-id="${c.id}">${ic('plus')}Fattura agenzia</button>`,economica:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/preventivi">${ic('calc')}Preventivi</button>`,appuntamento:`<button class="small" data-act="newEvento" data-c="${c.id}">${ic('cal')}Fissa</button>`,firma:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/pagamenti">${ic('euro')}Rate</button>`,ordine:`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/ordini">${ic('box')}Ordini</button>`,verbale:`<button class="small" data-act="newRipristino" data-id="${c.id}">${ic('plus')}Da riordinare / sistemare</button>`,ripristino:`<button class="small" data-act="newRipristino" data-id="${c.id}">${ic('plus')}Da riordinare / sistemare</button>`};
+  const extra=id=>{
+    if(id==='progettazione')return est.length?`<div class="table-wrap" style="margin-top:6px"><table><thead><tr><th>Agenzia</th><th>Brand</th><th>Fattura</th><th class="right-txt">Importo</th><th></th></tr></thead><tbody>${est.map((x,i)=>`<tr><td>${esc(x.agenzia)}</td><td>${esc(x.brand||'—')}</td><td>${esc(x.fattura||'—')}<small>${fd(x.data)}</small></td><td class="amount right-txt">${eur2(x.importo)}</td><td><button class="icon-btn" data-act="editEsterno" data-id="${c.id}" data-i="${i}">${ic('edit')}</button></td></tr>`).join('')}</tbody></table></div>`:'';
+    if(id==='rilievo')return`<div class="toolbar" style="margin:4px 0 8px"><div class="seg"><button class="${c.rilievo!=='speciale'?'active':''}" data-act="rilievoMode" data-id="${c.id}" data-v="rilevabile">Casa rilevabile</button><button class="${c.rilievo==='speciale'?'active':''}" data-act="rilievoMode" data-id="${c.id}" data-v="speciale">Non rilevabile: procedura speciale</button></div></div>${c.rilievo==='speciale'?'<div class="note" style="background:#fff7ea;color:#9b784c">Eccezione: ordiniamo sui disegni tecnici. Il cliente si obbliga in solido a farli rispettare; se la merce non ci sta, tutte le spese sono sue.</div>':''}`;
+    if(id==='verbale'||id==='ripristino')return rip.length?`<div class="table-wrap" style="margin-top:6px"><table><thead><tr><th>Da riordinare / sistemare</th><th>Azienda</th><th>Stato</th><th>Intervento</th><th></th></tr></thead><tbody>${rip.map((x,i)=>`<tr><td>${esc(x.descrizione)}</td><td>${esc(x.azienda||'—')}</td><td>${selectHtml(STATI_RIPRISTINO,x.stato,`class="inline-select" data-change="ripStato" data-id="${c.id}" data-i="${i}"`)}</td><td>${fd(x.data)}</td><td><button class="icon-btn" data-act="editRipristino" data-id="${c.id}" data-i="${i}">${ic('edit')}</button></td></tr>`).join('')}</tbody></table></div>`:'';
     return'';
   };
-  return WF_PRIVATO.map(([f,st],fi)=>{
-    const done=st.filter((_,si)=>c.steps[fi+'.'+si]).length, cur=fi+1===c.fase, past=fi+1<c.fase;
-    if(fi===13&&!rip.length&&!cur&&done===0)return`<div class="panel" style="opacity:.6"><div class="panel-head"><h2><span class="number-circle">${fi+1}</span>${esc(f)}</h2><span class="subtle">solo se il verbale riporta riordini o sistemazioni</span></div></div>`;
-    return`<div class="panel" style="${cur?'border-color:#305e47;box-shadow:0 0 0 2px #dce9d6':''}"><div class="panel-head"><h2><span class="number-circle" style="${past||done===st.length?'background:#a8c98b;border-color:#a8c98b;color:#173d39':''}">${fi+1}</span>${esc(f)} ${cur?'<span class="tag">fase attuale</span>':''}</h2><div class="actions">${lnk(fi)}<span class="tag ${done===st.length?'':'gray'}">${done}/${st.length}</span></div></div><div class="panel-body">${st.map((t,si)=>{const k=fi+'.'+si,v=c.steps[k];return`<label class="check-row ${v?'done':''}"><input type="checkbox" data-change="step" data-id="${c.id}" data-k="${k}" ${v?'checked':''}><span style="flex:1">${esc(t)}</span>${v?`<span class="subtle">${fd(v)}</span>`:''}</label>`}).join('')}${extra(fi)}${cur&&done===st.length&&fi+1<WF_PRIVATO.length?`<div style="margin-top:14px"><button class="lime" data-act="avanza" data-id="${c.id}">Fase completata: passa a ${esc(WF_PRIVATO[fi+1][0])} ${ic('arrow')}</button></div>`:''}</div></div>`}).join('');
+  return WF_PRIVATO.map((ph,fi)=>{
+    const st=wfSteps(c,ph), done=st.filter(([k])=>c.steps[k]).length, req=st.filter(x=>!x[2]), reqDone=req.every(([k])=>c.steps[k]), cur=fi+1===c.fase, past=fi+1<c.fase;
+    if(ph.id==='ripristino'&&!rip.length&&!cur&&done===0)return`<div class="panel" style="opacity:.6"><div class="panel-head"><h2><span class="number-circle">${fi+1}</span>${esc(ph.f)}</h2><span class="subtle">solo se nel verbale ci sono cose da riordinare o sistemare</span></div></div>`;
+    return`<div class="panel" style="${cur?'border-color:#305e47;box-shadow:0 0 0 2px #dce9d6':''}"><div class="panel-head"><h2><span class="number-circle" style="${past||reqDone?'background:#a8c98b;border-color:#a8c98b;color:#173d39':''}">${fi+1}</span>${esc(ph.f)} ${cur?'<span class="tag">fase attuale</span>':''}</h2><div class="actions">${lnk[ph.id]||''}<span class="tag ${reqDone?'':'gray'}">${done}/${st.length}</span></div></div><div class="panel-body">${extra(ph.id)}${st.map(([k,t,opt])=>{const v=c.steps[k];return`<label class="check-row ${v?'done':''}"><input type="checkbox" data-change="step" data-id="${c.id}" data-k="${k}" data-f="${fi+1}" ${v?'checked':''}><span style="flex:1">${esc(t)}${opt?' <span class="tag gray">se serve</span>':''}</span>${v?`<span class="subtle">${fd(v)}</span>`:''}</label>`}).join('')}${cur&&reqDone&&fi+1<WF_PRIVATO.length?`<div style="margin-top:14px"><button class="lime" data-act="avanza" data-id="${c.id}">Fatto: passa a ${esc(WF_PRIVATO[fi+1].f)} ${ic('arrow')}</button></div>`:''}</div></div>`}).join('');
 }
 function formEsterno(c,i){
   const isNew=i==null;const x=isNew?{data:today()}:c.esterni[i];
@@ -834,11 +850,15 @@ const A={
     p.stato='Accettato';S.preventivi.forEach(x=>{if(x.id!==p.id&&x.commessaId===p.commessaId&&x.titolo===p.titolo&&x.stato!=='Rifiutato')x.stato='Superato'});
     const brands={};p.righe.filter(r=>!r.esclusa&&r.brand&&r.brand.toUpperCase()!=='BTWN'&&r.acquista!=='Partner').forEach(r=>{brands[r.brand]=(brands[r.brand]||0)+rigaCalc(r,p).costo});
     const nb=Object.keys(brands).length;
-    if(confirm(`Generare le rate del piano "${PIANI[p.piano]?.nome||'privati'}" su ${eur(t.netto)}${nb?` e ${nb} ordini fornitori (uno per brand)`:''}?`)){genRate(S.rate,c,null,p.piano||'privati',t.netto,today());Object.entries(brands).forEach(([b,v])=>S.ordini.push({id:uid(),commessaId:c.id,preventivoId:p.id,fornitore:b,numero:'',data:'',previsto:Math.round(v*100)/100,importo:null,arrivo:'',stato:'Da ordinare',note:`Da ${p.titolo} rev.${p.rev}`}))}
+    if(confirm(`Generare le rate del piano "${pianoGet(p.piano)?.nome||'privati'}" su ${eur(t.netto)}${nb?` e ${nb} ordini fornitori (uno per brand)`:''}?`)){genRate(S.rate,c,null,p.piano||'privati',t.netto,today(),p.ratePerc);Object.entries(brands).forEach(([b,v])=>S.ordini.push({id:uid(),commessaId:c.id,preventivoId:p.id,fornitore:b,numero:'',data:'',previsto:Math.round(v*100)/100,importo:null,arrivo:'',stato:'Da ordinare',note:`Da ${p.titolo} rev.${p.rev}`}))}
     save();render();toast('Preventivo accettato')},
   schedaRiga:d=>{const p=byId('preventivi',d.p);formScheda(p,p.righe.find(r=>r.id===d.r))},
   paginaCliente:d=>{const p=byId('preventivi',d.id);formPagina(p,()=>{apriPagina(p);render.keepScroll=true;render()})},
   scaricaPagina:d=>{const p=byId('preventivi',d.id);if(!p.pagina){formPagina(p,()=>scaricaPagina(p));return}scaricaPagina(p)},
+  editPiano:d=>{const k=d.k,pl=pianoGet(k);openForm({title:'Piano di pagamento',values:{nome:pl.nome,righe:pl.rate.map(r=>`${r[0]} | ${r[1]} | ${r[2]}`).join('\n')},intro:'Una rata per riga: <b>percentuale | nome | quando</b>. Le percentuali devono sommare 100. Si applica alle rate generate da ora in poi.',fields:[{k:'nome',l:'Nome del piano',req:true,wide:true},{k:'righe',l:'Rate',type:'textarea',wide:true,req:true}],
+    onSave:o=>{const rows=o.righe.split('\n').map(x=>x.split('|').map(y=>y.trim())).filter(x=>x[0]);const rate=rows.map((x,i)=>[+x[0].replace(',','.'),x[1]||'Rata '+(i+1),x[2]||'',(PIANI[k]&&PIANI[k].rate[i]&&PIANI[k].rate[i][3])||(i===0?'firma':undefined)]);const sum=rate.reduce((a,r)=>a+r[0],0);if(rate.some(r=>isNaN(r[0]))||Math.abs(sum-100)>.01){$('#formErr').innerHTML=`<div class="error">Le percentuali sommano ${sum}: devono fare 100.</div>`;return false}S.piani=S.piani||{};S.piani[k]={nome:o.nome,rate}},
+    onDelete:S.piani&&S.piani[k]?()=>{delete S.piani[k]}:null})},
+  rilievoMode:d=>{const c=commessa(d.id);c.rilievo=d.v;save();render.keepScroll=true;render()},
   newEsterno:d=>formEsterno(commessa(d.id)),editEsterno:d=>formEsterno(commessa(d.id),+d.i),
   newRipristino:d=>formRipristino(commessa(d.id)),editRipristino:d=>formRipristino(commessa(d.id),+d.i),
   newOrdine:d=>formOrdine(null,d.id),editOrdine:d=>formOrdine(byId('ordini',d.id)),
@@ -872,7 +892,7 @@ document.addEventListener('change',e=>{
   if(d.change==='statoRata'){const r=byId('rate',d.id);r.stato=t.value;save();render();toast('Rata: '+t.value)}
   if(d.change==='prevStato'){const p=byId('preventivi',d.id);if(t.value==='Accettato'){t.value=p.stato;A.accettaPrev({id:p.id});return}p.stato=t.value;save();render();toast('Preventivo: '+t.value)}
   if(d.change==='ordineStato'){const o=byId('ordini',d.id);o.stato=t.value;save();render.keepScroll=true;render();toast(o.fornitore+' → '+t.value)}
-  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();const fi=+d.k.split('.')[0];if(fi+1>c.fase)c.fase=fi+1}else delete c.steps[d.k];save();render.keepScroll=true;render()}
+  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase)c.fase=+d.f}else delete c.steps[d.k];save();render.keepScroll=true;render()}
   if(d.change==='ripStato'){const c=commessa(d.id);c.ripristini[+d.i].stato=t.value;save();render.keepScroll=true;render();toast('Ripristino: '+t.value)}
   if(d.change==='doc'){const c=commessa(d.id);c.docs=c.docs||{};c.docs[d.i]=t.checked?1:0;save();render()}
 });
