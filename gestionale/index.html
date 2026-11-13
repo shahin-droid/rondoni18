@@ -33,7 +33,20 @@ const initials=n=>(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].t
 
 /* ---------- Dominio BTWN ---------- */
 const FASI=['Analisi operazione','Audit progettuale','Strategia di servizio','Progettazione','Ingaggio cliente','Coordinamento esecutivo','Logistica e montaggio','Consegna e post-vendita','Feedback e dati'];
-const SERVIZI=['Advisory immobiliare','Varianti','Interior / Home Book','Fornitura arredi','Visualizzazione','MyHabitat'];
+const SV={mk:'Marketing e comunicazione',var:'Gestione varianti',lev:'Leve commerciali (Interior Design Pack)',cfg:'Configuratore',adv:'Advisory immobiliare'};
+const SERVIZI=[SV.mk,SV.var,SV.lev,SV.cfg,SV.adv,'Interior / Home Book','Fornitura arredi'];
+const SERV_MAP={'Varianti':SV.var,'Visualizzazione':SV.mk,'MyHabitat':SV.cfg};
+const TIPI_MK=['Render interni','Render esterni','Sito internet','Naming','Grafica e logo','Brochure commerciale','Contenuti sito','Altro'];
+const STATI_MK=['Da preventivare','Preventivato','In lavorazione','Viste preliminari','Revisione','Consegnato'];
+const ELEMENTI_PACK=['Cucina','Armadi','Mobile bagno','Pack misto','Voucher arredo'];
+const FORMULE_LEVE=[{v:'capitolato',l:'Capitolato: lo compra lo sviluppatore, il cliente poi personalizza'},{v:'scontato',l:'Pack scontato: venduto al cliente finale tramite agenzia'},{v:'voucher',l:'Voucher arredo: valore di listino venduto allo sviluppatore a sconto'}];
+const STATI_VARIANTE=['Nessuna variante','Cliente affidato a BTWN','Richieste raccolte','Fattibilità verificata con impresa','Preventivo varianti','Firmato dal cliente','Esecutivi all\'impresa','In cantiere','Completate'];
+const WF_B2B={
+  mk:[['mk_brief',"Brief e materiali ricevuti (DWG, capitolato, target, riferimenti)"],['mk_prev',"Preventivo dei lavori inviato allo sviluppatore"],['mk_firma',"Contratto firmato e acconto incassato"],['mk_prel',"Viste preliminari / bozze consegnate"],['mk_rev',"Revisioni concordate per iscritto"],['mk_cons',"Consegna finale"],['mk_saldo',"Saldo incassato"]],
+  var:[['vr_accordo',"Accordo con lo sviluppatore firmato: chi paga le varianti"],['vr_listino',"Listino varianti dell'impresa ricevuto (se no, quota l'impresa)"],['vr_dwg',"DWG esecutivi e impiantistici ricevuti"],['vr_regole',"Allineamento con l'impresa: regole e tempi di cantiere"]],
+  lev:[['lv_mat',"Materiale ricevuto: DWG del costruttore, capitolato, listino immobiliare"],['lv_target',"Target price capito"],['lv_analisi',"Analisi completata"],['lv_formula',"Formula decisa (capitolato, pack scontato, voucher)"],['lv_prog',"Progetto dei pack per ogni tipologico"],['lv_offerta',"Preventivo e offerta riservata allo sviluppatore"],['lv_accordo',"Accordo firmato"]],
+  cfg:[['cf_tipo',"Deciso il configuratore: pre-lancio o MyHabitat (operazione online)"],['cf_dati',"Ricevuti i dati di back-end dallo sviluppatore"],['cf_mancanti',"Preventivato quello che manca (tipologici, planimetrie commerciali, contenuti)"],['cf_firma',"Preventivo firmato"],['cf_config',"Back-end configurato"],['cf_online',"Configuratore online"],['cf_report',"Report dati condiviso con lo sviluppatore"]]
+};
 const STATI_COMMESSA=['Pipeline','Attiva','Sospesa','Chiusa','Persa'];
 const STATI_UNITA=['Da contattare','Personalizzazione','Rilievo','Ordine','Consegna','Montaggio','Chiusa'];
 const STATI_RATA=['Prevista','Fatturata','Incassata'];
@@ -105,13 +118,14 @@ function seed(){
   const lerca=cl('Lerca – BPER','Developer / investitore');
   const clienti=[lyndos,coran,tef,tortato,indEd,lerca];
   const C=(o)=>({id:uid(),codice:'',nome:'',luogo:'',clienteId:'',servizi:[],fase:1,stato:'Attiva',valore:null,probabilita:100,unitaTot:null,brand:'',piano:'tgo5',inizio:'',consegna:'',note:'',docs:{},files:[],...o});
-  const tgo=C({codice:'TGO-E6',nome:'The Green One · DesignPack Lotto E6',luogo:'San Donato Milanese',clienteId:lyndos.id,servizi:['Fornitura arredi','Varianti'],fase:6,unitaTot:25,brand:'Cesar + Caccaro · AEG/Electrolux',piano:'tgo5',note:'AQ Arredi firmato. Ritmo minimo 20 unità/mese. Advisor: Coran Immobiliare.',docs:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,9:1}});
+  const tgoTip=[{id:uid(),nome:'Bilo 1',unita:8,mq:62,prezzo:330000},{id:uid(),nome:'Trilo 1',unita:10,mq:88,prezzo:430000},{id:uid(),nome:'Trilo 2',unita:5,mq:96,prezzo:470000},{id:uid(),nome:'Quadri',unita:2,mq:128,prezzo:610000}];
+  const tgo=C({tipologici:tgoTip,formula:'capitolato',pack:tgoTip.map(t=>({id:uid(),tipologicoId:t.id,elemento:'Pack misto',descrizione:'Cucina + armadi (esempio)',listino:t.mq*230,scAcq:50,scVend:30})),varCfg:{feeCli:.5,feeSvil:.2,svilSu:'tutti',omaggioN:0},steps:{lv_mat:D(-200),lv_target:D(-190),lv_analisi:D(-180),lv_formula:D(-170),lv_prog:D(-150),lv_offerta:D(-140),lv_accordo:D(-130),vr_accordo:D(-130),vr_listino:D(-120),vr_dwg:D(-120)},codice:'TGO-E6',nome:'The Green One · DesignPack Lotto E6',luogo:'San Donato Milanese',clienteId:lyndos.id,servizi:['Fornitura arredi','Varianti'],fase:6,unitaTot:25,brand:'Cesar + Caccaro · AEG/Electrolux',piano:'tgo5',note:'AQ Arredi firmato. Ritmo minimo 20 unità/mese. Advisor: Coran Immobiliare.',docs:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,9:1}});
   const tgv=C({codice:'TGO-VAR',nome:'The Green One · Varianti lotti 8-11-7-10',luogo:'San Donato Milanese – Via Fabiani',clienteId:lyndos.id,servizi:['Varianti'],fase:6,piano:'unica',consegna:'2026-06-30',note:'AQ Varianti firmato 10/04/2025. Fee 0,50% dal cliente + 0,20% da Lyndos. Consegne di riferimento: edifici 8-11 aprile 2026, edifici 7-10 giugno 2026 → verificare indennizzi per ritardo.',docs:{0:1,2:1,6:1}});
   const oik=C({codice:'OIK',nome:'Oikos',luogo:'Burago',servizi:['Fornitura arredi'],fase:6,unitaTot:60,brand:'Miton · Electrolux',note:'Prime 30 consegne 2026.'});
   const har=C({codice:'HAR',nome:'Harmonia · 43 ville',luogo:'Carpianello',servizi:['Fornitura arredi','Interior / Home Book'],fase:4,unitaTot:43,brand:'Cesar · Electrolux',note:'Ville: maggiore personalizzazione.'});
   const par=C({codice:'PAR-ES',nome:'Paratico · esecutiva',luogo:"Lago d'Iseo",servizi:['Fornitura arredi'],fase:7,unitaTot:4,note:'Consegna compressa in 5 giorni.'});
   const bdt=C({codice:'BDT',nome:'Paratico · Bosco dei Taxodi',luogo:"Lago d'Iseo",clienteId:tortato.id,servizi:['Advisory immobiliare'],fase:2,unitaTot:65,valore:26000,piano:'unica',note:'8.100 mq, ~65 app. + 2 lab. Ipotesi L1 16.500 € + L2 9.500 € (o forfait 18-20k).'});
-  const gas=C({codice:'GAS',nome:'Gasometro · Render 3D',luogo:'Milano – Politecnico',clienteId:tef.id,servizi:['Visualizzazione'],fase:4,valore:13000,piano:'render',consegna:D(20),note:'12 render, 13.000 € + IVA. Revisioni extra da quotare per iscritto.'});
+  const gas=C({marketing:[{id:uid(),tipo:'Render interni',descrizione:'Viste indoor',qta:6,prezzo:1083.33,stato:'Viste preliminari'},{id:uid(),tipo:'Render esterni',descrizione:'Viste outdoor',qta:6,prezzo:1083.34,stato:'Viste preliminari'}],steps:{mk_brief:D(-40),mk_prev:D(-35),mk_firma:D(-30),mk_prel:D(-5)},codice:'GAS',nome:'Gasometro · Render 3D',luogo:'Milano – Politecnico',clienteId:tef.id,servizi:['Visualizzazione'],fase:4,valore:13000,piano:'render',consegna:D(20),note:'12 render, 13.000 € + IVA. Revisioni extra da quotare per iscritto.'});
   const ind=C({codice:'IND',nome:'Industrie Edili · 144 unità',clienteId:indEd.id,servizi:['Fornitura arredi'],stato:'Pipeline',unitaTot:144,valore:6480000,probabilita:20,note:'Valore medio app. ~700k€, potenziale arredo ~45k€/unità.'});
   const ler=C({codice:'LER',nome:'BPER Residenze Sant\'Anna',clienteId:lerca.id,servizi:['Fornitura arredi','Interior / Home Book'],stato:'Pipeline',unitaTot:85,probabilita:30,note:'Opportunità full-arredo. Valore da stimare.'});
   const oas=C({codice:'OAS',nome:'Oasi Isola',luogo:'Milano',servizi:['Fornitura arredi'],stato:'Pipeline',probabilita:25,brand:'Binova'});
@@ -162,7 +176,7 @@ function genRate(list,c,u,pianoKey,base,startDate,percOverride){
 
 /* ---------- Stato ---------- */
 let S, ui={view:'dashboard',commesseMode:'lista',q:'',filtroStato:'Attive',agendaPast:false,rateFiltro:'Aperte'};
-function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}if(!S||!S.commesse){S=seed();save(true)}S.preventivi=S.preventivi||[];S.ordini=S.ordini||[];}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}if(!S||!S.commesse){S=seed();save(true)}S.preventivi=S.preventivi||[];S.ordini=S.ordini||[];S.commesse.forEach(c=>{c.servizi=(c.servizi||[]).map(x=>SERV_MAP[x]||(x==='Fornitura arredi'&&c.tipo!=='Privato'?SV.lev:x))});}
 function save(silent){try{localStorage.setItem(KEY,JSON.stringify(S));if(!silent)flash()}catch(e){toast('Impossibile salvare: spazio del browser esaurito')}}
 let flashT;function flash(){const el=$('#savestate');if(el){el.innerHTML='<span class="dot"></span>Salvato';clearTimeout(flashT);flashT=setTimeout(()=>el.innerHTML='<span class="dot"></span>Dati salvati in locale',1500)}}
 const byId=(arr,id)=>S[arr].find(x=>x.id===id);
@@ -199,7 +213,7 @@ function alerts(){
     if(c.tipo==='Privato'){(c.ripristini||[]).forEach(x=>{if(x.stato!=='Completato'&&x.data&&daysTo(x.data)<0)out.push({sev:2,icon:'alert',t:`${c.nome} · ripristino in ritardo`,s:`${x.descrizione} · ${x.azienda||''} · previsto ${fd(x.data)}`,go:`#/commessa/${c.id}/workflow`})});
       if(c.rilievo==='speciale'&&c.fase>=FASI_PRIVATO.indexOf('Ordine')+1&&!(c.steps&&c.steps.sp_obbligo))out.push({sev:3,icon:'alert',t:`${c.nome} · procedura speciale senza dichiarazione`,s:'Casa non rilevabile: serve la dichiarazione firmata del cliente prima di ordinare',go:`#/commessa/${c.id}/workflow`});const fo=FASI_PRIVATO.indexOf('Merce in magazzino')+1;if(c.fase>=fo&&c.fase<=fo+1&&!(c.steps&&c.steps.mont_quot))out.push({sev:1,icon:'box',t:`${c.nome} · montaggio non ancora quotato`,s:'Inviare Home Book e indicazioni di logistica al fornitore del servizio per la quotazione',go:`#/commessa/${c.id}/workflow`});return}
     if(c.fase>=2&&n<CL.length)out.push({sev:1,icon:'file',t:`${c.nome} · documenti ${n}/${CL.length}`,s:`Mancano ${CL.length-n} voci dalla checklist ${c.tipo==='Privato'?'cliente':'committente'}`,go:`#/commessa/${c.id}/documenti`});
-    if(c.consegna&&c.servizi.includes('Varianti')&&daysTo(c.consegna)<-90)out.push({sev:1,icon:'clock',t:`${c.nome} · ritardo consegna ${Math.floor(-daysTo(c.consegna)/30)} mesi`,s:'Verificare indennizzo per ritardo previsto dall\'AQ varianti',go:`#/commessa/${c.id}`});
+    if(c.consegna&&c.servizi.includes(SV.var)&&daysTo(c.consegna)<-90)out.push({sev:1,icon:'clock',t:`${c.nome} · ritardo consegna ${Math.floor(-daysTo(c.consegna)/30)} mesi`,s:'Verificare indennizzo per ritardo previsto dall\'AQ varianti',go:`#/commessa/${c.id}`});
   });
   S.preventivi.forEach(p=>{const c=commessa(p.commessaId);if(!c||p.stato!=='Inviato'||!p.data)return;const d=daysTo(addDays(p.data,+p.validita||10));if(d<0)out.push({sev:1,icon:'calc',t:`${p.titolo} rev.${p.rev} · oltre la validità`,s:`${c.nome} · inviata il ${fd(p.data)}, validità ${p.validita||10} gg: sollecitare o aggiornare`,go:`#/preventivo/${p.id}`})});
   S.ordini.forEach(o=>{const c=commessa(o.commessaId);if(!c)return;
@@ -259,16 +273,34 @@ const tagRata=r=>{if(r.stato==='Incassata')return'<span class="tag">Incassata</s
 const empty=(icon,t,s,btn='')=>`<div class="empty">${ic(icon)}<b>${t}</b>${s}${btn?'<div style="margin-top:16px">'+btn+'</div>':''}</div>`;
 const progress=c=>`<div class="progress"><span style="width:${Math.round(c.fase/fasiFor(c).length*100)}%"></span></div>`;
 const selectHtml=(opts,val,attrs='')=>`<select ${attrs}>${opts.map(o=>{const v=typeof o==='object'?o.v:o,l=typeof o==='object'?o.l:o;return`<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`}).join('')}</select>`;
+function varCfg(c){return Object.assign({feeCli:FEE.varianti*100,feeSvil:FEE.consulenza*100,svilSu:'tutti',omaggioN:0},c.varCfg||{})}
+function varFees(c){
+  const cfg=varCfg(c),us=unitaDi(c.id),on=c.servizi.includes(SV.var);if(!on)return{cli:0,svil:0,omaggio:0,nVar:0,nOm:0,cfg};
+  const vu=us.filter(u=>u.varianti).sort((a,b)=>(a.preliminare||'9').localeCompare(b.preliminare||'9'));
+  const om=new Set(vu.slice(0,+cfg.omaggioN||0).map(u=>u.id));
+  const cli=vu.filter(u=>!om.has(u.id)).reduce((a,u)=>a+(+u.prezzo||0)*cfg.feeCli/100,0);
+  const omaggio=vu.filter(u=>om.has(u.id)).reduce((a,u)=>a+(+u.prezzo||0)*cfg.feeCli/100,0);
+  const base=(cfg.svilSu==='tutti'?us:vu).reduce((a,u)=>a+(+u.prezzo||0),0);
+  return{cli,svil:base*cfg.feeSvil/100+omaggio,omaggio,nVar:vu.length,nOm:om.size,om,cfg};
+}
+function packCalc(c,r){const t=(c.tipologici||[]).find(x=>x.id===r.tipologicoId);const n=t?+t.unita||0:0;const L=+r.listino||0;const prezzo=L*(1-(+r.scVend||0)/100), costo=L*(1-(+r.scAcq||0)/100);const ades=(c.formula==='scontato'?(r.adesione==null?100:+r.adesione):100)/100;const q=n*ades;return{n,prezzo,costo,marg:prezzo-costo,q,tot:q*prezzo,margTot:q*(prezzo-costo)}}
+function serviziTot(c){
+  const on=k=>c.servizi.includes(SV[k]);
+  const mk=on('mk')?(c.marketing||[]).reduce((a,x)=>a+(+x.qta||1)*(+x.prezzo||0),0):0;
+  const lv=on('lev')?(c.pack||[]).reduce((a,r)=>{const x=packCalc(c,r);a.tot+=x.tot;a.marg+=x.margTot;return a},{tot:0,marg:0}):{tot:0,marg:0};
+  const cfg=on('cfg')?(c.cfgVoci||[]).reduce((a,x)=>a+(+x.qta||1)*(+x.prezzo||0),0):0;
+  return{mk,lev:lv.tot,levMarg:lv.marg,cfg};
+}
 function commessaNumeri(c){
   const us=unitaDi(c.id), rs=rateDi(c.id);
   const pack=us.reduce((a,u)=>a+(+u.pack||0),0);
   const prezzi=us.reduce((a,u)=>a+(+u.prezzo||0),0);
-  const feeVar=us.filter(u=>u.varianti).reduce((a,u)=>a+(+u.prezzo||0)*FEE.varianti,0);
-  const feeCons=c.servizi.includes('Varianti')?prezzi*FEE.consulenza:0;
+  const vf=varFees(c);const feeVar=vf.cli, feeCons=vf.svil;
+  const sv=serviziTot(c);
   const incassato=rs.filter(r=>r.stato==='Incassata').reduce((a,r)=>a+r.importo,0);
   const aperto=rs.filter(r=>r.stato!=='Incassata').reduce((a,r)=>a+r.importo,0);
-  const valore=c.valore!=null&&c.valore!==''?+c.valore:(pack+feeVar+feeCons);
-  return{us,rs,pack,prezzi,feeVar,feeCons,incassato,aperto,valore};
+  const valore=c.valore!=null&&c.valore!==''?+c.valore:(pack+feeVar+feeCons+sv.mk+sv.lev+sv.cfg);
+  return{us,rs,pack,prezzi,feeVar,feeCons,incassato,aperto,valore,vf,sv};
 }
 
 /* ---------- Panoramica ---------- */
@@ -341,7 +373,7 @@ function vCommessa(r){
   const prevs=prevDi(c.id), ords=ordiniDi(c.id), priv=c.tipo==='Privato';
   const evs=S.eventi.filter(e=>e.commessaId===c.id);
   const wfDone=priv?WF_PRIVATO.reduce((a,ph)=>a+wfSteps(c,ph).filter(([k])=>c.steps&&c.steps[k]).length,0):0, wfTot=WF_PRIVATO.reduce((a,ph)=>a+wfSteps(c,ph).length,0);
-  const tabs=[['panoramica','Panoramica'],...(priv?[['workflow',`Workflow ${wfDone}/${wfTot}`]]:[]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
+  const tabs=[['panoramica','Panoramica'],...(priv?[['workflow',`Workflow ${wfDone}/${wfTot}`]]:[['servizi',`Servizi (${c.servizi.filter(x=>[SV.mk,SV.var,SV.lev,SV.cfg].includes(x)).length})`],['tipologici',`Tipologici (${(c.tipologici||[]).length})`]]),...(priv&&!n.us.length?[]:[['unita',`Unità (${n.us.length})`]]),['preventivi',`Preventivi (${prevs.length})`],['ordini',`Ordini (${ords.length})`],['pagamenti',`Pagamenti (${n.rs.length})`],['documenti',priv?`Documenti (${(c.files||[]).length})`:`Documenti ${nDocs}/${CL.length}`],['agenda',`Agenda (${evs.length})`]];
   let body='';
   if(tab==='panoramica'){
     body=`<div class="detail-grid"><div class="panel"><div class="panel-head"><h2>Scheda</h2><button class="small" data-act="editCommessa" data-id="${c.id}">${ic('edit')}Modifica</button></div><div class="panel-body">
@@ -360,15 +392,16 @@ function vCommessa(r){
       <div class="kv"><span>Valore commessa</span><b class="amount">${n.valore?eur(n.valore):'—'}</b></div>
       ${priv&&!n.us.length?'':`<div class="kv"><span>Unità registrate / a contratto</span><b>${n.us.length} / ${c.unitaTot||'—'}</b></div><div class="kv"><span>Valore pack arredi registrato</span><b class="amount">${eur(n.pack)}</b></div>`}
       ${n.us.length?`<div class="kv"><span>Valore medio pack / unità</span><b class="amount">${eur(n.pack/n.us.length)}</b></div>`:''}
-      ${c.servizi.includes('Varianti')||n.feeVar?`<div class="kv"><span>Fee varianti 0,50% (clienti)</span><b class="amount">${eur(n.feeVar)}</b></div><div class="kv"><span>Consulenza base 0,20% (committente)</span><b class="amount">${eur(n.feeCons)}</b></div>`:''}
+      ${n.sv.mk?`<div class="kv"><span>Marketing e comunicazione</span><b class="amount">${eur(n.sv.mk)}</b></div>`:''}${n.sv.lev?`<div class="kv"><span>Leve commerciali (pack)</span><b class="amount">${eur(n.sv.lev)}</b></div>`:''}${n.sv.cfg?`<div class="kv"><span>Configuratore</span><b class="amount">${eur(n.sv.cfg)}</b></div>`:''}
+      ${c.servizi.includes(SV.var)?`<div class="kv"><span>Varianti: fee pagate dai clienti (${n.vf.cfg.feeCli}%)</span><b class="amount">${eur(n.feeVar)}</b></div><div class="kv"><span>Varianti: pagato dallo sviluppatore${n.vf.nOm?' (incl. '+n.vf.nOm+' omaggi)':''}</span><b class="amount">${eur(n.feeCons)}</b></div>`:''}
       <div class="kv"><span>Incassato</span><b class="amount" style="color:#4f7a3a">${eur(n.incassato)}</b></div>
       <div class="kv"><span>Da incassare</span><b class="amount">${eur(n.aperto)}</b></div>
       <div class="kv"><span>Stato unità</span><span>${STATI_UNITA.map(s=>{const k=n.us.filter(u=>u.stato===s).length;return k?`${tagUnita(s)} ${k}`:''}).filter(Boolean).join(' &nbsp;')||'—'}</span></div>
     </div></div></div>`;
   }
   if(tab==='unita'){
-    body=`<div class="toolbar"><div class="subtle" style="flex:1">${c.servizi.includes('Fornitura arredi')?"Regola AQ: l'acconto all'ordine va versato almeno 120 giorni prima del rogito.":''}</div><button data-act="bulkUnita" data-id="${c.id}">${ic('list')}Genera più unità</button><button class="primary" data-act="newUnita" data-id="${c.id}">${ic('plus')}Nuova unità</button></div>
-    <div class="panel">${n.us.length?`<div class="table-wrap"><table><thead><tr><th>Unità</th><th>Acquirente</th><th>Stato</th><th class="right-txt">Prezzo vendita</th><th class="right-txt">Pack arredi</th><th>Varianti</th><th>Rogito</th><th>Limite ordine</th><th></th></tr></thead><tbody>${n.us.sort((a,b)=>a.codice.localeCompare(b.codice,'it',{numeric:true})).map(u=>{const lim=u.rogito?addDays(u.rogito,-120):'';const dl=lim?daysTo(lim):null;const pre=STATI_UNITA.indexOf(u.stato)<3;return`<tr><td><button class="link" data-act="editUnita" data-id="${u.id}">${esc(u.codice)}</button></td><td>${u.acquirente?esc(u.acquirente):'<span class="tag amber">da comunicare</span>'}<small>${u.preliminare?'preliminare '+fd(u.preliminare):''}</small></td><td>${selectHtml(STATI_UNITA,u.stato,`class="inline-select" data-change="statoUnita" data-id="${u.id}"`)}</td><td class="amount right-txt">${u.prezzo?eur(u.prezzo):'—'}</td><td class="amount right-txt">${u.pack?eur(u.pack):'—'}</td><td>${u.varianti?`<span class="tag blue">Sì</span><small>fee ${eur((u.prezzo||0)*FEE.varianti)}</small>`:'<span class="muted">No</span>'}</td><td>${fd(u.rogito)}</td><td>${lim?`${fd(lim)}${pre?`<small style="color:${dl<0?'var(--red)':dl<=30?'var(--orange)':'inherit'}">${dl<0?'superato da '+(-dl)+' gg':'tra '+dl+' gg'}</small>`:'<small>ordine confermato</small>'}`:'—'}</td><td><div class="actions"><button class="icon-btn" title="Genera rate" data-act="genRate" data-id="${c.id}" data-u="${u.id}">${ic('euro')}</button><button class="icon-btn" title="Modifica" data-act="editUnita" data-id="${u.id}">${ic('edit')}</button></div></td></tr>`}).join('')}</tbody></table></div>`:empty('home2','Nessuna unità','Aggiungi le unità della commessa una per una o in blocco.',`<button class="primary" data-act="bulkUnita" data-id="${c.id}">Genera unità</button>`)}</div>`;
+    body=`<div class="toolbar"><div class="subtle" style="flex:1">${c.servizi.includes(SV.lev)?"Regola AQ: l'acconto all'ordine va versato almeno 120 giorni prima del rogito.":''}</div><button data-act="bulkUnita" data-id="${c.id}">${ic('list')}Genera più unità</button><button class="primary" data-act="newUnita" data-id="${c.id}">${ic('plus')}Nuova unità</button></div>
+    <div class="panel">${n.us.length?`<div class="table-wrap"><table><thead><tr><th>Unità</th><th>Acquirente</th><th>Stato</th><th class="right-txt">Prezzo vendita</th><th class="right-txt">Pack arredi</th><th>Varianti</th><th>Rogito</th><th>Limite ordine</th><th></th></tr></thead><tbody>${n.us.sort((a,b)=>a.codice.localeCompare(b.codice,'it',{numeric:true})).map(u=>{const lim=u.rogito?addDays(u.rogito,-120):'';const dl=lim?daysTo(lim):null;const pre=STATI_UNITA.indexOf(u.stato)<3;return`<tr><td><button class="link" data-act="editUnita" data-id="${u.id}">${esc(u.codice)}</button></td><td>${u.acquirente?esc(u.acquirente):'<span class="tag amber">da comunicare</span>'}<small>${u.preliminare?'preliminare '+fd(u.preliminare):''}</small></td><td>${selectHtml(STATI_UNITA,u.stato,`class="inline-select" data-change="statoUnita" data-id="${u.id}"`)}</td><td class="amount right-txt">${u.prezzo?eur(u.prezzo):'—'}</td><td class="amount right-txt">${u.pack?eur(u.pack):'—'}</td><td>${c.servizi.includes(SV.var)?selectHtml(STATI_VARIANTE,u.statoVar||(u.varianti?'Cliente affidato a BTWN':'Nessuna variante'),`class="inline-select" data-change="statoVar" data-id="${u.id}"`)+(u.varianti?`<small>${n.vf.om&&n.vf.om.has(u.id)?'omaggio sviluppatore':'fee '+eur((u.prezzo||0)*n.vf.cfg.feeCli/100)}</small>`:''):(u.varianti?'<span class="tag blue">Sì</span>':'<span class="muted">No</span>')}</td><td>${fd(u.rogito)}</td><td>${lim?`${fd(lim)}${pre?`<small style="color:${dl<0?'var(--red)':dl<=30?'var(--orange)':'inherit'}">${dl<0?'superato da '+(-dl)+' gg':'tra '+dl+' gg'}</small>`:'<small>ordine confermato</small>'}`:'—'}</td><td><div class="actions"><button class="icon-btn" title="Genera rate" data-act="genRate" data-id="${c.id}" data-u="${u.id}">${ic('euro')}</button><button class="icon-btn" title="Modifica" data-act="editUnita" data-id="${u.id}">${ic('edit')}</button></div></td></tr>`}).join('')}</tbody></table></div>`:empty('home2','Nessuna unità','Aggiungi le unità della commessa una per una o in blocco.',`<button class="primary" data-act="bulkUnita" data-id="${c.id}">Genera unità</button>`)}</div>`;
   }
   if(tab==='pagamenti'){
     body=`<div class="cards three"><div class="card"><div class="card-label">Incassato</div><div class="metric amount">${eur(n.incassato)}</div></div><div class="card"><div class="card-label">Fatturato da incassare</div><div class="metric amount">${eur(n.rs.filter(r=>r.stato==='Fatturata').reduce((a,r)=>a+r.importo,0))}</div></div><div class="card"><div class="card-label">Previsto</div><div class="metric amount">${eur(n.rs.filter(r=>r.stato==='Prevista').reduce((a,r)=>a+r.importo,0))}</div></div></div>
@@ -380,6 +413,8 @@ function vCommessa(r){
     <div class="panel"><div class="panel-head"><h2>Archivio e link</h2><button class="small" data-act="newFile" data-id="${c.id}">${ic('plus')}Aggiungi</button></div><div class="panel-body"><p class="subtle" style="margin:0">Collega cartelle Drive, DWG, contratti firmati, verbali.</p><div class="files">${(c.files||[]).map((f,i)=>`<div class="file" style="display:flex;align-items:center;gap:10px">${ic('file')}<div style="flex:1;min-width:0">${f.url?`<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`:esc(f.nome)}<div class="subtle">${esc(f.tipo||'')} · ${fd(f.data)}</div></div><button class="icon-btn danger" data-act="delFile" data-id="${c.id}" data-i="${i}" title="Rimuovi">${ic('trash')}</button></div>`).join('')||'<div class="subtle" style="padding:20px 0">Nessun documento collegato.</div>'}</div></div></div></div>`;
   }
   if(tab==='workflow'&&priv){body=workflowView(c)}
+  if(tab==='servizi'&&!priv){body=serviziView(c,n)}
+  if(tab==='tipologici'&&!priv){body=tipologiciView(c)}
   if(tab==='preventivi'){
     body=`<div class="toolbar"><div class="subtle" style="flex:1">Foglio economico: listino, sconto d'acquisto, sconto cliente e margine per riga. Ogni modifica importante = nuova revisione.</div><button class="primary" data-act="newPrev" data-id="${c.id}">${ic('plus')}Nuovo preventivo</button></div><div class="panel">${prevTable(prevs,false)}</div>`;
   }
@@ -535,7 +570,7 @@ function formUnita(u,cid){
     {k:'acquirente',l:'Promissario acquirente',wide:true},
     {k:'prezzo',l:'Prezzo di vendita immobile (€)',type:'number'},{k:'pack',l:'Valore pack arredi (€)',type:'number'},
     {k:'preliminare',l:'Data preliminare',type:'date'},{k:'rogito',l:'Data rogito',type:'date'},
-    {k:'rilievo',l:'Data rilievo',type:'date'},{k:'varianti',l:'Cliente con varianti (fee 0,50%)',type:'checkbox'},
+    {k:'rilievo',l:'Data rilievo',type:'date'},{k:'tipologicoId',l:'Tipologico',type:'select',opts:tipOpts(c||{})()},{k:'varianti',l:'Cliente con varianti',type:'checkbox'},{k:'statoVar',l:'Stato varianti',type:'select',opts:STATI_VARIANTE},
     {k:'note',l:'Note',type:'textarea',wide:true}],
     calc:o=>{const lim=o.rogito?addDays(o.rogito,-120):'';return`<div>Fee varianti<strong>${o.varianti?eur2((o.prezzo||0)*FEE.varianti):'—'}</strong></div><div>Consulenza 0,20%<strong>${eur2((o.prezzo||0)*FEE.consulenza)}</strong></div><div>Limite acconto ordine<strong>${lim?fd(lim):'—'}</strong></div><div>Contatto acquirente entro<strong>${o.preliminare?fd(addDays(o.preliminare,7)):'—'}</strong></div>`},
     onSave:o=>{if(isNew)S.unita.push({id:uid(),commessaId:cid,...o});else Object.assign(u,o)},
@@ -778,6 +813,66 @@ function formRipristino(c,i){
     onSave:o=>{c.ripristini=c.ripristini||[];if(isNew)c.ripristini.push(o);else Object.assign(x,o)},onDelete:isNew?null:()=>{c.ripristini.splice(i,1)}});
 }
 
+
+/* ---------- Servizi B2B (operazioni immobiliari) ---------- */
+function editTable(c,list,cols,calc,emptyTxt){
+  const rows=c[list]||[];
+  const cell=(r,col)=>{const v=r[col.f]??'';const base=`data-cl="${c.id}" data-ls="${list}" data-r="${r.id}" data-f="${col.f}"`;
+    if(col.type==='select')return selectHtml(typeof col.opts==='function'?col.opts():col.opts,v,`class="inline-select" ${base}`);
+    return`<input class="grid-input" style="width:${col.w||100}px" ${col.type==='number'?'type="number" step="any"':''} ${base} value="${esc(v)}">`};
+  return`<div class="table-wrap"><table class="edit-table"><thead><tr>${cols.map(x=>`<th>${x.l}</th>`).join('')}${(calc||[]).map(x=>`<th class="right-txt">${x.l}</th>`).join('')}<th></th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(x=>`<td>${cell(r,x)}</td>`).join('')}${(calc||[]).map(x=>`<td class="calc-cell">${x.fn(r)}</td>`).join('')}<td><button class="icon-btn danger" title="Elimina" data-act="delRow" data-cl="${c.id}" data-ls="${list}" data-r="${r.id}">${ic('trash')}</button></td></tr>`).join(''):`<tr><td colspan="${cols.length+(calc||[]).length+1}"><div class="subtle" style="padding:14px 0">${emptyTxt}</div></td></tr>`}</tbody></table></div>`;
+}
+const stepList=(c,steps)=>steps.map(([k,t])=>{const v=c.steps&&c.steps[k];return`<label class="check-row ${v?'done':''}"><input type="checkbox" data-change="step" data-id="${c.id}" data-k="${k}" data-f="0" ${v?'checked':''}><span style="flex:1">${esc(t)}</span>${v?`<span class="subtle">${fd(v)}</span>`:''}</label>`}).join('');
+const stepCount=(c,steps)=>`<span class="tag ${steps.every(([k])=>c.steps&&c.steps[k])?'':'gray'}">${steps.filter(([k])=>c.steps&&c.steps[k]).length}/${steps.length}</span>`;
+const tipOpts=c=>()=>[{v:'',l:'—'},...(c.tipologici||[]).map(t=>({v:t.id,l:t.nome}))];
+function tipologiciView(c){
+  const tot=(c.tipologici||[]).reduce((a,t)=>a+(+t.unita||0),0);
+  return`<div class="toolbar"><div class="subtle" style="flex:1">I tipologici dell'operazione (mono, bilo, trilo 1, trilo 2, quadri…): servono ai pack, alle varianti e al configuratore. ${tot?`<b>${tot} unità</b> in ${(c.tipologici||[]).length} tipologici${c.unitaTot&&tot!==+c.unitaTot?` · a contratto ${c.unitaTot}`:''}.`:''}</div><button class="primary" data-act="addRow" data-cl="${c.id}" data-ls="tipologici">${ic('plus')}Tipologico</button></div>
+  <div class="panel">${editTable(c,'tipologici',[{f:'nome',l:'Tipologico',w:140},{f:'unita',l:'N. unità',type:'number',w:70},{f:'mq',l:'Mq commerciali',type:'number',w:80},{f:'prezzo',l:'Prezzo medio vendita €',type:'number',w:110},{f:'planimetria',l:'Planimetria (link)',w:200}],[{l:'Unità registrate',fn:t=>unitaDi(c.id).filter(u=>u.tipologicoId===t.id).length}],'Nessun tipologico: aggiungili dalla tabella dell\'operazione.')}</div>`;
+}
+function serviziView(c,n){
+  const on=k=>c.servizi.includes(SV[k]);
+  if(!['mk','var','lev','cfg'].some(on))return`<div class="panel">${empty('folder','Nessun servizio B2B attivo','Attiva i servizi dalla scheda della commessa: marketing e comunicazione, gestione varianti, leve commerciali, configuratore.',`<button class="primary" data-act="editCommessa" data-id="${c.id}">Scegli i servizi</button>`)}</div>`;
+  let h='';
+  if(on('mk')){const tot=n.sv.mk;h+=`<div class="panel"><div class="panel-head"><h2>Marketing e comunicazione</h2><div class="actions"><b class="amount">${eur(tot)}</b>${stepCount(c,WF_B2B.mk)}</div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Render indoor e outdoor, sito internet, naming dell'operazione, grafica e loghi, brochure commerciali e contenuti.</p>
+    <div class="detail-grid"><div>${stepList(c,WF_B2B.mk)}</div><div><div class="toolbar" style="margin:0 0 8px"><b style="flex:1">Lavori</b><button class="small" data-act="addRow" data-cl="${c.id}" data-ls="marketing">${ic('plus')}Lavoro</button></div>${editTable(c,'marketing',[{f:'tipo',l:'Lavoro',type:'select',opts:TIPI_MK},{f:'descrizione',l:'Descrizione',w:150},{f:'qta',l:'Q.tà',type:'number',w:50},{f:'prezzo',l:'Prezzo €',type:'number',w:80},{f:'stato',l:'Stato',type:'select',opts:STATI_MK}],[{l:'Totale',fn:x=>eur((+x.qta||1)*(+x.prezzo||0))}],'Nessun lavoro.')}</div></div></div></div>`}
+  if(on('var')){const cfg=varCfg(c),vf=n.vf;const by={};n.us.forEach(u=>{const k=u.statoVar||(u.varianti?'Cliente affidato a BTWN':'Nessuna variante');by[k]=(by[k]||0)+1});
+    h+=`<div class="panel"><div class="panel-head"><h2>Gestione varianti</h2><div class="actions">${stepCount(c,WF_B2B.var)}<button class="small" data-act="varCfg" data-id="${c.id}">${ic('euro')}Chi paga</button></div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Il cliente che ha comprato viene affidato a BTWN: personalizzazioni di impianto elettrico, idrico e pareti, in accordo con l'impresa. Preventivo dal listino dell'impresa, oppure richieste inviate all'impresa che le quota; il cliente firma; esecutivi finali all'impresa per il cantiere.</p>
+    <div class="detail-grid"><div>${stepList(c,WF_B2B.var)}</div><div>
+      <div class="kv"><span>Chi paga</span><b>${cfg.feeCli>0&&cfg.feeSvil>0?'Misto':cfg.feeCli>0?'Il cliente':cfg.feeSvil>0?'Lo sviluppatore / impresa':'—'}</b></div>
+      <div class="kv"><span>Fee a carico del cliente</span><b>${cfg.feeCli}% del prezzo di vendita</b></div>
+      <div class="kv"><span>A carico dello sviluppatore / impresa</span><b>${cfg.feeSvil}% su ${cfg.svilSu==='tutti'?'tutte le unità':'le unità con varianti'}</b></div>
+      ${+cfg.omaggioN?`<div class="kv"><span>Leva commerciale</span><b>varianti in omaggio ai primi ${cfg.omaggioN} clienti (paga lo sviluppatore)</b></div>`:''}
+      <div class="kv"><span>Clienti con varianti</span><b>${vf.nVar} su ${n.us.length} unità</b></div>
+      <div class="kv"><span>Incasso dai clienti</span><b class="amount">${eur(vf.cli)}</b></div>
+      <div class="kv"><span>Incasso dallo sviluppatore</span><b class="amount">${eur(vf.svil)}</b></div>
+      <div class="kv"><span>Avanzamento</span><span>${STATI_VARIANTE.filter(k=>by[k]).map(k=>`<span class="tag ${k==='Completate'?'':k==='Nessuna variante'?'gray':'blue'}">${esc(k)} ${by[k]}</span>`).join(' ')||'—'}</span></div>
+      <div style="margin-top:12px"><button class="small" data-act="nav" data-h="#/commessa/${c.id}/unita">${ic('home2')}Unità e stato varianti</button></div>
+    </div></div></div></div>`}
+  if(on('lev')){const L=(c.pack||[]).map(r=>packCalc(c,r));const tot=L.reduce((a,x)=>a+x.tot,0),mg=L.reduce((a,x)=>a+x.margTot,0);const f=c.formula||'capitolato';
+    const lblVend=f==='capitolato'?'Sconto allo sviluppatore %':f==='scontato'?'Sconto al cliente finale %':'Sconto voucher allo sviluppatore %';
+    h+=`<div class="panel"><div class="panel-head"><h2>Leve commerciali · Interior Design Pack</h2><div class="actions"><b class="amount">${eur(tot)}</b>${stepCount(c,WF_B2B.lev)}</div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Portare l'arredo dentro l'operazione: un pack per ogni tipologico (cucina, armadi, mobile bagno o formule miste), dopo l'analisi su DWG del costruttore e target price.</p>
+    <div class="detail-grid"><div>${stepList(c,WF_B2B.lev)}</div><div>
+      <label>Formula${selectHtml(FORMULE_LEVE,f,`data-change="formula" data-id="${c.id}"`)}</label>
+      <div class="note">${f==='capitolato'?'Lo sviluppatore compra il capitolato a prezzo riservato; poi il cliente viene da BTWN e lo può personalizzare.':f==='scontato'?"Pack a prezzo scontato: l'agenzia lo vende al cliente finale (\"invece di 20 in negozio lo paghi con BTWN a sconto\"). Indica l'adesione stimata.":'Lo sviluppatore regala al cliente un voucher arredo (valore di listino, es. 10.000 €) e lo paga a BTWN scontato del 20-30%: alto valore percepito, costo ridotto.'}</div>
+      <div class="kv"><span>${f==='scontato'?'Ricavo atteso (con adesione)':'Valore per lo sviluppatore'}</span><b class="amount">${eur(tot)}</b></div><div class="kv"><span>Margine BTWN</span><b class="amount ${tot&&mClass(mg/tot*100)}">${eur(mg)}${tot?' · '+(mg/tot*100).toFixed(1)+'%':''}</b></div>
+    </div></div>
+    <div class="toolbar" style="margin:16px 0 8px"><b style="flex:1">Pack per tipologico</b>${(c.tipologici||[]).length?'':`<button class="small" data-act="nav" data-h="#/commessa/${c.id}/tipologici">Prima inserisci i tipologici</button>`}<button class="small" data-act="addRow" data-cl="${c.id}" data-ls="pack">${ic('plus')}Pack</button></div>
+    ${editTable(c,'pack',[{f:'tipologicoId',l:'Tipologico',type:'select',opts:tipOpts(c)},{f:'elemento',l:'Elemento',type:'select',opts:ELEMENTI_PACK},{f:'descrizione',l:'Descrizione',w:150},{f:'listino',l:f==='voucher'?'Valore voucher €':'Listino €',type:'number',w:85},{f:'scAcq',l:'Sc. acquisto %',type:'number',w:60},{f:'scVend',l:lblVend,type:'number',w:60},...(f==='scontato'?[{f:'adesione',l:'Adesione %',type:'number',w:60}]:[])],[{l:'Prezzo / unità',fn:r=>eur(packCalc(c,r).prezzo)},{l:'Unità',fn:r=>{const x=packCalc(c,r);return f==='scontato'?`${Math.round(x.q*10)/10} di ${x.n}`:x.n}},{l:'Totale',fn:r=>`<b>${eur(packCalc(c,r).tot)}</b>`},{l:'Margine',fn:r=>{const x=packCalc(c,r);return`${eur(x.margTot)}<small>${x.prezzo?(x.marg/x.prezzo*100).toFixed(1)+'%':''}</small>`}}],'Nessun pack: aggiungi una riga per ogni tipologico ed elemento.')}
+    </div></div>`}
+  if(on('cfg')){const tot=n.sv.cfg;
+    h+=`<div class="panel"><div class="panel-head"><h2>Configuratore</h2><div class="actions"><b class="amount">${eur(tot)}</b>${stepCount(c,WF_B2B.cfg)}</div></div><div class="panel-body"><p class="subtle" style="margin:0 0 10px">Pre-lancio: raccoglie dati sull'operazione prima del lancio (6-12 mesi). MyHabitat: sull'operazione già online. Il report orienta lo sviluppatore su tagli, prezzi, capitolato e promozioni. Il prezzo nasce dal lavoro di back-end.</p>
+    <div class="detail-grid"><div><label style="margin-bottom:10px">Tipo${selectHtml(['Pre-lancio','MyHabitat (operazione online)'],c.cfgTipo||'Pre-lancio',`data-change="cfgTipo" data-id="${c.id}"`)}</label>${stepList(c,WF_B2B.cfg)}</div><div><div class="toolbar" style="margin:0 0 8px"><b style="flex:1">Lavoro di back-end</b><button class="small" data-act="addRow" data-cl="${c.id}" data-ls="cfgVoci">${ic('plus')}Voce</button></div>${editTable(c,'cfgVoci',[{f:'voce',l:'Voce',w:170},{f:'qta',l:'Q.tà',type:'number',w:55},{f:'prezzo',l:'Prezzo unit. €',type:'number',w:80},{f:'fornisce',l:'Chi fornisce',type:'select',opts:['BTWN','Sviluppatore']}],[{l:'Totale',fn:x=>x.fornisce==='Sviluppatore'?'<span class="muted">dato dallo sviluppatore</span>':eur((+x.qta||1)*(+x.prezzo||0))}],'Es. tipologici da caricare, planimetrie commerciali da fare, contenuti, report.')}</div></div></div></div>`}
+  return h;
+}
+function formVarCfg(c){
+  openForm({title:'Gestione varianti · chi paga',values:varCfg(c),intro:"Cliente, sviluppatore/impresa, formule miste (es. 50/50) oppure varianti regalate ai primi clienti come leva commerciale. Esempio The Green One: 0,50% dal cliente con varianti + 0,20% dallo sviluppatore su tutti i clienti.",fields:[
+    {k:'feeCli',l:'Fee a carico del cliente (% del prezzo di vendita)',type:'number'},{k:'feeSvil',l:'A carico dello sviluppatore / impresa (%)',type:'number'},
+    {k:'svilSu',l:'La quota sviluppatore si calcola su',type:'select',opts:[{v:'tutti',l:'Tutte le unità vendute'},{v:'varianti',l:'Solo le unità con varianti'}]},{k:'omaggioN',l:'Varianti in omaggio ai primi N clienti (le paga lo sviluppatore)',type:'number'}],
+    calc:o=>`<div>Esempio su 400.000 €<strong>cliente ${eur(4000*(+o.feeCli||0))} · sviluppatore ${eur(4000*(+o.feeSvil||0))}</strong></div>`,
+    onSave:o=>{c.varCfg={feeCli:+o.feeCli||0,feeSvil:+o.feeSvil||0,svilSu:o.svilSu,omaggioN:+o.omaggioN||0}}});
+}
+
 /* ---------- Ordini fornitori ---------- */
 const tagOrdine=o=>{const late=o.arrivo&&daysTo(o.arrivo)<0&&['Da ordinare','Ordinato','Confermato'].includes(o.stato);return late?'<span class="tag red">in ritardo</span>':''};
 function ordiniTable(list,showCommessa){
@@ -859,6 +954,9 @@ const A={
     onSave:o=>{const rows=o.righe.split('\n').map(x=>x.split('|').map(y=>y.trim())).filter(x=>x[0]);const rate=rows.map((x,i)=>[+x[0].replace(',','.'),x[1]||'Rata '+(i+1),x[2]||'',(PIANI[k]&&PIANI[k].rate[i]&&PIANI[k].rate[i][3])||(i===0?'firma':undefined)]);const sum=rate.reduce((a,r)=>a+r[0],0);if(rate.some(r=>isNaN(r[0]))||Math.abs(sum-100)>.01){$('#formErr').innerHTML=`<div class="error">Le percentuali sommano ${sum}: devono fare 100.</div>`;return false}S.piani=S.piani||{};S.piani[k]={nome:o.nome,rate}},
     onDelete:S.piani&&S.piani[k]?()=>{delete S.piani[k]}:null})},
   rilievoMode:d=>{const c=commessa(d.id);c.rilievo=d.v;save();render.keepScroll=true;render()},
+  addRow:d=>{const c=commessa(d.cl);c[d.ls]=c[d.ls]||[];const def={tipologici:{nome:''},marketing:{tipo:'Render interni',qta:1,stato:'Da preventivare'},pack:{elemento:'Cucina',tipologicoId:(c.tipologici||[])[0]?.id||''},cfgVoci:{voce:'',qta:1,fornisce:'BTWN'}}[d.ls]||{};c[d.ls].push({id:uid(),...def});save();render.keepScroll=true;render();const ins=document.querySelectorAll(`[data-ls="${d.ls}"][data-cl="${c.id}"] , input[data-ls="${d.ls}"]`);const last=[...document.querySelectorAll(`input[data-ls="${d.ls}"]`)].pop();if(last)last.focus()},
+  delRow:d=>{const c=commessa(d.cl);c[d.ls]=(c[d.ls]||[]).filter(x=>x.id!==d.r);save();render.keepScroll=true;render()},
+  varCfg:d=>formVarCfg(commessa(d.id)),
   newEsterno:d=>formEsterno(commessa(d.id)),editEsterno:d=>formEsterno(commessa(d.id),+d.i),
   newRipristino:d=>formRipristino(commessa(d.id)),editRipristino:d=>formRipristino(commessa(d.id),+d.i),
   newOrdine:d=>formOrdine(null,d.id),editOrdine:d=>formOrdine(byId('ordini',d.id)),
@@ -881,6 +979,8 @@ const A={
 };
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.closest('dialog')&&!t.closest('#app'))return;const f=A[t.dataset.act];if(f){e.preventDefault();f(t.dataset,t)}});
 document.addEventListener('change',e=>{
+  const gt=e.target.closest('[data-cl][data-ls][data-f]');
+  if(gt){const c=commessa(gt.dataset.cl),r=(c[gt.dataset.ls]||[]).find(x=>x.id===gt.dataset.r);if(!r)return;const v=gt.value;r[gt.dataset.f]=gt.type==='number'?(v===''?null:+String(v).replace(',','.')):v;save();setTimeout(()=>{render.keepScroll=true;render()},0);return}
   const g=e.target.closest('[data-pr][data-f]');
   if(g){const p=byId('preventivi',g.dataset.pr),r=p&&p.righe.find(x=>x.id===g.dataset.r);if(!r)return;const f=g.dataset.f;
     let v=g.value;if(['qta','listino','scAcq','scCli'].includes(f))v=v===''?null:+String(v).replace(',','.');r[f]=v;
@@ -892,6 +992,9 @@ document.addEventListener('change',e=>{
   if(d.change==='statoRata'){const r=byId('rate',d.id);r.stato=t.value;save();render();toast('Rata: '+t.value)}
   if(d.change==='prevStato'){const p=byId('preventivi',d.id);if(t.value==='Accettato'){t.value=p.stato;A.accettaPrev({id:p.id});return}p.stato=t.value;save();render();toast('Preventivo: '+t.value)}
   if(d.change==='ordineStato'){const o=byId('ordini',d.id);o.stato=t.value;save();render.keepScroll=true;render();toast(o.fornitore+' → '+t.value)}
+  if(d.change==='formula'){const c=commessa(d.id);c.formula=t.value;save();render.keepScroll=true;render()}
+  if(d.change==='cfgTipo'){const c=commessa(d.id);c.cfgTipo=t.value;save();render.keepScroll=true;render()}
+  if(d.change==='statoVar'){const u=byId('unita',d.id);u.statoVar=t.value;u.varianti=t.value!=='Nessuna variante';save();render.keepScroll=true;render();toast(u.codice+' · '+t.value)}
   if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase)c.fase=+d.f}else delete c.steps[d.k];save();render.keepScroll=true;render()}
   if(d.change==='ripStato'){const c=commessa(d.id);c.ripristini[+d.i].stato=t.value;save();render.keepScroll=true;render();toast('Ripristino: '+t.value)}
   if(d.change==='doc'){const c=commessa(d.id);c.docs=c.docs||{};c.docs[d.i]=t.checked?1:0;save();render()}
