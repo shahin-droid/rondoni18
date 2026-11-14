@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>BTWN Bussola · Workflow cliente privato (B2C)</title>
+<style>
+:root{--ink:#213e3b;--muted:#6c7b77;--bg:#f3f5f1;--green:#173d39;--lime:#d9ef92;--line:#dfe6dc;--soft:#eef4e7;--amber:#fcf0dc;--amberink:#9b6a2c;--blue:#e8eff7;--blueink:#466a8c;--red:#fae9e7;--redink:#a8453f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 Inter,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1360px;margin:auto;padding:32px 26px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-bottom:2px solid var(--green);padding-bottom:14px;margin-bottom:18px}
+.brand{font-size:28px;font-weight:800;letter-spacing:-1.5px}.brand span{color:#8fb04a}
+h1{font-size:24px;margin:4px 0 0;letter-spacing:-.5px}h2{font-size:15px;margin:0}
+.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+p{margin:4px 0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:11.5px;color:var(--muted);margin:10px 0 18px}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:4px;padding:1px 6px;background:var(--soft);color:#486346;vertical-align:1px;white-space:nowrap}
+.tag.adm{background:#173d39;color:#d9ef92}.tag.opt{background:#fff;border:1px dashed #9aa9a2;color:var(--muted)}.tag.auto{background:var(--blue);color:var(--blueink)}.tag.al{background:var(--red);color:var(--redink)}.tag.out{background:var(--amber);color:var(--amberink)}
+.macro{margin:26px 0 8px;display:flex;align-items:center;gap:10px}.macro b{background:var(--green);color:var(--lime);border-radius:8px;padding:4px 10px;font-size:12px;letter-spacing:.5px;text-transform:uppercase}.macro span{color:var(--muted);font-size:12px}
+.head,.ph{display:grid;grid-template-columns:190px 1.15fr 1fr 1.25fr 1fr 1fr;gap:0}
+.head{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}
+.head div{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 10px}
+.ph{background:#fff;border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden;break-inside:avoid}
+.ph>div{padding:10px 10px;border-left:1px solid #eef2ec}
+.ph>div:first-child{border-left:0;background:#fafbf8}
+.ph .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--green);font-weight:800;font-size:12px;margin-bottom:4px}
+.ph .t{font-weight:700;font-size:13.5px;line-height:1.25;display:block}
+.ph .w{font-size:11px;color:var(--muted);margin-top:4px;display:block}
+ul{margin:0;padding-left:15px}li{margin:1px 0}
+.cb{list-style:none;padding-left:0}.cb li{padding-left:18px;position:relative}.cb li::before{content:"";position:absolute;left:0;top:3px;width:11px;height:11px;border:1.5px solid #6a8f6f;border-radius:3px}
+.k{font-weight:600;color:var(--ink)}.m{color:var(--muted)}
+.ph.optp{border-style:dashed}
+.side{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}@media(max-width:1000px){.side{grid-template-columns:1fr}.head{display:none}.ph{grid-template-columns:1fr}.ph>div{border-left:0;border-top:1px solid #eef2ec}}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}.card h3{font-size:13px;margin:0 0 6px}.card.dark{background:var(--green);color:#fff}.card.dark h3{color:var(--lime)}.card.dark li,.card.dark p{color:#cfe0d9}
+footer{margin-top:30px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media print{body{background:#fff}.head{position:static}.wrap{padding:0}}
+</style></head><body><div class="wrap">
+<header><div><div class="brand">BT<span>W</span>N</div><div class="eyebrow">Bussola · mappa del workflow</div><h1>Cliente privato (B2C) · 16 fasi</h1></div><p style="max-width:520px;text-align:right">Per ogni fase: cosa si spunta, quali dati si inseriscono e dove, cosa fa il gestionale, i documenti che entrano ed escono, i soldi e gli avvisi. Serve per analizzare campi e funzioni.</p></header>
+<div class="legend"><span><span class="tag adm">admin</span> visibile solo all'amministratore</span><span><span class="tag opt">se serve</span> passaggio facoltativo</span><span><span class="tag auto">auto</span> lo fa il gestionale da solo</span><span><span class="tag out">esce</span> documento verso l'esterno</span><span><span class="tag al">avviso</span> compare in "Da guardare"</span><span>Ogni spunta registra la data · spuntare un passaggio di una fase successiva sposta la commessa in quella fase · a fase completa compare "Fatto: passa a…"</span></div>
+
+<div class="head"><div>Fase</div><div>Passaggi da spuntare</div><div>Dati inseriti · dove</div><div>Funzioni del gestionale</div><div>Documenti</div><div>Soldi · avvisi</div></div>
+
+<div class="macro"><b>Acquisizione</b><span>dal primo contatto al budget</span></div>
+
+<div class="ph"><div><span class="n">1</span><span class="t">Contatto e presentazione del servizio</span><span class="w">la commessa nasce qui</span></div>
+<div><ul class="cb"><li>Contatto al telefono, via mail o video call</li><li>Ci presentiamo e raccontiamo il servizio (btwn.it/privati)</li></ul></div>
+<div><b class="k">Configurazione guidata</b> (Nuova commessa):<ul><li>tipo: Cliente privato</li><li>nome commessa, codice, luogo</li><li>cliente esistente o nuovo (nome)</li><li>segnalato da, primo contatto (telefono/email/video call/di persona)</li><li>budget, stato, probabilità, date inizio/consegna, note</li><li>compenso Home Book, piano rate, percentuali per questo cliente</li></ul></div>
+<div><ul><li><span class="tag auto">auto</span> crea commessa e workflow, cliente in rubrica</li><li>stato "Pipeline" se ancora da chiudere</li><li>"Scrivi a…" apre una mail in Outlook</li><li>"Appuntamento" → file per il calendario Outlook</li></ul></div>
+<div class="m">—</div>
+<div class="m">Pipeline ponderata in Panoramica <span class="tag adm">admin</span></div></div>
+
+<div class="ph"><div><span class="n">2</span><span class="t">Contratto Home Book</span></div>
+<div><ul class="cb"><li>Inviato al cliente il contratto Home Book</li><li>Il cliente lo riceve e lo firma</li><li>Home Book pagato</li></ul></div>
+<div><ul><li>compenso Home Book (dalla configurazione, default 1.100 €)</li><li>rata Home Book: importo, scadenza, intestatario</li></ul></div>
+<div><ul><li>pulsante "Carica e invia il contratto" → Documenti</li><li>"Invia al cliente": mail Outlook pronta con allegato; segna "inviato il…"</li><li>Panoramica: "Crea rata" Home Book</li><li>Pagamenti: "Emetti fattura", "Incassata" <span class="tag adm">admin</span></li></ul></div>
+<div><span class="tag out">esce</span> contratto Home Book (oggi PDF vostro; <i>proposta: generato già compilato</i>)<br>entra: contratto firmato</div>
+<div>rata Home Book 100% <span class="tag adm">admin</span></div></div>
+
+<div class="ph"><div><span class="n">3</span><span class="t">DWG ricevuto</span></div>
+<div><ul class="cb"><li>Ricevuto il DWG della casa</li></ul></div>
+<div class="m">nessun campo: si carica il file</div>
+<div><ul><li>Documenti: "Carica file" (DWG, PDF, foto) o link Drive</li></ul></div>
+<div>entra: DWG / planimetria</div>
+<div class="m">—</div></div>
+
+<div class="ph"><div><span class="n">4</span><span class="t">Raccolta informazioni e budget</span></div>
+<div><ul class="cb"><li>Raccolta informazioni: video call o appuntamento per decidere come progettare gli arredi</li><li>Budget acquisito</li></ul></div>
+<div><ul><li>budget del cliente (Configura → Cliente e dati)</li><li>appuntamento: titolo, data, ora, tipo, luogo, note</li></ul></div>
+<div><ul><li>Agenda + file Outlook</li><li>Panoramica commessa: budget accanto all'offerta (+/− %)</li></ul></div>
+<div class="m">note dell'incontro nelle note della commessa</div>
+<div class="m">—</div></div>
+
+<div class="macro"><b>Progetto e vendita</b><span>dal design alla firma del contratto</span></div>
+
+<div class="ph"><div><span class="n">5</span><span class="t">Progettazione</span><span class="w">design + parte economica</span></div>
+<div><ul class="cb"><li>Design: progettazione interna dei nostri arredi</li><li>Arredi fatti sviluppare dalle agenzie esterne del brand <span class="tag opt">se serve</span></li><li>Fatture di servizio delle agenzie ricevute <span class="tag opt">se serve</span></li><li>Parte economica: listino, sconti, costo merce, sconto cliente, offerta, offerta con IVA</li><li>Presentazione Home Book preparata</li></ul></div>
+<div><b class="k">Fattura agenzia</b>: agenzia, brand, oggetto, importo, n., data <span class="tag adm">admin</span><br><b class="k">Preventivo</b>: titolo, data, validità, piano e percentuali, IVA, tempi di consegna, nota in calce, credito Home Book %, prezzi mostrati, note interne<br><b class="k">Riga</b>: ambiente, oggetto, <b>brand (menu)</b>, modello, descrizione, q.tà, listino, sconto acquisto <span class="tag adm">admin</span>, sconto cliente, acquista (BTWN/partner)<br><b class="k">Scheda cliente della riga</b>: foto, link prodotto, gruppo alternative, esclusa dal totale, nascondi, articolo di catalogo</div>
+<div><ul><li><span class="tag auto">auto</span> scelto il brand: sconto d'acquisto (anche 40+10+5) e sconto cliente dalla scheda fornitore</li><li><span class="tag auto">auto</span> costo, offerta, <b>margine per riga</b>, sconto max per stare al 30% <span class="tag adm">admin</span></li><li>"il cliente vede −X%" sui listini IVA inclusa</li><li>Sconto cliente su tutte · Prezzo obiettivo · Sconto visibile al cliente</li><li>montaggio: riga esclusa dal totale presentato</li><li>Duplica / elimina riga</li></ul></div>
+<div>entra: progetti delle agenzie, fatture agenzie<br>Home Book (vostro file di presentazione) → Documenti</div>
+<div>costi agenzie → margine commessa <span class="tag adm">admin</span><br>margine sotto 30% in arancione <span class="tag adm">admin</span></div></div>
+
+<div class="ph"><div><span class="n">6</span><span class="t">Presentazione Home Book</span><span class="w">entrarci = Home Book e offerta presentati</span></div>
+<div><ul class="cb"><li>Call o appuntamento con il cliente</li><li>Presentati l'Home Book e l'offerta arredi</li><li>Montaggio non presentato: verrà calcolato sull'arredo confermato</li></ul></div>
+<div><b class="k">Pagina cliente</b>: titolo, periodo, email per le scelte, testo introduttivo, planimetria (foto), prezzi mostrati (nessuno/listino/riservato), totale sì/no<br>stato preventivo → Inviato</div>
+<div><ul><li>"Offerta cliente": PDF con prezzi a scelta (solo totale / per ambiente / per voce / listino e sconto)</li><li>"Pagina cliente": anteprima, Scarica, <b>Invia pagina</b> (mail Outlook con allegato)</li><li>il cliente sceglie alternative, mette "mi piace / da rivedere / no", commenti, e manda il riepilogo</li></ul></div>
+<div><span class="tag out">esce</span> offerta PDF, pagina cliente, Home Book<br>entra: riepilogo scelte del cliente (mail)</div>
+<div><span class="tag al">avviso</span> offerta inviata oltre la validità (10 gg)</div></div>
+
+<div class="ph"><div><span class="n">7</span><span class="t">Modifiche o accettazione</span></div>
+<div><ul class="cb"><li>Il cliente chiede modifiche: riprogettiamo, ripreventiviamo, nuova call <span class="tag opt">se serve</span></li><li>Il cliente accetta progetto e offerta</li><li>Deciso quanto ridare dell'Home Book (50%, altra % o nulla)</li></ul></div>
+<div><ul><li>credito Home Book % (impostazioni preventivo)</li><li>percentuali rate per il cliente</li></ul></div>
+<div><ul><li>"Nuova revisione": rev. 2, 3…; la precedente diventa superata</li><li>"Accettato": <span class="tag auto">auto</span> genera le <b>rate</b> sul totale e <b>un ordine per brand</b> con il costo atteso</li></ul></div>
+<div><span class="tag out">esce</span> offerta rev. aggiornata</div>
+<div>rate 20/40/40 create <span class="tag adm">admin</span><br>credito Home Book scalato dall'offerta</div></div>
+
+<div class="ph"><div><span class="n">8</span><span class="t">Firma contratto</span></div>
+<div><ul class="cb"><li>Il cliente conferma e firma il contratto</li><li>Emessa fattura di acconto</li><li>Acconto incassato</li></ul></div>
+<div><b class="k">Fattura</b>: n. (proposto in automatico), data, intestatario, imponibile, IVA, scadenza<br><b class="k">Incasso</b>: data</div>
+<div><ul><li>Documenti: carica contratto e condizioni firmati</li><li>Pagamenti: "Emetti fattura" → "Incassata" <span class="tag adm">admin</span></li><li>link "Rate" dalla fase</li></ul></div>
+<div>entra: offerta firmata + condizioni di vendita</div>
+<div>acconto 20% <span class="tag adm">admin</span><br><span class="tag al">avviso</span> rata scaduta (oltre 60 gg: diffida)</div></div>
+
+<div class="macro"><b>Esecuzione</b><span>dal cantiere alla consegna</span></div>
+
+<div class="ph"><div><span class="n">9</span><span class="t">Schemi impianti</span></div>
+<div><ul class="cb"><li>Inviati gli schemi degli impianti riferiti all'arredo al cliente, al suo architetto o all'impresa</li></ul></div>
+<div class="m">nessun campo: si carica il file</div>
+<div><ul><li>Documenti: carica schemi → "Invia al cliente" (mail Outlook con allegato)</li></ul></div>
+<div><span class="tag out">esce</span> schemi impianti</div>
+<div class="m">—</div></div>
+
+<div class="ph"><div><span class="n">10</span><span class="t">Rilievo</span><span class="w">due strade</span></div>
+<div><b>Casa rilevabile</b><ul class="cb"><li>Usciamo a fare il rilievo</li><li>Adeguati progetto e preventivo al rilievo</li><li>Il cliente rifirma</li></ul><b>Non rilevabile · procedura speciale</b> <span class="tag opt">eccezione</span><ul class="cb"><li>Inviati i disegni tecnici</li><li>Il cliente si obbliga in solido (dichiarazione firmata)</li><li>Accettato per iscritto: se la merce non ci sta, spese al cliente</li></ul></div>
+<div><ul><li>scelta della strada (pulsante nella fase)</li><li>appuntamento di rilievo</li></ul></div>
+<div><ul><li>Nuova revisione del preventivo dopo il rilievo</li><li>Agenda + file Outlook</li></ul></div>
+<div>entra: rilievo, dichiarazione firmata (speciale)<br><span class="tag out">esce</span> preventivo aggiornato</div>
+<div><span class="tag al">avviso</span> procedura speciale senza dichiarazione all'ordine</div></div>
+
+<div class="ph"><div><span class="n">11</span><span class="t">Ordine</span></div>
+<div><ul class="cb"><li>Il cliente ci dice di ordinare</li><li>Ordine inviato alle aziende</li><li>Chiesto ulteriore acconto</li><li>Ulteriore acconto incassato</li><li>Montaggio: inviati Home Book e logistica al fornitore del servizio per la quotazione</li><li>Montaggio quotato al cliente</li></ul></div>
+<div><b class="k">Ordine</b>: fornitore (menu), n. conferma, data, data di carico, arrivo a magazzino, importo confermato <span class="tag adm">admin</span>, stato, note</div>
+<div><ul><li><b>"Carica conferma d'ordine"</b> (PDF): <span class="tag auto">auto</span> legge n., data, carico, arrivo, importo, fornitore; la salva nei documenti</li><li><span class="tag auto">auto</span> confronta con il preventivo: listino, sconto, da pagare, differenza <span class="tag adm">admin</span></li><li>elenco ordini dentro la fase</li><li>rata 40% "Emetti fattura" <span class="tag adm">admin</span></li></ul></div>
+<div><span class="tag out">esce</span> ordini ai fornitori (oggi fuori dal gestionale)<br>entra: conferme d'ordine</div>
+<div><span class="tag al">avviso</span> conferma diversa dal preventivo (anche "IVA inclusa")<br>ordine ulteriore acconto 40% <span class="tag adm">admin</span></div></div>
+
+<div class="ph"><div><span class="n">12</span><span class="t">Merce in magazzino</span></div>
+<div><ul class="cb"><li>Merce arrivata in magazzino</li><li>Chiesto il saldo</li><li>Saldo incassato</li></ul></div>
+<div><ul><li>stato ordine → Arrivato</li><li>fattura di saldo, incasso</li></ul></div>
+<div><ul><li>tabella ordini con carico e arrivo dentro la fase</li><li>Pagamenti: saldo "Emetti" / "Incassata" <span class="tag adm">admin</span></li></ul></div>
+<div class="m">—</div>
+<div><span class="tag al">avviso</span> merce a magazzino tra X gg: chiedere il saldo<br><span class="tag al">avviso</span> merce attesa e non arrivata<br><span class="tag al">avviso</span> montaggio non ancora quotato<br>saldo 40% <span class="tag adm">admin</span></div></div>
+
+<div class="ph"><div><span class="n">13</span><span class="t">Consegna</span></div>
+<div><ul class="cb"><li>Consegna pianificata</li><li>Consegna effettuata</li></ul></div>
+<div><ul><li>appuntamento Consegna / Montaggio</li><li>stato ordini → Consegnato</li></ul></div>
+<div><ul><li>Agenda + file Outlook</li></ul></div>
+<div class="m">—</div>
+<div class="m">—</div></div>
+
+<div class="macro"><b>Chiusura</b><span>verbale, eventuali ripristini, fine</span></div>
+
+<div class="ph"><div><span class="n">14</span><span class="t">Verbale di fine lavori</span></div>
+<div><ul class="cb"><li>Verbale di fine lavori firmato</li><li>Cose da riordinare o sistemare segnate nel verbale <span class="tag opt">se serve</span></li></ul></div>
+<div><b class="k">Da riordinare / sistemare</b>: descrizione, azienda, stato, data intervento, note</div>
+<div><ul><li>Documenti: carica il verbale firmato</li><li>pulsante "Da riordinare / sistemare" nella fase</li></ul></div>
+<div>entra: verbale firmato</div>
+<div class="m">—</div></div>
+
+<div class="ph optp"><div><span class="n">15</span><span class="t">Riordino e ripristino</span><span class="w">solo se il verbale riporta qualcosa</span></div>
+<div><ul class="cb"><li>Ci attiviamo con le aziende</li><li>Arrivata la merce mancante o il riordino</li><li>Fissato con il cliente l'intervento a casa sua</li><li>Ripristino e attività completate</li></ul></div>
+<div>stato di ogni voce: da richiedere → richiesto all'azienda → merce arrivata → intervento fissato → completato</div>
+<div><ul><li>tabella dei ripristini dentro la fase</li><li>Agenda per l'intervento</li></ul></div>
+<div class="m">—</div>
+<div><span class="tag al">avviso</span> ripristino in ritardo (data intervento passata)</div></div>
+
+<div class="ph"><div><span class="n">16</span><span class="t">Finito</span></div>
+<div><ul class="cb"><li>Tutto ok: salutiamo e siamo a posto</li></ul></div>
+<div class="m">—</div>
+<div><ul><li><span class="tag auto">auto</span> passando all'ultima fase la commessa diventa "Chiusa"</li></ul></div>
+<div class="m">—</div>
+<div>quadro economico finale in Economia <span class="tag adm">admin</span></div></div>
+
+<div class="side">
+ <div class="card dark"><h3>Sempre disponibili nella commessa</h3><ul><li><b>Panoramica</b>: scheda, quadro economico <span class="tag adm">admin</span>, Home Book, budget vs offerta, margine</li><li><b>Prossime attività</b> in Panoramica generale: il primo passaggio non fatto della fase in corso</li><li><b>Configura</b>: riapre la configurazione guidata</li><li><b>Documenti</b>: carica, apri, scarica, invia al cliente</li><li><b>Agenda</b> della commessa</li></ul></div>
+ <div class="card"><h3>I soldi del cliente privato</h3><ul><li>Home Book: 100% alla firma dell'incarico (fase 2)</li><li>Fornitura: 20% alla firma (fase 8) · 40% all'ordine (fase 11) · 40% a merce in magazzino (fase 12)</li><li>Montaggio: quotato a parte (fase 11)</li><li>Credito Home Book: scalato dall'offerta (fase 7)</li><li>Costi: ordini, agenzie, logistica → margine in Economia <span class="tag adm">admin</span></li></ul></div>
+ <div class="card"><h3>Punti da decidere insieme</h3><ul><li>Generare il contratto Home Book già compilato (fase 2)?</li><li>Ordini ai fornitori: oggi si fanno fuori dal gestionale; generarli da qui (fase 11)?</li><li>Montaggio: diventa un ordine al fornitore del servizio con la sua conferma (fase 11)?</li><li>Schemi impianti: destinatari diversi dal cliente (architetto, impresa) in rubrica (fase 9)?</li><li>Verbale di fine lavori generato dal gestionale (fase 14)?</li></ul></div>
+</div>
+
+<footer>BTWN · Between Contract &amp; Design · Bussola — workflow del cliente privato come implementato nella versione corrente.</footer>
+</div></body></html>
