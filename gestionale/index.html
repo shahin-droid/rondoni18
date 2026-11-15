@@ -324,13 +324,13 @@ const uiSet=o=>{if(restoring)return;try{localStorage.setItem(UI_KEY,JSON.stringi
 let _scT;window.addEventListener('scroll',()=>{clearTimeout(_scT);_scT=setTimeout(()=>uiSet({scroll:window.scrollY}),250)},{passive:true});
 function formSnapshot(form){const v={};form.querySelectorAll('[name]').forEach(el=>{if(el.type==='file')return;if(el.type==='checkbox'||el.type==='radio'){if(el.type==='radio'&&!el.checked)return;v[el.name+(el.type==='checkbox'&&form.querySelectorAll(`[name="${el.name}"]`).length>1?'@'+el.value:'')]=el.type==='checkbox'?el.checked:el.value}else v[el.name]=el.value});return v}
 function formFill(form,v){Object.entries(v||{}).forEach(([k,val])=>{let el;if(k.includes('@')){const [n,vv]=k.split('@');el=[...form.querySelectorAll(`[name="${n}"]`)].find(x=>x.value===vv);if(el)el.checked=!!val;return}el=form.querySelector(`[name="${k}"]`);if(!el||el.type==='file')return;if(el.type==='checkbox')el.checked=!!val;else if(el.type==='radio'){const r=form.querySelector(`[name="${k}"][value="${val}"]`);if(r)r.checked=true}else el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}))})}
-function wireRicorda(form,info){const snap=()=>uiSet({form:Object.assign({},info,{values:formSnapshot(form)})});form.addEventListener('input',snap);form.addEventListener('change',snap);snap()}
+function wireRicorda(form,info,base){base=base||formSnapshot(form);const snap=()=>{const v=formSnapshot(form),d={};Object.keys(v).forEach(k=>{if(v[k]!==base[k])d[k]=v[k]});uiSet({form:Object.assign({},info,{values:d})})};form.addEventListener('input',snap);form.addEventListener('change',snap);snap()}
 {const hk=()=>{const m=$('#modal');if(m)m.addEventListener('close',()=>uiSet({form:null}))};if($('#modal'))hk();else document.addEventListener('DOMContentLoaded',hk)}
 function riprendi(){const u=uiGet();restoring=true;try{
   if(u.scroll)setTimeout(()=>window.scrollTo(0,u.scroll),60);
   const f=u.form;if(!f)return;
   if(f.wizard){const c=f.cid?commessa(f.cid):null;if(f.cid&&!c)return;wizardCommessa(c,{d:f.d,step:f.step});return}
-  if(f.act&&A[f.act]&&!/^(del|nav|pagato|accetta|rev|clear|keep|logout|export|import|print|scarica|invia|send)/i.test(f.act)){A[f.act](f.data||{});const form=$('#mf');if(form&&$('#modal').open){formFill(form,f.values);wireRicorda(form,f)}}
+  if(f.act&&A[f.act]&&!/^(del|nav|pagato|accetta|rev|clear|keep|logout|export|import|print|scarica|invia|send)/i.test(f.act)){A[f.act](f.data||{});const form=$('#mf');if(form&&$('#modal').open){const base=formSnapshot(form);formFill(form,f.values);wireRicorda(form,f,base)}}
 }catch(e){console.log('riprendi',e)}finally{restoring=false}}
 function render(){
   if(!me()){renderLogin();return}
