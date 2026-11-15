@@ -312,8 +312,24 @@ function alerts(){
 const NAV=[['dashboard','home','Panoramica'],['commesse','folder','Commesse'],['vendite','calc','Preventivi e ordini'],['clienti','users','Clienti'],['agenda','cal','Agenda'],['economia','euro','Economia'],['impostazioni','gear','Impostazioni']];
 function route(){const h=location.hash.replace(/^#\/?/,'').split('/');return{view:h[0]||'dashboard',id:h[1],tab:h[2]}}
 function go(h){if(location.hash===h)render();else location.hash=h}
+/* Riprendi da dove eri: pagina, scorrimento e modulo aperto restano dopo un ricaricamento (es. aggiornamento del gestionale) */
+const UI_KEY='btwn-ui';let lastAct=null,restoring=false;
+const uiGet=()=>{try{return JSON.parse(localStorage.getItem(UI_KEY))||{}}catch(e){return{}}};
+const uiSet=o=>{if(restoring)return;try{localStorage.setItem(UI_KEY,JSON.stringify(Object.assign(uiGet(),o)))}catch(e){}};
+let _scT;window.addEventListener('scroll',()=>{clearTimeout(_scT);_scT=setTimeout(()=>uiSet({scroll:window.scrollY}),250)},{passive:true});
+function formSnapshot(form){const v={};form.querySelectorAll('[name]').forEach(el=>{if(el.type==='file')return;if(el.type==='checkbox'||el.type==='radio'){if(el.type==='radio'&&!el.checked)return;v[el.name+(el.type==='checkbox'&&form.querySelectorAll(`[name="${el.name}"]`).length>1?'@'+el.value:'')]=el.type==='checkbox'?el.checked:el.value}else v[el.name]=el.value});return v}
+function formFill(form,v){Object.entries(v||{}).forEach(([k,val])=>{let el;if(k.includes('@')){const [n,vv]=k.split('@');el=[...form.querySelectorAll(`[name="${n}"]`)].find(x=>x.value===vv);if(el)el.checked=!!val;return}el=form.querySelector(`[name="${k}"]`);if(!el||el.type==='file')return;if(el.type==='checkbox')el.checked=!!val;else if(el.type==='radio'){const r=form.querySelector(`[name="${k}"][value="${val}"]`);if(r)r.checked=true}else el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}))})}
+function wireRicorda(form,info){const snap=()=>uiSet({form:Object.assign({},info,{values:formSnapshot(form)})});form.addEventListener('input',snap);form.addEventListener('change',snap);snap()}
+{const hk=()=>{const m=$('#modal');if(m)m.addEventListener('close',()=>uiSet({form:null}))};if($('#modal'))hk();else document.addEventListener('DOMContentLoaded',hk)}
+function riprendi(){const u=uiGet();restoring=true;try{
+  if(u.scroll)setTimeout(()=>window.scrollTo(0,u.scroll),60);
+  const f=u.form;if(!f)return;
+  if(f.wizard){const c=f.cid?commessa(f.cid):null;if(f.cid&&!c)return;wizardCommessa(c,{d:f.d,step:f.step});return}
+  if(f.act&&A[f.act]&&!/^(del|nav|pagato|accetta|rev|clear|keep|logout|export|import|print|scarica|invia|send)/i.test(f.act)){A[f.act](f.data||{});const form=$('#mf');if(form&&$('#modal').open){formFill(form,f.values);wireRicorda(form,f)}}
+}catch(e){console.log('riprendi',e)}finally{restoring=false}}
 function render(){
   if(!me()){renderLogin();return}
+  uiSet({hash:location.hash||'#/dashboard'});
   const r=route();ui.view=r.view;
   const views={fornitore:vFornitore,vendite:vVendite,preventivo:vPreventivo,dashboard:vDashboard,commesse:vCommesse,commessa:vCommessa,clienti:vClienti,agenda:vAgenda,economia:vEconomia,fornitori:vFornitori,impostazioni:vImpostazioni};
   document.body.classList.toggle('role-collab',!isAdmin());
@@ -717,6 +733,7 @@ function openForm({title,fields,values={},onSave,calc,onDelete,intro}){
     const res=onSave(o);if(res===false)return;save();d.close();render();toast('Salvato')};
   d.showModal();
   const first=form.querySelector('input:not([type=checkbox]),select,textarea');if(first)first.focus();
+  if(lastAct&&!restoring)wireRicorda(form,{act:lastAct.act,data:lastAct.data,title});lastAct=null;
 }
 const clientiOpts=()=>[{v:'',l:'— nessuno —'},...S.clienti.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(c=>({v:c.id,l:c.nome}))];
 const commesseOpts=()=>[{v:'',l:'— nessuna —'},...S.commesse.filter(c=>c.stato!=='Persa').map(c=>({v:c.id,l:(c.codice?c.codice+' · ':'')+c.nome}))];
@@ -1233,10 +1250,11 @@ function stampaLivelli(c){
 const getP=(o,k)=>k.split('.').reduce((a,x)=>a==null?a:a[x],o);
 const setP=(o,k,v)=>{const ks=k.split('.');let t=o;ks.slice(0,-1).forEach(x=>{t[x]=t[x]&&typeof t[x]==='object'?t[x]:{};t=t[x]});t[ks[ks.length-1]]=v};
 const DESC_SERV={arr:"Consulenza sui DWG dello studio di architettura: tre livelli, dai commenti alla riprogettazione dei layout.",mk:"Render indoor e outdoor, sito, naming, grafica e loghi, brochure.",var:"Il cliente che ha comprato viene affidato a BTWN per le personalizzazioni; eventualmente anche il cantiere fino alla consegna.",lev:"Interior Design Pack per tipologico: capitolato, pack scontato o voucher.",cfg:"Configuratore pre-lancio o MyHabitat sull'operazione online."};
-function wizardCommessa(c0){
+function wizardCommessa(c0,rip){
   const isNew=!c0;
   const d=isNew?{tipo:'',servizi:[],stato:'Attiva',probabilita:100,hbFee:HB_FEE,hbRitorno:50,hbSoglia:HB_SOGLIA,piano:'privati',varCfg:varCfg({}),diffCfg:diffCfg({}),formula:'capitolato',quotaTipo:'perc',cfgTipo:'Pre-lancio',arrPrezzi:{},retroGiorni:120}:JSON.parse(JSON.stringify(Object.assign({},c0,{varCfg:varCfg(c0),diffCfg:diffCfg(c0),arrPrezzi:c0.arrPrezzi||{}})));
-  let step=isNew?0:1;const dlg=$('#modal');
+  let step=isNew?0:1;const dlg=$('#modal');if(rip){Object.assign(d,rip.d);step=rip.step||0}
+  const ricorda=()=>uiSet({form:{wizard:true,cid:c0?c0.id:'',d:JSON.parse(JSON.stringify(d)),step}});
   const steps=()=>d.tipo==='Privato'?['Tipo di lavoro','Cliente e dati','Condizioni','Riepilogo']:['Tipo di lavoro','Cliente e dati','Servizi','Impostazioni dei servizi','Riepilogo'];
   const F=(f)=>f.html!=null?f.html:fieldHtml(f,new Proxy({},{get:(_,k)=>getP(d,k)}));
   const sec=(t,body)=>`<div style="margin:18px 0 6px"><b>${t}</b></div><div class="form-grid">${body}</div>`;
@@ -1284,6 +1302,7 @@ function wizardCommessa(c0){
         const v=[chi,dove].filter(Boolean).join(' · ');if(auto&&v){nm.value=v;d._autoNome=v}const lu=f.querySelector('[name=luogo]');if(lu&&!lu.value){const c2=g('nuovoCitta')||(cl&&cl.citta)||'';if(c2)lu.value=c2.replace(/\s*\(.*\)$/,'')}};
       nm.addEventListener('input',()=>{auto=!nm.value});['clienteId','nuovoNome','nuovoCognome','nuovoVia','nuovoCitta'].forEach(n=>{const e=f.querySelector(`[name="${n}"]`);if(e){e.addEventListener('input',comp);e.addEventListener('change',comp)}})}
     const first=dlg.querySelector('input:not([type=checkbox]),select');if(first&&step)first.focus();
+    const wzf=$('#wz');if(wzf){const sv=()=>{collect();ricorda()};wzf.addEventListener('input',sv);wzf.addEventListener('change',sv)}ricorda();
   };
   draw();if(!dlg.open)dlg.showModal();
 }
@@ -1600,7 +1619,7 @@ const A={
   resetDemo:()=>{if(confirm('Sostituire tutti i dati con quelli dimostrativi?')){const name=me().nome;S=seed();const u=S.users.find(x=>x.nome===name)||S.users[0];localStorage.setItem(SESSION,u.id);save();go('#/dashboard');toast('Dati dimostrativi ripristinati')}},
   wipe:()=>{if(confirm('Cancellare TUTTI i dati? Esporta prima un backup.')&&confirm('Confermi la cancellazione?')){const u=me();S={version:1,demo:false,azienda:S.azienda,users:[u],clienti:[],commesse:[],unita:[],rate:[],eventi:[],fornitori:[]};save();go('#/dashboard');toast('Dati cancellati')}}
 };
-document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.closest('dialog')&&!t.closest('#app'))return;const f=A[t.dataset.act];if(f){e.preventDefault();f(t.dataset,t)}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.closest('dialog')&&!t.closest('#app'))return;const f=A[t.dataset.act];if(f){e.preventDefault();lastAct={act:t.dataset.act,data:Object.assign({},t.dataset)};f(t.dataset,t)}});
 document.addEventListener('change',e=>{
   const gt=e.target.closest('[data-cl][data-ls][data-f]');
   if(gt){const c=commessa(gt.dataset.cl),r=(c[gt.dataset.ls]||[]).find(x=>x.id===gt.dataset.r);if(!r)return;const v=gt.value;r[gt.dataset.f]=gt.type==='number'?(v===''?null:+String(v).replace(',','.')):v;save();setTimeout(()=>{render.keepScroll=true;render()},0);return}
@@ -1636,5 +1655,5 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{if(e.target.id==='q'){ui.q=e.target.value;const pos=e.target.selectionStart;render();const q=$('#q');q.focus();q.setSelectionRange(pos,pos)}});
 
-load();idbInit().then(render);
+load();{const u=uiGet();if(!location.hash&&u.hash&&u.hash!=='#/dashboard'){try{history.replaceState(null,'',u.hash)}catch(e){location.hash=u.hash}}}idbInit().then(()=>{render();if(me())riprendi()});
 </script></body></html>
