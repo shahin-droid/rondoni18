@@ -163,7 +163,7 @@ const PIANI={
   tgo5:{nome:'DesignPack · 5 rate (The Green One)',rate:[[5,"Acconto iniziale","Entro 30gg DFFM, avvio personalizzazione"],[30,"Acconto al rilievo","Entro 30gg DFFM, approvazione rilievo"],[40,"Acconto all'ordine","A vista fattura, conferma d'ordine",'ordine'],[15,"Acconto alla consegna","Alla consegna materiali in cantiere"],[10,"Saldo finale","Dopo verbale di ultimazione lavori"]]},
   v3:{nome:'DesignPack · 4 rate (template V3)',rate:[[15,"Acconto iniziale","A vista fattura, avvio personalizzazione"],[35,"Acconto al rilievo","A vista fattura, approvazione rilievo"],[45,"Acconto all'ordine","A vista fattura, conferma d'ordine",'ordine'],[5,"Saldo finale","Dopo verbale di ultimazione lavori"]]},
   render:{nome:'Servizi professionali',rate:[[50,"Acconto alla firma","Alla firma del contratto",'firma'],[50,"Saldo alla consegna","Alla consegna degli elaborati"]]},
-  privati:{nome:'Fornitura privati',rate:[[20,"Acconto alla firma","Alla firma del contratto",'firma'],[40,"Acconto all'ordine","All'invio dell'ordine in produzione"],[40,"Saldo","A merce pronta in magazzino"]]},
+  privati:{nome:'Fornitura privati',rate:[[20,"Acconto alla firma","Alla firma del contratto",'firma'],[40,"Acconto all'ordine","All'invio dell'ordine in produzione",'ordine'],[40,"Saldo","A merce pronta in magazzino",'magazzino']]},
   homebook:{nome:'Incarico Home Book',rate:[[100,"Incarico Home Book Interior","Alla sottoscrizione dell'incarico",'firma']]},
   pack:{nome:'Interior Pack · personalizzazioni',rate:[[20,"Fee all'avvio della gestione del cliente","Quando iniziamo a gestire il cliente per le personalizzazioni",'firma'],[40,"Percentuale all'ordine","Quando lo sviluppatore ci dice di ordinare",'ordine'],[40,"Saldo","Merce pronta in magazzino: esce quando è pagata"]]},
   unica:{nome:'Rata unica',rate:[[100,"Compenso","A vista fattura",'firma']]}
@@ -238,6 +238,11 @@ function seed(){
   rate.filter(r=>r.stato!=='Prevista').sort((a,b)=>(a.scadenza||'').localeCompare(b.scadenza||'')).forEach((r,i)=>{r.numero=(i+1)+'/'+new Date().getFullYear();r.dataFattura=r.scadenza||D(-30);if(r.stato==='Incassata')r.dataIncasso=addDays(r.dataFattura,12)});
   return{version:1,demo:true,preventivi,ordini,azienda:{ragione:'Between Contract & Design S.a.s.',piva:'08284490961',sede:'Via Turati 8, Milano',pec:'btwn@pec.it'},users:[{id:uid(),nome:'Shahin Firouzabadi',ruolo:'Amministratore'}],clienti,commesse,unita,rate,eventi,fornitori};
 }
+/* Quando va emessa ogni rata: evento del contratto legato ai passaggi del workflow */
+const triggerRata=r=>r.trigger||(/firma|sottoscrizione/i.test(r.quando||r.descrizione)?'firma':/ordine/i.test(r.quando||r.descrizione)?'ordine':/magazzino|merce pronta/i.test(r.quando||'')?'magazzino':/consegna/i.test(r.quando||'')?'consegna':/verbale|ultimazione/i.test(r.quando||'')?'fine':'');
+const STEP_EVENTO={firma:'firma',ok_ordine:'ordine',ordinato:'ordine',arrivata:'magazzino',cons_fatta:'consegna',verbale:'fine',op_firma:'firma'};
+const STEP_FATTURA={firma:'fatt_acconto',ordine:'acc2_rich',magazzino:'saldo_rich'};
+function eventoCommessa(c,ev){let n=0;S.rate.filter(r=>r.commessaId===c.id&&r.stato==='Prevista'&&triggerRata(r)===ev&&!r.scadenza).forEach(r=>{r.scadenza=today();n++});if(n)setTimeout(()=>toast(`Da emettere: ${n===1?'una fattura':n+' fatture'} (${ev==='firma'?'acconto alla firma':ev==='ordine'?'acconto all\'ordine':ev==='magazzino'?'saldo a merce pronta':ev}). La trovi negli avvisi.`),200)}
 function genRate(list,c,u,pianoKey,base,startDate,percOverride){
   const p=pianoGet(pianoKey);if(!p)return;
   const ov=parsePerc(percOverride,p.rate.length);
@@ -245,7 +250,7 @@ function genRate(list,c,u,pianoKey,base,startDate,percOverride){
     let scad='';
     if(trigger==='ordine'&&u&&u.rogito)scad=addDays(u.rogito,-120);
     if(trigger==='firma')scad=startDate||today();
-    list.push({id:uid(),commessaId:c.id,unitaId:u?u.id:'',descrizione:desc,quando,perc,importo:Math.round(base*perc)/100,scadenza:scad,stato:'Prevista'});
+    list.push({id:uid(),commessaId:c.id,unitaId:u?u.id:'',descrizione:desc,quando,perc,trigger:trigger||'',importo:Math.round(base*perc)/100,scadenza:scad,stato:'Prevista'});
   });
 }
 
@@ -283,7 +288,7 @@ function alerts(){
   S.rate.forEach(r=>{
     if(r.stato==='Incassata'||!r.scadenza)return;const d=daysTo(r.scadenza);const c=commessa(r.commessaId);if(!c)return;const u=r.unitaId&&byId('unita',r.unitaId);
     if(d<0)out.push({sev:d<-60?3:2,icon:'euro',t:`${r.descrizione}${u?' · '+u.codice:''} scaduta da ${-d} gg`,s:`${c.nome} · ${eur(r.importo)}${d<-60?' · oltre 60 gg: valutare diffida ex art. 1454 c.c.':''}`,go:`#/commessa/${c.id}/pagamenti`});
-    else if(d<=7&&r.stato==='Prevista')out.push({sev:1,icon:'euro',t:`Da fatturare: ${r.descrizione}${u?' · '+u.codice:''}`,s:`${c.nome} · ${eur(r.importo)} · scadenza ${fd(r.scadenza)}`,go:`#/commessa/${c.id}/pagamenti`});
+    else if(d<=7&&r.stato==='Prevista')out.push({sev:2,icon:'euro',t:`Emetti fattura: ${r.descrizione}${r.perc?' '+r.perc+'%':''}${u?' · '+u.codice:''}`,s:`${c.nome} · ${eur(r.importo)} · scadenza ${fd(r.scadenza)}`,go:`#/commessa/${c.id}/pagamenti`});
   });
   S.commesse.forEach(c=>{
     if(c.stato!=='Attiva')return;
@@ -636,9 +641,14 @@ function leggiFatturaPdf(t){const T=String(t||'').replace(/\r/g,'');const r={};
   let nome='';const sp=T.match(/(?:spett\.?(?:abile)?|cliente|destinatario|intestatario)\s*[:\n]\s*([^\n]{3,80})/i);if(sp&&!/tratt|dati|informativa/i.test(sp[1]))nome=sp[1];
   if(!nome&&r.cf){const ln=T.split('\n').find(l=>l.toUpperCase().includes(r.cf)||/\bvia\b|\bviale\b|\bcorso\b|\bpiazza\b/i.test(l)&&/^[A-ZÀ-Ü'\s.]{5,}\s(VIA|VIALE|CORSO|PIAZZA)\b/.test(l));if(ln)nome=ln}
   r.nome=nome.replace(/\s+(VIA|VIALE|CORSO|PIAZZA|P\.ZZA|STRADA)\b.*$/i,'').replace(/C\.?F\.?.*$/i,'').trim();
-  return r}
+  r.testo=T.slice(0,3000);return r}
 const clientePerFattura=r=>S.clienti.find(c=>(r.cf&&(normKey(c.piva)===normKey(r.cf)||normKey(c.cf)===normKey(r.cf)))||(r.piva&&(normKey(c.piva)===normKey(r.piva)||normKey(c.cf)===normKey(r.piva))))||(r.nome&&S.clienti.find(c=>normKey(c.nome)===normKey(r.nome)||normKey([c.pCognome,c.pNome].join(''))===normKey(r.nome)))||null;
-function rataPerFattura(clId,imp){const cs=S.commesse.filter(c=>c.clienteId===clId).map(c=>c.id);return S.rate.filter(r=>cs.includes(r.commessaId)&&r.stato==='Prevista'&&imp!=null&&Math.abs((+r.importo||0)-imp)<1).sort((a,b)=>(a.scadenza||'').localeCompare(b.scadenza||''))[0]||null}
+function rataPerFattura(clId,imp,testo){const cs=S.commesse.filter(c=>c.clienteId===clId).map(c=>c.id);const T=String(testo||'').toLowerCase();
+  const cand=S.rate.filter(r=>cs.includes(r.commessaId)&&r.stato==='Prevista').map(r=>{let sc=0;const im=+r.importo||0;
+    if(imp!=null&&im){const dif=Math.abs(im-imp)/im;if(dif<.005)sc+=10;else if(dif<.03)sc+=5;else if(Math.abs(im*1.22-imp)<1)sc+=4}
+    if(r.perc&&new RegExp('\\b'+r.perc+'\\s*%').test(T))sc+=4;
+    const ev=triggerRata(r);if(ev==='firma'&&/firma|acconto iniziale|sottoscrizione/.test(T))sc+=2;if(ev==='ordine'&&/ordine/.test(T))sc+=2;if((ev==='magazzino'||/saldo/i.test(r.descrizione))&&/saldo/.test(T))sc+=3;if(/acconto/.test(T)&&/acconto/i.test(r.descrizione))sc+=1;
+    if(r.scadenza)sc+=1;return{r,sc}}).filter(x=>x.sc>=4).sort((a,b)=>b.sc-a.sc||(a.r.scadenza||'9').localeCompare(b.r.scadenza||'9'));return cand.length?cand[0].r:null}
 function formCaricaFatturePdf(clPreset){let righe=[];
   openForm({title:'Carica fatture PDF',values:{},intro:`Scarica la fattura in PDF dal programma delle fatture e caricala qui (anche più di una). Leggo numero, data, cliente (codice fiscale o partita IVA), imponibile, IVA e totale; salvo il PDF e lo collego al cliente${clPreset?'':', che si riconosce da solo'}. Se il cliente ha una rata prevista dello stesso importo, la segno come fatturata.<div style="margin-top:10px"><label class="small" style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;background:#fff">${ic('upload')}Scegli i PDF delle fatture<input type="file" id="fpdf" multiple accept="application/pdf,.pdf" hidden></label></div><div id="fpdfEsito" style="margin-top:10px"></div>`,fields:[],
     onSave:()=>{if(!righe.length){$('#formErr').innerHTML='<div class="error">Scegli prima i PDF.</div>';return false}let n=0,nr=0,nc=0;
@@ -647,15 +657,15 @@ function formCaricaFatturePdf(clPreset){let righe=[];
         const ex=S.fatture.find(f=>f.numero===x.r.numero&&(f.data||'').slice(0,4)===(x.r.data||'').slice(0,4)&&f.tipo===x.r.tipo);
         const seg=x.r.tipo==='Nota di credito'?-1:1;const rec={clienteId:clId,numero:x.r.numero||'',data:x.r.data||today(),tipo:x.r.tipo||'Fattura',imponibile:seg*Math.abs(x.r.imponibile||0),iva:seg*Math.abs(x.r.iva||0),totale:seg*Math.abs(x.r.totale||0),causale:x.r.causale||'',commessaId:cm?cm.value:'',fileId:x.fileId};
         if(ex)Object.assign(ex,rec);else S.fatture.push({id:uid(),...rec});n++;
-        const rt=$(`#frt${i}`);if(rt&&rt.checked&&x.rata){x.rata.stato='Fatturata';x.rata.numero=rec.numero;x.rata.dataFattura=rec.data;x.rata.fileId=x.fileId;nr++}});
+        const rt=$(`#frt${i}`);if(rt&&rt.checked&&x.rata){x.rata.stato='Fatturata';x.rata.numero=rec.numero;x.rata.dataFattura=rec.data;x.rata.fileId=x.fileId;nr++;const cm2=commessa(x.rata.commessaId);const st=STEP_FATTURA[triggerRata(x.rata)];if(cm2&&st){cm2.steps=cm2.steps||{};if(!cm2.steps[st])cm2.steps[st]=rec.data}if(cm2&&!rec.commessaId){const ff=S.fatture.find(f=>f.fileId===x.fileId);if(ff)ff.commessaId=cm2.id}}});
       setTimeout(()=>toast(`${n} fatture salvate: le trovi in Economia → Fatture emesse e nella scheda del cliente${nc?`, ${nc} clienti nuovi`:''}${nr?`, ${nr} rate segnate fatturate`:''}`),300)}});
   const inp=$('#fpdf'),es=$('#fpdfEsito');
   inp.onchange=async()=>{es.innerHTML='<div class="subtle">Leggo i PDF…</div>';righe=[];
     for(const f of inp.files){let t='';try{t=await pdfText(f)}catch(e){}const r=leggiFatturaPdf(t);const cl=clPreset?cliente(clPreset):clientePerFattura(r);
-      const nome=`Fattura ${r.numero||''} del ${fd(r.data)} - ${(cl&&cl.nome)||r.nome||'cliente'}.pdf`.replace(/[\\/:*?"<>|]/g,'_');const fileId=await putFile(f,nome);righe.push({r,cl,fileId,nomeFile:f.name,rata:cl?rataPerFattura(cl.id,r.imponibile):null})}
+      const nome=`Fattura ${r.numero||''} del ${fd(r.data)} - ${(cl&&cl.nome)||r.nome||'cliente'}.pdf`.replace(/[\\/:*?"<>|]/g,'_');const fileId=await putFile(f,nome);righe.push({r,cl,fileId,nomeFile:f.name,rata:cl?rataPerFattura(cl.id,r.imponibile,(r.causale||'')+' '+(r.testo||'')):null})}
     const clOpts=sel=>`<option value="">— scegli il cliente —</option><option value="__nuovo">+ Nuovo cliente dalla fattura</option>${S.clienti.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(c=>`<option value="${c.id}" ${sel===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}`;
     es.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Fattura</th><th>Cliente</th><th>Commessa</th><th class="right-txt">Imponibile</th></tr></thead><tbody>${righe.map((x,i)=>{const r=x.r;const cid=x.cl?x.cl.id:'';const cms=S.commesse.filter(c=>c.clienteId===cid);
-      return`<tr><td><b>${esc(r.tipo||'?')} ${esc(r.numero||'—')}</b><small>${r.data?fd(r.data):'data non trovata'} · ${esc(x.nomeFile)}</small></td><td><select class="inline-select" id="fcl${i}" style="max-width:220px">${clOpts(cid)}</select><small>${x.cl?'riconosciuto da '+(r.cf||r.piva?'C.F./P.IVA':'nome'):'non trovato: '+esc(r.nome||r.cf||r.piva||'—')}</small></td><td>${cms.length?`<select class="inline-select" id="fcm${i}"><option value="">—</option>${cms.map(c=>`<option value="${c.id}" ${x.rata&&x.rata.commessaId===c.id?'selected':''}>${esc(c.codice||c.nome)}</option>`).join('')}</select>`:'<span class="muted">—</span>'}${x.rata?`<label class="small" style="display:flex;gap:4px;align-items:center;margin-top:4px"><input type="checkbox" id="frt${i}" checked> segna fatturata la rata "${esc(x.rata.descrizione)}"</label>`:''}</td><td class="amount right-txt">${r.imponibile!=null?eur2(r.imponibile):'<span class="tag amber">non letto</span>'}<small>${r.totale!=null?'totale '+eur2(r.totale):''}</small></td></tr>`}).join('')}</tbody></table></div><p class="subtle">Controlla il cliente di ogni fattura e premi Salva.</p>`};
+      return`<tr><td><b>${esc(r.tipo||'?')} ${esc(r.numero||'—')}</b><small>${r.data?fd(r.data):'data non trovata'} · ${esc(x.nomeFile)}</small></td><td><select class="inline-select" id="fcl${i}" style="max-width:220px">${clOpts(cid)}</select><small>${x.cl?'riconosciuto da '+(r.cf||r.piva?'C.F./P.IVA':'nome'):'non trovato: '+esc(r.nome||r.cf||r.piva||'—')}</small></td><td>${cms.length?`<select class="inline-select" id="fcm${i}"><option value="">—</option>${cms.map(c=>`<option value="${c.id}" ${x.rata&&x.rata.commessaId===c.id?'selected':''}>${esc(c.codice||c.nome)}</option>`).join('')}</select>`:'<span class="muted">—</span>'}${x.rata?`<label class="small" style="display:flex;gap:4px;align-items:center;margin-top:4px"><input type="checkbox" id="frt${i}" checked> è la rata <b>${esc(x.rata.descrizione)}${x.rata.perc?' '+x.rata.perc+'%':''}</b> (${eur(x.rata.importo)}): segnala fatturata</label>`:''}</td><td class="amount right-txt">${r.imponibile!=null?eur2(r.imponibile):'<span class="tag amber">non letto</span>'}<small>${r.totale!=null?'totale '+eur2(r.totale):''}</small></td></tr>`}).join('')}</tbody></table></div><p class="subtle">Controlla il cliente di ogni fattura e premi Salva.</p>`};
 }
 function formImportaFatture(){let trovate=[];
   openForm({title:'Importa fatture emesse',values:{dal:2024,crea:true},intro:`Carica le <b>fatture elettroniche XML</b> (FatturaPA, anche tutte insieme) oppure l'<b>elenco documenti</b> esportato da Fattura SMART in <b>Excel o CSV</b> (colonne numero, data, cliente, partita IVA o codice fiscale, imponibile, IVA, totale). Ogni fattura si collega al cliente per partita IVA o codice fiscale, altrimenti per nome. Le fatture già caricate non si duplicano.<div style="margin-top:10px"><label class="small" style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;background:#fff">${ic('upload')}Scegli i file (XML, Excel o CSV)<input type="file" id="fatFile" multiple accept=".xml,.csv,.txt,.xlsx" hidden></label></div><div id="fatEsito" style="margin-top:10px"></div>`,
@@ -1785,7 +1795,7 @@ document.addEventListener('change',e=>{
   if(d.change==='uploadFornDocs'){const f=byId('fornitori',d.id);(async()=>{for(const file of t.files){const id=await putFile(file,file.name);(f.files=f.files||[]).push({nome:file.name,data:today(),fileId:id,size:file.size})}save();render.keepScroll=true;render();toast('Caricato')})();return}
   if(d.change==='margObj'){S.impostazioni=Object.assign({},S.impostazioni,{margine:+t.value||30});save();render.keepScroll=true;render();toast('Margine obiettivo: '+margObj()+'%')}
   if(d.change==='uploadDocs'){uploadDocs(commessa(d.id),[...t.files]);return}
-  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase)c.fase=+d.f}else delete c.steps[d.k];save();render.keepScroll=true;render()}
+  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase)c.fase=+d.f;if(STEP_EVENTO[d.k])eventoCommessa(c,STEP_EVENTO[d.k])}else delete c.steps[d.k];save();render.keepScroll=true;render()}
   if(d.change==='ripStato'){const c=commessa(d.id);c.ripristini[+d.i].stato=t.value;save();render.keepScroll=true;render();toast('Ripristino: '+t.value)}
   if(d.change==='doc'){const c=commessa(d.id);c.docs=c.docs||{};c.docs[d.i]=t.checked?1:0;save();render()}
 });
