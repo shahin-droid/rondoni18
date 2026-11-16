@@ -950,10 +950,14 @@ function formUnita(u,cid){
 }
 function formBulk(cid){
   const c=commessa(cid);
-  openForm({title:'Genera unità',intro:`Crea più unità in blocco per <b>${esc(c.nome)}</b>. Potrai completare acquirenti e date dopo.`,values:{prefisso:(c.codice||'U')+'-',da:unitaDi(cid).length+1,quante:Math.max(1,(c.unitaTot||10)-unitaDi(cid).length)},fields:[
-    {k:'prefisso',l:'Prefisso codice',req:true},{k:'da',l:'Numero iniziale',type:'number',req:true},{k:'quante',l:'Quante unità',type:'number',req:true},{k:'pack',l:'Valore pack standard (€)',type:'number'}],
-    calc:o=>`<div>Anteprima<strong style="font-size:13px">${o.quante>0?esc(o.prefisso)+String(o.da).padStart(2,'0')+' … '+esc(o.prefisso)+String(o.da+o.quante-1).padStart(2,'0'):'—'}</strong></div><div>Totale pack<strong>${eur((o.pack||0)*(o.quante||0))}</strong></div>`,
-    onSave:o=>{if(!(o.quante>0&&o.quante<=500)){$('#formErr').innerHTML='<div class="error">Numero di unità non valido (1–500)</div>';return false}for(let i=0;i<o.quante;i++)S.unita.push({id:uid(),commessaId:cid,codice:o.prefisso+String(o.da+i).padStart(2,'0'),acquirente:'',prezzo:null,pack:o.pack,varianti:false,stato:'Da contattare',preliminare:'',rogito:'',rilievo:'',note:''})}});
+  openForm({title:'Genera appartamenti',intro:`Crea in un colpo solo gli appartamenti (unità) del cantiere <b>${esc(c.nome)}</b>. Due modi: <b>incolla l'elenco</b> dei codici così come sono nel listino del cantiere (B27, B28, B52…, uno per riga, se vuoi seguito dalla tipologia: <i>B27; Bilo</i>), oppure fai una <b>numerazione</b> con prefisso (es. E6-01 … E6-25). Acquirenti, date e arredi di capitolato li completi dopo.`,values:{prefisso:(c.codice||'U')+'-',da:unitaDi(cid).length+1,quante:Math.max(1,(c.unitaTot||10)-unitaDi(cid).length)},fields:[
+    {k:'elenco',l:'Incolla l\'elenco dei codici (uno per riga; facoltativo: codice; tipologia)',type:'textarea',wide:true,ph:'B27; Bilo'},{k:'prefisso',l:'…oppure numerazione: prefisso codice'},{k:'da',l:'Numero iniziale',type:'number'},{k:'quante',l:'Quante unità',type:'number'}],
+    calc:o=>{const el=String(o.elenco||'').split(/\n/).map(x=>x.trim()).filter(Boolean);return el.length?`<div>Dall'elenco<strong style="font-size:13px">${el.length} appartamenti: ${esc(el.slice(0,3).map(x=>x.split(/[;\t]/)[0]).join(', '))}${el.length>3?'…':''}</strong></div>`:`<div>Anteprima<strong style="font-size:13px">${o.quante>0?esc(o.prefisso)+String(o.da).padStart(2,'0')+' … '+esc(o.prefisso)+String(o.da+o.quante-1).padStart(2,'0'):'—'}</strong></div>`},
+    onSave:o=>{const nuova=(codice,tip)=>{if(unitaDi(cid).some(u=>u.codice.toUpperCase()===codice.toUpperCase()))return 0;let t=null;if(tip){c.tipologici=c.tipologici||[];t=c.tipologici.find(x=>normKey(x.nome)===normKey(tip));if(!t){t={id:uid(),nome:tip,unita:0};c.tipologici.push(t)}t.unita=(+t.unita||0)+1}S.unita.push({id:uid(),commessaId:cid,codice,tipologicoId:t?t.id:'',acquirente:'',prezzo:null,pack:null,varianti:false,stato:'Da contattare',preliminare:'',rogito:'',rilievo:'',note:''});return 1};
+      const el=String(o.elenco||'').split(/\n/).map(x=>x.trim()).filter(Boolean);let n=0;
+      if(el.length){el.forEach(r=>{const [cod,tip]=r.split(/\s*[;\t]\s*/);if(cod)n+=nuova(cod.trim(),(tip||'').trim())})}
+      else{if(!o.prefisso||!(o.quante>0&&o.quante<=500)){$('#formErr').innerHTML='<div class="error">Incolla l\'elenco oppure indica prefisso e quante unità (1–500).</div>';return false}for(let i=0;i<o.quante;i++)n+=nuova(o.prefisso+String(o.da+i).padStart(2,'0'),'')}
+      setTimeout(()=>toast(`${n} appartamenti creati`),200)}});
 }
 function formGenRate(cid,unitaId){
   const c=commessa(cid);const us=unitaDi(cid);const u=unitaId&&byId('unita',unitaId);
