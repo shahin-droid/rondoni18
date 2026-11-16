@@ -472,15 +472,25 @@ function commessaNumeri(c){
 }
 
 /* ---------- Panoramica ---------- */
+const STEP_SLA={hb_invio:2,hb_firma:7,hb_pagato:7,dwg:7,budget:7,presentato:21,accetta:10,firma:5,fatt_acconto:2,acconto:10,imp_fatto:7,imp_prog:7,impianti:5,ok_ordine:3,ordinato:3,conf_ver:3,arrivata:null,saldo_rich:2,saldo:10,cons_pian:5,verbale:3,rip_aziende:3,finito:7};
+const SLA_DEF=7;
+const ultimaData=c=>{const d=Object.values(c.steps||{}).filter(x=>typeof x==='string').sort().pop();return d||c.faseDal||c.creata||c.inizio||''};
+const respDi=c=>c.resp?S.users.find(u=>u.id===c.resp):null;
 function prossimeAttivita(){
-  const out=[];
+  const out=[];const mk=(c,o)=>{const dal=o.dal||ultimaData(c);const gg=dal?-daysTo(dal):0;const sla=o.sla===undefined?SLA_DEF:o.sla;out.push({c,...o,dal,gg,sla,ritardo:sla==null?0:gg-sla,resp:respDi(c)})};
   S.commesse.filter(c=>c.stato==='Attiva').forEach(c=>{c.steps=c.steps||{};
-    const WF=wfFor(c),ph=WF[c.fase-1];if(ph){const st=wfSteps(c,ph).filter(x=>!x[2]&&!c.steps[x[0]]);if(st.length)out.push({c,k:st[0][0],t:st[0][1],f:c.fase,where:ph.f,more:st.length-1})}
-    if(c.tipo!=='Privato')['arr','mk','var','lev','cfg'].forEach(k=>{if(!c.servizi.includes(SV[k]))return;const st=(WF_B2B[k]||[]).filter(x=>!x[2]&&!c.steps[x[0]]);if(st.length)out.push({c,k:st[0][0],t:st[0][1],f:0,where:SV[k],more:st.length-1})});
+    const daOrd=S.ordini.filter(o=>o.commessaId===c.id&&o.stato==='Da ordinare');
+    const WF=wfFor(c),ph=WF[c.fase-1];if(ph){const st=wfSteps(c,ph).filter(x=>!x[2]&&!c.steps[x[0]]&&!(x[0]==='ordinato'&&daOrd.length));if(st.length)mk(c,{k:st[0][0],t:st[0][1],f:c.fase,where:ph.f,more:st.length-1,sla:c.tipo==='Privato'?(STEP_SLA[st[0][0]]===undefined?SLA_DEF:STEP_SLA[st[0][0]]):(STEP_SLA[st[0][0]]??null)})}
+    if(c.tipo!=='Privato')['arr','mk','var','lev','cfg'].forEach(k=>{if(!c.servizi.includes(SV[k]))return;const st=(WF_B2B[k]||[]).filter(x=>!x[2]&&!c.steps[x[0]]);if(st.length)mk(c,{k:st[0][0],t:st[0][1],f:0,where:SV[k],more:st.length-1,sla:STEP_SLA[st[0][0]]??null})});
+    if(c.steps.ok_ordine||c.steps.firma||daOrd.some(o=>o.preventivoId))daOrd.forEach(o=>{const p=o.preventivoId&&byId('preventivi',o.preventivoId);const cosa=p?[...new Set(p.righe.filter(r=>r.brand===o.fornitore&&!r.esclusa).map(r=>r.oggetto||r.ambiente).filter(Boolean))].slice(0,3).join(', '):'';
+      mk(c,{ordine:o,t:`Ordinare ${o.fornitore}${cosa?' ('+cosa.toLowerCase()+')':''}`,where:'Ordini',dal:c.steps.ok_ordine||(p&&p.accettatoIl)||o.creato||'',sla:3})});
   });
-  return out;
-}
-function vDashboard(){
+  return out.sort((a,b)=>(b.ritardo>0)-(a.ritardo>0)||b.ritardo-a.ritardo)}
+const mieAttivita=(tutti)=>{const u=me();return prossimeAttivita().filter(a=>tutti||!a.resp||a.resp.id===u.id)};
+function rigaAttivita(a){const late=a.ritardo>0;return`<div class="check-row" style="align-items:flex-start;${late?'color:var(--red)':''}">${a.ordine?`<span style="width:16px"></span>`:`<input type="checkbox" data-change="step" data-id="${a.c.id}" data-k="${a.k}" data-f="${a.f}" style="margin-top:2px">`}<span style="flex:1"><b style="font-weight:600">${esc(a.c.nome)}${a.resp?' · '+esc(a.resp.nome.split(' ')[0]):''}</b> — ${esc(a.t)}<br><span class="subtle">${esc(a.where)}${a.more?' · poi altre '+a.more:''}${a.dal?` · ${late?`<b style="color:var(--red)">in ritardo di ${a.ritardo} gg</b> (fermo da ${a.gg} gg)`:a.gg?`fermo da ${a.gg} gg`:'da oggi'}`:''}</span></span>${a.ordine?`<button class="small ${late?'lime':''}" data-act="inviaOrdine" data-id="${a.ordine.id}">${ic('arrow')}Invia ordine</button>`:`<button class="small ghost" data-act="nav" data-h="#/commessa/${a.c.id}/${a.f?'workflow':'servizi'}">Apri</button>`}</div>`}
+function promemoriaMattino(force){const u=me();if(!u)return;const K='btwn-promemoria-'+u.id;if(!force&&localStorage.getItem(K)===today())return;const L=mieAttivita(false);if(!L.length&&!force)return;localStorage.setItem(K,today());
+  const late=L.filter(a=>a.ritardo>0);openForm({title:`${u.nome.split(' ')[0]}, oggi hai ${L.length} ${L.length===1?'cosa':'cose'} da portare avanti`,values:{},intro:`${late.length?`<b style="color:var(--red)">${late.length} in ritardo</b> rispetto ai tempi previsti. `:''}Spunta o apri ciascuna: la lista resta in Panoramica.<div class="mini-list" style="margin-top:10px">${L.slice(0,Math.max(10,late.length)).map(rigaAttivita).join('')+(L.length>Math.max(10,late.length)?`<p class="subtle">e altre ${L.length-Math.max(10,late.length)} in Panoramica.</p>`:'')||'<p class="subtle">Niente in sospeso.</p>'}</div>`,fields:[],onSave:()=>{}})}
+function vDashboard(){setTimeout(()=>{if(location.hash.replace('#/','').split('/')[0]in{'':1,dashboard:1}&&!$('#modal').open)promemoriaMattino()},500);
   const att=S.commesse.filter(c=>c.stato==='Attiva'), pipe=S.commesse.filter(c=>c.stato==='Pipeline');
   const pond=pipe.reduce((a,c)=>a+(+c.valore||0)*(+c.probabilita||0)/100,0);
   const lordo=pipe.reduce((a,c)=>a+(+c.valore||0),0);
@@ -495,7 +505,7 @@ function vDashboard(){
   <div class="actions"><button data-act="newEvento">${ic('cal')}Appuntamento</button><button data-act="newCliente">${ic('users')}Cliente</button></div></div>
   ${S.demo?`<div class="attention"><div><b>Stai vedendo dati dimostrativi</b><small>Commesse e brand vengono dal profilo BTWN; unità, acquirenti, importi delle rate e appuntamenti sono di esempio.</small></div><div class="actions"><button class="small" data-act="clearDemo">Svuota esempi</button><button class="small ghost" data-act="keepDemo">Tieni</button></div></div>`:''}
   <div class="grid-main"><div>
-    ${(()=>{const pa=prossimeAttivita();return`<div class="panel"><div class="panel-head"><h2>Prossime attività</h2><span class="subtle">spunta quando è fatto</span></div>${pa.length?`<div class="mini-list">${pa.slice(0,12).map(a=>`<label class="check-row" style="align-items:flex-start"><input type="checkbox" data-change="step" data-id="${a.c.id}" data-k="${a.k}" data-f="${a.f}" style="margin-top:2px"><span style="flex:1"><b style="font-weight:600">${esc(a.t)}</b><br><span class="subtle"><button class="link" style="font-weight:500" data-act="nav" data-h="#/commessa/${a.c.id}/${a.f?'workflow':'servizi'}">${esc(a.c.nome)}</button> · ${esc(a.where)}${a.more?' · poi altre '+a.more:''}</span></span></label>`).join('')}${pa.length>12?`<div class="subtle" style="padding-top:10px">e altre ${pa.length-12}…</div>`:''}</div>`:empty('check','Niente in sospeso','Tutte le fasi correnti sono complete.')}</div>`})()}
+    ${(()=>{const tutti=!!ui.taskTutti;const pa=mieAttivita(tutti);const late=pa.filter(a=>a.ritardo>0).length;return`<div class="panel" style="${late?'border-color:var(--red)':''}"><div class="panel-head"><h2>${tutti?'Attività di tutti':'Le tue attività'} ${late?`<span class="tag red">${late} in ritardo</span>`:''}</h2><div class="actions"><button class="small ghost" data-act="taskTutti">${tutti?'Solo le mie':'Vedi tutti'}</button><button class="small ghost" data-act="riepilogoMail" title="Prepara in Outlook una mail con la lista">${ic('arrow')}Mail</button></div></div>${pa.length?`<div class="mini-list">${pa.slice(0,15).map(rigaAttivita).join('')}${pa.length>15?`<div class="subtle" style="padding-top:10px">e altre ${pa.length-15}…</div>`:''}</div>`:empty('check','Niente in sospeso','Tutte le fasi correnti sono complete.')}</div>`})()}
     <div class="panel"><div class="panel-head"><h2>Commesse attive</h2><button class="small" data-act="nav" data-h="#/commesse">Tutte ${ic('arrow')}</button></div>
     ${att.length?`<div class="table-wrap"><table><thead><tr><th>Commessa</th><th>Fase</th><th>Unità</th><th class="right-txt adm">Da incassare</th></tr></thead><tbody>${att.map(c=>{const n=commessaNumeri(c);return`<tr><td><button class="link" data-act="nav" data-h="#/commessa/${c.id}">${esc(c.nome)}</button><small>${esc(c.codice)} · ${esc(c.luogo||'—')}</small></td><td style="min-width:170px"><span class="subtle">${c.fase}/${fasiFor(c).length} · ${fasiFor(c)[c.fase-1]||''}</span>${progress(c)}</td><td>${n.us.length}${c.unitaTot?' / '+c.unitaTot:''}</td><td class="amount right-txt adm">${eur(n.aperto)}</td></tr>`}).join('')}</tbody></table></div>`:empty('folder','Nessuna commessa attiva','Crea la prima commessa per iniziare.')}
     </div>
@@ -604,7 +614,7 @@ function vCommessa(r){
     const sorted=evs.sort((a,b)=>(b.data+b.ora).localeCompare(a.data+a.ora));
     body=`<div class="toolbar"><div style="flex:1"></div><button class="primary" data-act="newEvento" data-c="${c.id}">${ic('plus')}Appuntamento</button></div><div class="panel">${sorted.length?sorted.map(e=>eventoRow(e,true)).join(''):empty('cal','Nessun appuntamento','')}</div>`;
   }
-  return`<div class="head"><div><div class="eyebrow">${esc(c.codice)} · ${tagStato(c.stato)}</div><h1>${esc(c.nome)}</h1><p>${esc([cl&&cl.nome,c.luogo,c.unitaTot&&c.unitaTot+' unità'].filter(Boolean).join(' · '))}</p></div>
+  return`<div class="head"><div><div class="eyebrow">${esc(c.codice)} · ${tagStato(c.stato)}</div><h1>${esc(c.nome)}</h1><p>${esc([cl&&cl.nome,c.luogo,c.unitaTot&&c.unitaTot+' unità'].filter(Boolean).join(' · '))} · Responsabile ${selectHtml([{v:'',l:'— tutti —'},...S.users.map(u=>({v:u.id,l:u.nome}))],c.resp||'',`class="inline-select" style="width:auto" data-change="respCommessa" data-id="${c.id}" title="Chi riceve le attività di questa commessa in Panoramica"`)}</p></div>
   <div class="actions">${cl&&cl.email?`<a class="btn-like" href="mailto:${esc(cl.email)}?subject=${encodeURIComponent(c.nome)}" style="text-decoration:none"><button type="button">${ic('file')}Scrivi a ${esc(cl.referente||cl.nome)}</button></a>`:''}<button data-act="newEvento" data-c="${c.id}">${ic('cal')}Appuntamento</button><button data-act="editCommessa" data-id="${c.id}">${ic('gear')}Configura</button>${c.fase<fasiFor(c).length?`<button class="lime" data-act="avanza" data-id="${c.id}">Passa a: ${esc(fasiFor(c)[c.fase])} ${ic('arrow')}</button>`:''}</div></div>
   <div class="phasebar">${fasiFor(c).map((f,i)=>`<button class="phase ${i+1<c.fase?'done':i+1===c.fase?'current':''}" data-act="setFase" data-id="${c.id}" data-f="${i+1}" title="Imposta fase ${i+1}"><i></i>${i+1}. ${f}</button>`).join('')}</div>
   <div class="tabs">${tabs.map(([k,l])=>`<button class="${tab===k?'active':''}" data-act="nav" data-h="#/commessa/${c.id}/${k}">${l}</button>`).join('')}</div>${body}`;
@@ -1889,7 +1899,7 @@ const A={
   rateFiltro:d=>{ui.rateFiltro=d.v;render()},
   cliFiltro:d=>{ui.cliFiltro=d.v;ui.cliTipo='';render.keepScroll=true;render()},
   newCommessa:()=>wizardCommessa(),editCommessa:d=>wizardCommessa(commessa(d.id)),
-  avanza:d=>{const c=commessa(d.id);const F=fasiFor(c);c.fase=Math.min(F.length,c.fase+1);if(c.tipo==='Privato'&&c.fase===F.length)c.stato='Chiusa';save();render();toast('Fase '+c.fase+' · '+F[c.fase-1])},
+  avanza:d=>{const c=commessa(d.id);const F=fasiFor(c);c.fase=Math.min(F.length,c.fase+1);c.faseDal=today();if(c.tipo==='Privato'&&c.fase===F.length)c.stato='Chiusa';save();render();toast('Fase '+c.fase+' · '+F[c.fase-1])},
   setFase:d=>{const c=commessa(d.id);c.fase=+d.f;save();render()},
   newUnita:d=>formUnita(null,d.id),editUnita:d=>formUnita(byId('unita',d.id)),bulkUnita:d=>formBulk(d.id),
   genRate:d=>formGenRate(d.id,d.u),newRata:d=>formRata(null,d.id),editRata:d=>formRata(byId('rate',d.id)),
@@ -1924,7 +1934,7 @@ const A={
     p.stato='Accettato';if(p.personalizzazione&&p.unitaId){const u=byId('unita',p.unitaId);if(u){u.listinoProgetto=Math.round(t.Lnuovo);u.stato=STATI_UNITA.indexOf(u.stato)<2?'Rilievo':u.stato}}S.preventivi.forEach(x=>{if(x.id!==p.id&&x.commessaId===p.commessaId&&x.titolo===p.titolo&&x.stato!=='Rifiutato')x.stato='Superato'});
     const brands={};p.righe.filter(r=>!r.esclusa&&!r.capitolato&&r.brand&&r.brand.toUpperCase()!=='BTWN'&&r.acquista!=='Partner').forEach(r=>{brands[r.brand]=(brands[r.brand]||0)+rigaCalc(r,p).costo});
     const nb=Object.keys(brands).length;
-    if(confirm(`Generare le rate del piano "${pianoGet(p.piano)?.nome||'privati'}" su ${eur(t.netto)}${nb?` e ${nb} ordini fornitori (uno per brand)`:''}?`)){genRate(S.rate,c,null,p.piano||'privati',t.netto,today(),p.ratePerc);Object.entries(brands).forEach(([b,v])=>S.ordini.push({id:uid(),commessaId:c.id,preventivoId:p.id,fornitore:b,numero:'',data:'',previsto:Math.round(v*100)/100,importo:null,arrivo:'',stato:'Da ordinare',note:`Da ${p.titolo} rev.${p.rev}`}))}
+    if(confirm(`Generare le rate del piano "${pianoGet(p.piano)?.nome||'privati'}" su ${eur(t.netto)}${nb?` e ${nb} ordini fornitori (uno per brand)`:''}?`)){genRate(S.rate,c,null,p.piano||'privati',t.netto,today(),p.ratePerc);Object.entries(brands).forEach(([b,v])=>S.ordini.push({id:uid(),creato:today(),commessaId:c.id,preventivoId:p.id,fornitore:b,numero:'',data:'',previsto:Math.round(v*100)/100,importo:null,arrivo:'',stato:'Da ordinare',note:`Da ${p.titolo} rev.${p.rev}`}))}
     save();render();toast('Preventivo accettato')},
   schedaRiga:d=>{const p=byId('preventivi',d.p);formScheda(p,p.righe.find(r=>r.id===d.r))},
   paginaCliente:d=>{const p=byId('preventivi',d.id);formPagina(p,()=>{apriPagina(p);render.keepScroll=true;render()})},
@@ -2021,6 +2031,9 @@ const A={
     const html=paginaHTML(p,false,ref=>{ref=String(ref||'').trim();return ref.startsWith('idb:')?(map[ref.slice(4)]||''):ref});
     const nome=((p.pagina.titolo||'progetto').replace(/[\\/:*?"<>|]/g,'-'))+'.html';
     await inviaOutlook({to:cl&&cl.email,subject:`${p.pagina.titolo||c.nome} · il tuo progetto d'arredo`,body:testoMail(c,"in allegato trovi la pagina del tuo progetto d'arredo: aprila nel browser, scegli tra le alternative, lascia le tue preferenze e inviaci il riepilogo. Il progetto è quello"),attachments:[{name:nome,type:'text/html',blob:new Blob([html],{type:'text/html'})},...extra],nomeFile:`Mail ${p.pagina.titolo||'pagina cliente'}`})},
+  taskTutti:()=>{ui.taskTutti=!ui.taskTutti;render.keepScroll=true;render()},
+  promemoria:()=>promemoriaMattino(true),
+  riepilogoMail:()=>{const L=mieAttivita(!!ui.taskTutti);const u=me();inviaOutlook({to:'',subject:`Attività del ${fd(today())}`,body:`${L.map(a=>`- ${a.c.nome}${a.resp?' ('+a.resp.nome+')':''}: ${a.t}${a.ritardo>0?` — IN RITARDO di ${a.ritardo} gg`:''}`).join('\n')||'Niente in sospeso.'}\n\n${u?u.nome:''}`,attachments:[],nomeFile:'Attivita '+today()})},
   stepDoc:d=>{const c=commessa(d.id);const i=document.createElement('input');i.type='file';i.multiple=true;i.onchange=()=>{if(i.files.length)uploadDocs(c,[...i.files],STEP_DOC[d.k],d.k)};i.click()},
   delFile:d=>{const c=commessa(d.id);if(confirm('Rimuovere il documento?')){const [f]=c.files.splice(+d.i,1);if(f&&f.fileId)delFileBlob(f.fileId);save();render()}},
   clearDemo:()=>{if(!confirm('Rimuovere unità, rate e appuntamenti di esempio? Commesse, clienti e brand restano.'))return;S.unita=[];S.rate=[];S.eventi=[];S.demo=false;save();render();toast('Esempi rimossi')},
@@ -2071,7 +2084,8 @@ document.addEventListener('change',e=>{
   if(d.change==='uploadFornDocs'){const f=byId('fornitori',d.id);(async()=>{for(const file of t.files){const id=await putFile(file,file.name);(f.files=f.files||[]).push({nome:file.name,data:today(),fileId:id,size:file.size})}save();render.keepScroll=true;render();toast('Caricato')})();return}
   if(d.change==='margObj'){S.impostazioni=Object.assign({},S.impostazioni,{margine:+t.value||30});save();render.keepScroll=true;render();toast('Margine obiettivo: '+margObj()+'%')}
   if(d.change==='uploadDocs'){uploadDocs(commessa(d.id),[...t.files]);return}
-  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase)c.fase=+d.f;if(STEP_EVENTO[d.k])eventoCommessa(c,STEP_EVENTO[d.k])}else delete c.steps[d.k];save();render.keepScroll=true;render()}
+  if(d.change==='respCommessa'){const c=commessa(d.id);c.resp=t.value;save();toast(t.value?'Le attività vanno a '+S.users.find(u=>u.id===t.value).nome:'Attività visibili a tutti');return}
+  if(d.change==='step'){const c=commessa(d.id);c.steps=c.steps||{};if(t.checked){c.steps[d.k]=today();if(+d.f>c.fase){c.fase=+d.f;c.faseDal=today()}if(STEP_EVENTO[d.k])eventoCommessa(c,STEP_EVENTO[d.k])}else delete c.steps[d.k];save();render.keepScroll=true;render()}
   if(d.change==='ripStato'){const c=commessa(d.id);c.ripristini[+d.i].stato=t.value;save();render.keepScroll=true;render();toast('Ripristino: '+t.value)}
   if(d.change==='doc'){const c=commessa(d.id);c.docs=c.docs||{};c.docs[d.i]=t.checked?1:0;save();render()}
 });
