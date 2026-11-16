@@ -1319,8 +1319,14 @@ async function scaricaPagina(p){const slug=((p.pagina&&p.pagina.titolo)||'pagina
 /* ---------- Workflow cliente privato ---------- */
 function diffRilievoBox(c){if(c.rilievo==='speciale')return'';const d=c.diffRil||{},ps=prevDi(c.id),acc=ps.find(p=>p.stato==='Accettato'),t=acc&&prevCalc(acc);
   const fld=(k,l,ph)=>`<label>${l}<input type="number" step="any" value="${d[k]??''}" placeholder="${ph}" data-change="diffRil" data-id="${c.id}" data-k="${k}"></label>`;
-  return`<div class="calc-grid" style="margin:4px 0 6px">${fld('cliente','Differenziale chiesto al cliente (€ + IVA)','es. 700')}${fld('listino','Aumento di listino del brand (€, non al cliente)','es. 300')}</div>
-  <div class="note" style="margin-bottom:8px">${t?`Contratto firmato ${eur(t.netto)} → aggiornato <b>${eur(t.netto+(+d.cliente||0))}</b> + IVA. `:''}${+d.listino?`Nella conferma d'ordine il costo salirà di circa <b>${eur(d.listino)}</b> per aumento di listino: al controllo delle conferme non è un errore.`:'L\'aumento di listino del brand si segna a parte: spiega la differenza che arriverà nella conferma d\'ordine.'}</div>`}
+  const k=t&&t.L?t.costo/t.L:0.45;const prog=+d.progetto||0,cli=+d.cliente||0,aum=+d.listino||0;const dCosto=prog*k+aum;const dMarg=cli-dCosto;
+  const righe=[];
+  if(prog)righe.push(`Listino del progetto ${prog>0?'salito':'sceso'} di <b>${eur(Math.abs(prog))}</b> → costo merce ${prog>0?'+':'−'}${eur(Math.abs(prog*k))} (acquisto medio ${((1-k)*100).toFixed(1)}%).`);
+  if(aum)righe.push(`Aumento di listino del brand: costo +${eur(aum)} (lo vedrai nella conferma d'ordine: non è un errore).`);
+  righe.push(t?(cli?`Al cliente: ${cli>0?'chiediamo':'riconosciamo'} ${eur(Math.abs(cli))} → contratto ${eur(t.netto)} diventa <b>${eur(t.netto+cli)}</b> + IVA.`:`Al cliente: <b>prezzo firmato invariato</b> (${eur(t.netto)} + IVA).`):'');
+  if(prog||aum||cli)righe.push(`Effetto sul margine BTWN: <b class="${dMarg>=0?'':'warn'}">${dMarg>=0?'+':'−'}${eur(Math.abs(dMarg))}</b>${t?` → margine ${eur(t.margNetto+dMarg)} (${((t.margNetto+dMarg)/((t.netto+cli)||1)*100).toFixed(1)}%)`:''}.`);
+  return`<div class="calc-grid" style="margin:4px 0 6px">${fld('progetto','Variazione di listino del progetto dopo il rilievo (€: + se sale, − se scende)','es. -2000')}${fld('cliente','Differenziale chiesto al cliente (€ + IVA; 0 o vuoto = prezzo invariato)','es. 700')}${fld('listino','Aumento di listino del brand (costo, non al cliente)','es. 300')}</div>
+  <div class="note" style="margin-bottom:8px">${righe.filter(Boolean).join('<br>')||'Se dopo il rilievo il progetto cambia, scrivi di quanto è salito o sceso il listino e quanto chiedi al cliente: vedi subito l\'effetto sul margine. Se il listino scende e tieni il prezzo firmato, lascia vuoto il differenziale al cliente.'}</div>`}
 function workflowView(c){
   c.steps=c.steps||{};
   const est=c.esterni||[], rip=c.ripristini||[];
