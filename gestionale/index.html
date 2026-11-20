@@ -1385,7 +1385,7 @@ function stampaOfferta(p){
   ${sec||'<p>Nessuna voce.</p>'}
   <div class="tot"><span>TOTALE OFFERTA PRODOTTO</span><span>${eur2(t.netto)} IVA esclusa</span></div>
   ${t.credito?`<p class="small">Il totale include ${t.creditoFisso?'il credito':'lo sconto del '+t.creditoPerc+'% del compenso'} Home Book (−${eur2(t.credito)}).</p>`:''}
-  ${p.noteOfferta?`<p class="small">${esc(p.noteOfferta).replace(/\n/g,'<br>')}</p>`:''}
+  ${(()=>{const n=noteOffertaEff(p);return n?`<p class="small">${esc(n).replace(/\n/g,'<br>')}</p>`:''})()}
   <div class="cond"><h3>Condizioni generali</h3><p>Resta escluso il costo per l'eventuale utilizzo della piattaforma aerea per il sollevamento al piano della merce qualora fosse necessario.<br>Il progetto e il preventivo potranno subire modifiche a seguito di rilievo esecutivo pre-ordine.<br>${p.consegna?'Tempi di consegna: '+esc(p.consegna)+'.<br>':''}Offerta valida ${p.validita||10} giorni dalla data di emissione. Si applicano le Condizioni Generali di Vendita BTWN.</p>${piano?`<p><b>Termini di pagamento:</b><br>${piano.rate.map((r,ri)=>`${ovp?ovp[ri]:r[0]}% ${esc(r[2].charAt(0).toLowerCase()+r[2].slice(1))}`).join('<br>')}</p>`:''}</div>
   <div class="sign"><div>Firma cliente</div><div>Data</div></div>${foot}</body></html>`;
   const w=window.open('','_blank');if(!w){toast('Consenti i pop-up per aprire l\'offerta');return}w.document.write(html);w.document.close();
@@ -1980,6 +1980,9 @@ const ordiniMini=c=>{const os=ordiniDi(c.id);return os.length?`<div class="table
 const TOLL_ORDINE=0.5;
 function margineEffettivo(p,t){const ords=S.ordini.filter(o=>o.preventivoId===p.id&&o.importo!=null&&o.importo!==''&&+o.importo>0);if(!ords.length)return null;let diff=0;
   ords.forEach(o=>{const at=attesoOrdine(o);if(at&&at.costo!=null)diff+=(+o.importo)-at.costo});const marg=t.margNetto-diff;return{marg,perc:t.netto?marg/t.netto*100:0,diff,n:ords.length}}
+const haMontaggio=p=>(p.righe||[]).some(r=>!r.esclusa&&(r.montaggio||r.montPerc||(isServizio(r)&&/montagg/i.test((r.oggetto||'')+' '+(r.descrizione||'')))));
+function noteOffertaEff(p){let n=String(p.noteOfferta||'');if(!haMontaggio(p))return n;
+  n=n.replace(/[^.\n]*montaggio\s+verr[àa]\s+quotat[^.\n]*\.?\s*/gi,'').replace(/Per trasporto, montaggio e allacciamenti seguirà un contratto a parte\.?/i,'Trasporto e montaggio sono inclusi come da voce in offerta; restano esclusi gli allacciamenti.');return n.trim()}
 function attesoOrdine(o){const p=o.preventivoId&&byId('preventivi',o.preventivoId);
   if(p){const rs=(p.righe||[]).filter(r=>!r.esclusa&&r.acquista!=='Partner'&&r.brand&&r.brand.trim().toLowerCase()===String(o.fornitore||'').trim().toLowerCase());
     if(rs.length){const L=rs.reduce((a,r)=>a+rigaCalc(r,p).L,0),costo=rs.reduce((a,r)=>a+rigaCalc(r,p).costo,0);return{listino:L,costo:Math.round(costo*100)/100,sconto:L?Math.round((1-costo/L)*1000)/10:0,righe:rs.length,da:p.titolo+' rev.'+p.rev}}}
