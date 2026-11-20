@@ -1840,7 +1840,7 @@ function wizardCommessa(c0,rip){
 
 /* ---------- Conferme d'ordine: lettura del PDF ---------- */
 let _pdfjs;
-function loadPdfJs(){if(_pdfjs)return _pdfjs;const add=src=>new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=src;sc.onload=res;sc.onerror=()=>rej(new Error('Non trovo '+src));document.head.appendChild(sc)});
+function loadPdfJs(){if(_pdfjs)return _pdfjs;if(window.pdfjsLib){try{window.pdfjsLib.GlobalWorkerOptions.workerSrc=window.pdfjsLib.GlobalWorkerOptions.workerSrc||'lib/pdf.worker.min.js'}catch(e){}return(_pdfjs=Promise.resolve(window.pdfjsLib))}const add=src=>new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=src;sc.onload=res;sc.onerror=()=>rej(new Error('Non trovo '+src));document.head.appendChild(sc)});
   _pdfjs=add('lib/pdf.worker.min.js').then(()=>add('lib/pdf.min.js')).then(()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';return window.pdfjsLib}).catch(e=>{_pdfjs=null;throw e});return _pdfjs}
 
 /* ---------- Documento d'identità: lettura automatica (OCR, Tesseract.js) ---------- */
