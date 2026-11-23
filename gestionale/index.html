@@ -715,7 +715,9 @@ function vCommessa(r){
   if(tab==='tipologici'&&!priv){body=tipologiciView(c)}
   if(tab==='capitolato'&&!priv){body=capitolatoView(c)}
   if(tab==='preventivi'){
-    body=`<div class="toolbar"><div class="subtle" style="flex:1">Foglio economico: listino, sconto d'acquisto, sconto cliente e margine per riga. Ogni modifica importante = nuova revisione.</div><button class="primary" data-act="newPrev" data-id="${c.id}">${ic('plus')}Nuovo preventivo</button></div><div class="panel">${prevTable(prevs,false)}</div>`;
+    prevs.forEach(p=>collegaRevRilievo(p,c));const pr=prevs.find(p=>p.postRilievo&&!['Superato','Rifiutato'].includes(p.stato)&&p.stato!=='Accettato'),accP=prevs.find(p=>p.stato==='Accettato'&&!p.capitolato);const inRilT=(wfFor(c)[c.fase-1]||{}).id==='rilievo';
+    const rilTop=pr?`<div class="toolbar" style="margin:0 0 8px"><b style="flex:1">Offerta dopo il rilievo: rev. ${pr.rev} ${tagPrev(pr.stato)}</b><button class="small primary" data-act="nav" data-h="#/preventivo/${pr.id}">${ic('edit')}Apri la rev. ${pr.rev} e modifica le voci</button></div>${rilPanel(pr,c)}`:inRilT&&accP&&!(c.steps||{}).ril_rifirma?`<div class="attention"><div><b>Fase Rilievo: crea l'offerta aggiornata</b><small>Copio l'offerta firmata (rev. ${accP.rev}) in una nuova revisione: ci scrivi i nuovi listini e qui sotto vedi il confronto, decidi il differenziale e la mandi al cliente.</small></div><button class="small lime" data-act="offRilievo" data-id="${c.id}">Crea l'offerta dopo il rilievo</button></div>`:'';
+    body=`${rilTop}<div class="toolbar"><div class="subtle" style="flex:1">Foglio economico: listino, sconto d'acquisto, sconto cliente e margine per riga. Ogni modifica importante = nuova revisione.</div><button class="primary" data-act="newPrev" data-id="${c.id}">${ic('plus')}Nuovo preventivo</button></div><div class="panel">${prevTable(prevs,false)}</div>`;
   }
   if(tab==='ordini'){
     const prev=ords.reduce((a,o)=>a+((attesoOrdine(o)||{}).costo||0),0), conf=ords.reduce((a,o)=>a+(+o.importo||0),0);
@@ -1609,8 +1611,8 @@ async function scaricaPagina(p){const slug=((p.pagina&&p.pagina.titolo)||'pagina
 
 /* ---------- Workflow cliente privato ---------- */
 const x0=v=>(v>=0?'+':'−')+eur(Math.abs(v));
-function collegaRevRilievo(p,c){if(p.postRilievo||p.capitolato||['Accettato','Superato','Rifiutato'].includes(p.stato))return;if((wfFor(c)[c.fase-1]||{}).id!=='rilievo')return;
-  const b=prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&x.titolo===p.titolo&&x.rev<p.rev)||prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&!x.capitolato);if(!b)return;
+function collegaRevRilievo(p,c){if(p.postRilievo||p.capitolato||['Accettato','Superato','Rifiutato'].includes(p.stato))return;const inRil=(wfFor(c)[c.fase-1]||{}).id==='rilievo';
+  const b=prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&x.titolo===p.titolo&&x.rev<p.rev)||(inRil&&prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&!x.capitolato));if(!b)return;
   const src=b.firmata?b.firmata.righe:b.righe;const used=new Set();const Rr={};const key=r=>((r.ambiente||'')+'|'+(r.oggetto||'')).toLowerCase();
   (p.righe||[]).forEach(r=>{if(r.interna||r.abbRil)return;const o=src.find(x=>!used.has(x.id)&&!x.interna&&!x.abbRil&&key(x)===key(r));if(!o)return;used.add(o.id);Rr[r.id]={oggetto:o.oggetto||'',ambiente:o.ambiente||'',listino:+o.listino||0,descrizione:o.descrizione||'',offerta:rigaCalc(o,b).offerta,esclusa:!!o.esclusa}});
   src.forEach(o=>{if(!o.interna&&!o.abbRil&&!used.has(o.id))Rr['x'+o.id]={oggetto:o.oggetto||'',ambiente:o.ambiente||'',listino:+o.listino||0,descrizione:o.descrizione||'',offerta:rigaCalc(o,b).offerta,esclusa:!!o.esclusa}});
