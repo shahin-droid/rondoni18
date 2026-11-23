@@ -23,6 +23,11 @@ nostro con un'app registrata nel Microsoft 365 aziendale, ricordarsi di:
 - Riconoscimento automatico dei documenti nelle cartelle del lavoro per spuntare
   i passaggi del workflow.
 
+## Verbale di fine lavori
+- Oggi il cliente o la squadra compilano il verbale da una pagina HTML e ci rimandano un file (WhatsApp/mail) che carichiamo nel gestionale.
+  Con un server nostro diventa un link: premendo "Invia" difetti, foto e firma si registrano subito nella commessa, senza file da rimandare.
+- Ticket di riordino: per i fornitori con portale (es. Binova) valutare l'integrazione diretta se offrono API.
+
 ## Dati
 - Esportare tutto l'archivio condiviso (commesse, clienti, preventivi, ordini,
   rate, to-do) e importarlo nel nuovo database.
