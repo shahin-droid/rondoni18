@@ -1365,6 +1365,7 @@ function prevTable(list,showCommessa){
 function vPreventivo(r){
   const p=byId('preventivi',r.id);if(!p)return empty('calc','Preventivo non trovato','',`<button data-act="nav" data-h="#/vendite">Torna ai preventivi</button>`);
   const c=commessa(p.commessaId), cl=c&&cliente(c.clienteId), t=prevCalc(p);
+  if(c)collegaRevRilievo(p,c);
   const sibl=S.preventivi.filter(x=>x.commessaId===p.commessaId&&x.titolo===p.titolo&&x.id!==p.id).sort((a,b)=>a.rev-b.rev);
   const dl=`<datalist id="dl-amb">${AMBIENTI.map(a=>`<option value="${a}">`).join('')}</datalist>`;
   const inp=(row,f,w,num)=>`<input class="grid-input" style="width:${w}px" ${num?'type="number" step="any"':''} ${f==='brand'?'list="dl-brand"':f==='ambiente'?'list="dl-amb"':''} data-pr="${p.id}" data-r="${row.id}" data-f="${f}" value="${esc(row[f]??'')}" aria-label="${f}">`;
@@ -1608,6 +1609,13 @@ async function scaricaPagina(p){const slug=((p.pagina&&p.pagina.titolo)||'pagina
 
 /* ---------- Workflow cliente privato ---------- */
 const x0=v=>(v>=0?'+':'−')+eur(Math.abs(v));
+function collegaRevRilievo(p,c){if(p.postRilievo||p.capitolato||['Accettato','Superato','Rifiutato'].includes(p.stato))return;if((wfFor(c)[c.fase-1]||{}).id!=='rilievo')return;
+  const b=prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&x.titolo===p.titolo&&x.rev<p.rev)||prevDi(c.id).find(x=>x.id!==p.id&&x.stato==='Accettato'&&!x.capitolato);if(!b)return;
+  const src=b.firmata?b.firmata.righe:b.righe;const used=new Set();const Rr={};const key=r=>((r.ambiente||'')+'|'+(r.oggetto||'')).toLowerCase();
+  (p.righe||[]).forEach(r=>{if(r.interna||r.abbRil)return;const o=src.find(x=>!used.has(x.id)&&!x.interna&&!x.abbRil&&key(x)===key(r));if(!o)return;used.add(o.id);Rr[r.id]={oggetto:o.oggetto||'',ambiente:o.ambiente||'',listino:+o.listino||0,descrizione:o.descrizione||'',offerta:rigaCalc(o,b).offerta,esclusa:!!o.esclusa}});
+  src.forEach(o=>{if(!o.interna&&!o.abbRil&&!used.has(o.id))Rr['x'+o.id]={oggetto:o.oggetto||'',ambiente:o.ambiente||'',listino:+o.listino||0,descrizione:o.descrizione||'',offerta:rigaCalc(o,b).offerta,esclusa:!!o.esclusa}});
+  if(!b.firmata)b.firmata={data:b.accettatoIl||today(),righe:JSON.parse(JSON.stringify(b.righe||[]))};
+  p.postRilievo=true;p.baseId=b.id;p.preRilievo={data:today(),righe:Rr,base:b.id};save()}
 function rilPanel(p,c){if(!p||!c||!p.postRilievo)return'';const b=p.baseId&&byId('preventivi',p.baseId);if(!b)return'';const DR=deltaRilievo(p);if(!DR)return'';
   const tb=prevCalc(b),tn=prevCalc(p),d=c.diffRil||{},st=c.steps||{};const fi=wfFor(c).findIndex(x=>x.id==='rilievo')+1;
   const sg=v=>`${v>=0.5?'+':v<=-0.5?'−':''}${eur(Math.abs(v))}`;
