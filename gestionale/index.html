@@ -12,6 +12,7 @@ input.grid-input:not([type=number]):focus{min-width:260px;position:relative;z-in
 .ogg-pop button:hover{background:#f1ede6!important}
 .shell{overflow-x:clip}.comm-top .head .actions{flex-wrap:wrap;justify-content:flex-end}
 .binari{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;position:sticky;top:calc(var(--commTop,0px) + 8px)}.binario{max-height:calc(100vh - var(--commTop,0px) - 24px);overflow-y:auto;padding:0 6px 20px 2px;overscroll-behavior:contain}.binario .eyebrow{position:sticky;top:0;background:var(--bg);z-index:2;padding:4px 0}details.fase-chiusa{opacity:.85}details.fase-chiusa[open]{opacity:1}details.fase-chiusa>summary::-webkit-details-marker{display:none}@media(max-width:900px){.binari{grid-template-columns:1fr;position:static}.binario{max-height:none;overflow:visible}}
+details.fase-chiusa .fase-dentro>.panel{border:0;box-shadow:none;margin:0;border-top:1px solid var(--line);border-radius:0}details.fase-chiusa[open]>summary{border-bottom:0}
 </style></head><body>
 <div id="app"><div class="loading">Caricamento…</div></div>
 <dialog id="modal"></dialog>
@@ -1944,7 +1945,7 @@ function workflowView(c){
   };
   const WF=wfFor(c);
   const panel=(ph,fi,vb)=>{const h=panel0(ph,fi,vb);const st=wfSteps(c,ph),reqDone=st.filter(x=>!x[2]).every(([k])=>c.steps[k]);const chiusa=vb?reqDone&&st.some(([k])=>c.steps[k]):(fi+1<c.fase&&reqDone);if(!chiusa||!h.startsWith('<div class="panel"'))return h;const key='fo_'+c.id+'_'+(vb?'var':ph.id);const last=st.map(([k])=>c.steps[k]).filter(Boolean).sort().pop();
-    return h.replace(/^<div class="panel" style="[^"]*"><div class="panel-head">/,`<details class="panel fase-chiusa" data-ui="${key}" ${ui[key]?'open':''}><summary class="panel-head" style="cursor:pointer;list-style:none">`).replace('</h2>',` <span class="tag">✓ conclusa${last?' · '+fd(last):''}</span> <span class="subtle" style="font-weight:400">▾</span></h2>`).replace('</div><div class="panel-body">','</summary><div class="panel-body">').replace(/<\/div>$/,'</details>')};
+    return`<details class="panel fase-chiusa" data-ui="${key}" ${ui[key]?'open':''}><summary class="panel-head" style="cursor:pointer;list-style:none"><h2><span class="number-circle" style="background:#a8c98b;border-color:#a8c98b;color:#151412">${vb?'V':fi+1}</span>${esc(ph.f)} <span class="tag">✓ conclusa${last?' · '+fd(last):''}</span> <span class="subtle" style="font-weight:400">▾ apri</span></h2></summary><div class="fase-dentro">${h}</div></details>`};
   const panel0=(ph,fi,vb)=>{
     const st=wfSteps(c,ph), done=st.filter(([k])=>c.steps[k]).length, req=st.filter(x=>!x[2]), reqDone=req.every(([k])=>c.steps[k]), cur=vb?!reqDone:fi+1===c.fase, past=vb?false:fi+1<c.fase;const lastIdx=vb?Math.max(-1,...st.map(([k],i)=>c.steps[k]?i:-1)):-1;
     if(ph.id==='ripristino'&&!rip.length&&!cur&&done===0)return`<div class="panel" style="opacity:.6"><div class="panel-head"><h2><span class="number-circle">${fi+1}</span>${esc(ph.f)}</h2><span class="subtle">solo se nel verbale ci sono cose da riordinare o sistemare</span></div></div>`;
