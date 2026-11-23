@@ -2153,7 +2153,8 @@ function noteOffertaEff(p){let n=String(p.noteOfferta||'');if(!haMontaggio(p))re
 function vociOrdine(p,forn){return(p&&p.righe||[]).filter(r=>!r.esclusa&&!r.capitolato&&!r.interna&&!r.abbRil&&r.acquista!=='Partner'&&r.brand&&r.brand.trim().toLowerCase()===String(forn||'').trim().toLowerCase())}
 function syncOrdini(c,p){if(!c||!p)return false;const brands={};(p.righe||[]).filter(r=>!r.esclusa&&!r.capitolato&&!r.interna&&!r.abbRil&&r.brand&&r.brand.toUpperCase()!=='BTWN'&&r.acquista!=='Partner').forEach(r=>{const k=r.brand.trim();brands[k]=(brands[k]||0)+rigaCalc(r,p).costo});
   const norm=x=>String(x||'').trim().toLowerCase();const auto=o=>o.stato==='Da ordinare'&&!o.numero&&!o.importo&&!o.confermaFileId&&!o.inviatoIl;let ch=false;const visti={};
-  S.ordini=S.ordini.filter(o=>{if(o.commessaId!==c.id)return true;const k=Object.keys(brands).find(b=>norm(b)===norm(o.fornitore));
+  const kOf=o=>Object.keys(brands).find(b=>norm(b)===norm(o.fornitore));const reali={};S.ordini.forEach(o=>{if(o.commessaId===c.id&&!auto(o)){const k=kOf(o);if(k)reali[k]=1}});
+  S.ordini=S.ordini.filter(o=>{if(o.commessaId!==c.id)return true;const k=kOf(o);if(k&&auto(o)&&reali[k]){ch=true;return false}
     if(!k){if(auto(o)&&o.preventivoId&&o.preventivoId!==p.id){ch=true;return false}return true}
     if(auto(o)&&visti[k]){ch=true;return false}visti[k]=1;if(o.preventivoId!==p.id||Math.abs((+o.previsto||0)-brands[k])>0.01){o.preventivoId=p.id;o.previsto=Math.round(brands[k]*100)/100;o.note=o.note&&/^Da .+? rev\.\d+/.test(o.note)?o.note.replace(/^Da .+? rev\.\d+/,`Da ${p.titolo} rev.${p.rev}`):(o.note||`Da ${p.titolo} rev.${p.rev}`);ch=true}return true});
   Object.entries(brands).forEach(([b,v])=>{if(!visti[b]){S.ordini.push({id:uid(),creato:today(),commessaId:c.id,preventivoId:p.id,fornitore:b,numero:'',data:'',previsto:Math.round(v*100)/100,importo:null,arrivo:'',stato:'Da ordinare',note:`Da ${p.titolo} rev.${p.rev}`});ch=true}});return ch}
