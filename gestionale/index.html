@@ -435,13 +435,13 @@ function render(){
   <div class="right"><span class="subtle hide-sm" id="savestate"><span class="dot"></span>${CLOUD.on?esc(CLOUD.testo||'Dati condivisi con il team'):'Dati salvati in locale'}</span><button class="small" data-act="nuovoContatto">${ic('users')}Nuovo contatto</button><button class="primary small" data-act="newCommessa">${ic('plus')}Nuova commessa</button></div></header>
   <main class="main" id="main">${fn(r)}</main></div>`;
   if(fk){const el=document.querySelector(`[data-r="${fk[0]}"][data-f="${fk[1]}"]`);if(el){el.focus();if(el.select)el.select()}}else if(!render.keepScroll)window.scrollTo(0,0);
-  render.keepScroll=false;commTopSync();
+  render.keepScroll=false;if(!document.querySelector('.comm-top')){document.body.classList.remove('scrolled');document.body.style.paddingBottom=''}commTopSync();
   if(r.view==='economia')wireEconomia();
 }
 window.addEventListener('hashchange',()=>render());
 document.addEventListener('click',e=>{const m=document.querySelector('.ogg-pop');if(m&&!m.contains(e.target)&&!e.target.closest('[data-act=oggMenu]'))m.remove()},true);document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.querySelector('.ogg-pop');if(m)m.remove()}});
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.ui)ui[d.dataset.ui]=d.open},true);
-function commTopSync(){const y=window.scrollY,on=document.body.classList.contains('scrolled');const sc=on?y>8:y>140;if(sc!==on)document.body.classList.toggle('scrolled',sc);const t=document.querySelector('.comm-top');document.documentElement.style.setProperty('--commTop',(t?t.offsetHeight:0)+'px')}
+function commTopSync(){const y=window.scrollY,on=document.body.classList.contains('scrolled');const sc=on?y>8:y>140;if(sc!==on){const t0=document.querySelector('.comm-top'),h0=t0?t0.offsetHeight:0;document.body.classList.toggle('scrolled',sc);const h1=t0?t0.offsetHeight:0;document.body.style.paddingBottom=sc&&h0>h1?(h0-h1)+'px':''}const t=document.querySelector('.comm-top');document.documentElement.style.setProperty('--commTop',(t?t.offsetHeight:0)+'px')}
 window.addEventListener('scroll',commTopSync,{passive:true});window.addEventListener('resize',commTopSync);
 
 /* ---------- Login ---------- */
