@@ -10,6 +10,7 @@
 .desc-ta{font-size:12px;overflow:hidden}.desc-ta:focus{overflow:auto}
 input.grid-input:not([type=number]):focus{min-width:260px;position:relative;z-index:5;box-shadow:0 6px 20px #15141222}textarea.desc-ta:focus{min-width:320px;position:relative;z-index:5;box-shadow:0 6px 20px #15141222}
 .ogg-pop button:hover{background:#f1ede6!important}
+.shell{overflow-x:clip}.comm-top .head .actions{flex-wrap:wrap;justify-content:flex-end}
 </style></head><body>
 <div id="app"><div class="loading">Caricamento…</div></div>
 <dialog id="modal"></dialog>
@@ -440,7 +441,7 @@ function render(){
 window.addEventListener('hashchange',()=>render());
 document.addEventListener('click',e=>{const m=document.querySelector('.ogg-pop');if(m&&!m.contains(e.target)&&!e.target.closest('[data-act=oggMenu]'))m.remove()},true);document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.querySelector('.ogg-pop');if(m)m.remove()}});
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.ui)ui[d.dataset.ui]=d.open},true);
-function commTopSync(){const sc=window.scrollY>40;document.body.classList.toggle('scrolled',sc);const t=document.querySelector('.comm-top');document.documentElement.style.setProperty('--commTop',(t?t.offsetHeight:0)+'px')}
+function commTopSync(){const y=window.scrollY,on=document.body.classList.contains('scrolled');const sc=on?y>8:y>140;if(sc!==on)document.body.classList.toggle('scrolled',sc);const t=document.querySelector('.comm-top');document.documentElement.style.setProperty('--commTop',(t?t.offsetHeight:0)+'px')}
 window.addEventListener('scroll',commTopSync,{passive:true});window.addEventListener('resize',commTopSync);
 
 /* ---------- Login ---------- */
