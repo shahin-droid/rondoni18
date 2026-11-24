@@ -141,6 +141,12 @@ Per ogni richiesta:
   "Rispondi al cliente" prepara la mail su quando si fa il rilievo. Con le varianti e il sopralluogo
   insieme, "cantiere pronto" (`var_pronto`) e casa rilevabile si spuntano a vicenda.
 
+### Banca
+- Estratto conto (PDF Banco BPM o CSV dell'home banking) caricato in **Economia** → `movimentiDaTesto` /
+  `movimentiDaCsv` → `candidatiRata` (importo con/senza IVA o totale fattura, nome cliente, n. fattura) →
+  `formBanca`: **propone, l'amministratore conferma** (mai incassi automatici). Movimenti in `S.banca`
+  (abbinato / ignorato / da abbinare). Mai committare estratti conto o dati bancari veri.
+
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.

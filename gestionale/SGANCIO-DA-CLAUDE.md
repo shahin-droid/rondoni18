@@ -40,3 +40,7 @@ nostro con un'app registrata nel Microsoft 365 aziendale, ricordarsi di:
   dentro Claude.
 - Calendario Outlook: appuntamenti del gestionale scritti direttamente nel
   calendario.
+
+## Banca
+- Oggi l'estratto conto si carica a mano (PDF o CSV). Con un server nostro: collegamento open banking (PSD2)
+  tramite un servizio ponte, movimenti in automatico ogni giorno; l'abbinamento resta da confermare.
