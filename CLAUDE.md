@@ -171,9 +171,14 @@ Per ogni richiesta:
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
-- Cartella SharePoint/OneDrive della commessa con sottocartelle: BRIEF, DWG, OFFERTA, PRESENTAZIONI,
-  CONFERME ORDINE, MONTAGGIO, POST RILIEVO (+ VARIANTI). Dentro Claude il caricamento verso
-  SharePoint è limitato a 1 MB.
+- **Formato cartelle BTWN** (lavori nuovi, deciso il 24/11/2026), in SharePoint › General › LAVORO:
+  cartella `VIA E CIVICO_COGNOME CLIENTE` (cantieri: `CANTIERE/APT_COGNOME`), sottocartelle `SP_SOTTO`:
+  00_INCARICO · 01_DOCUMENTI CASA · 02_BRIEF · 03_PROGETTO (per brand) · 04_OFFERTA · 05_PRESENTAZIONI ·
+  06_VARIANTI (solo con varianti) · 07_RILIEVO · 08_ORDINI (per brand) · 09_MONTAGGIO · 10_AMMINISTRAZIONE · _ARCHIVIO.
+- Ogni documento caricato in un passaggio del workflow viene copiato da solo nella sottocartella giusta
+  (`cartellaPerTipo` / `CARTELLA_DOC`, `spCopiaDoc`), con il nome standard. I lavori vecchi non si toccano:
+  `ALIAS_CARTELLE` riconosce BRIEF, DWG, OFFERTA, CONFERME ORDINE, POST RILIEVO… Dentro Claude il caricamento
+  è limitato a 1 MB: i file più grandi si trascinano a mano nella cartella indicata.
 
 ## Architettura (riferimento rapido)
 
@@ -196,7 +201,6 @@ Per ogni richiesta:
   Wolters Kluwer). In attesa di risposta: se c'è un accesso, collegamento automatico dopo lo sgancio.
 
 - Gestione e configurazione della **nuova commessa B2B / cantiere** (ancora da completare).
-- File caricati nel gestionale → automaticamente nella sottocartella SharePoint giusta
-  (proposte nuove cartelle CONTRATTI e AMMINISTRAZIONE: da confermare).
+- File messi a mano su OneDrive → riconosciuti dal gestionale per spuntare i passaggi (da fare).
 - Passaggio a Claude Team (account aziendale) e, più avanti, sgancio da Claude
   (vedi `gestionale/SGANCIO-DA-CLAUDE.md`).
