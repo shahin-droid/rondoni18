@@ -134,6 +134,13 @@ Per ogni richiesta:
   o pavimenti diversi/superiori, pagatore cliente/sviluppatore/ripartito, eventuale fee proprietà per monitoraggio
   cantiere) → **C va disegnata a parte**, con la parte B2B.
 
+### Rilievo
+- Si fa solo quando la casa è **rilevabile**: lo conferma l'impresa o l'architetto del cliente (a volte il
+  cliente o la direzione lavori). Passaggio `ril_pronto` + riquadro "Casa rilevabile" (`c.rilevabile`:
+  chi, referente, data, confermata, sollecito, storico). Finché non è confermato c'è un to-do di sollecito;
+  "Rispondi al cliente" prepara la mail su quando si fa il rilievo. Con le varianti e il sopralluogo
+  insieme, "cantiere pronto" (`var_pronto`) e casa rilevabile si spuntano a vicenda.
+
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
