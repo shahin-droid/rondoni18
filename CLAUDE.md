@@ -155,8 +155,11 @@ Per ogni richiesta:
   mancata consegna/rifiutata → to-do all'amministratore (`avvisiSdi`).
 - Ricevute (`S.fattureRic`): fornitore per P.IVA/nome, collegate a ordine o commessa (`ordiniCandFatt`);
   il costo reale entra in `costiCommessa`; se diverso dalla conferma d'ordine → to-do di verifica.
-- "XML" sulla rata da emettere (`formFatturaXml`) prepara il file FatturaPA (dentro uno zip) da caricare
-  in Fattura SMART: il numero è solo proposto. Da verificare se Fattura SMART importa XML di fatture attive.
+- **Verificato:** Fattura SMART NON accetta XML di fatture attive da inviare (l'import XML è solo storico,
+  non va allo SdI). Quindi "Dati fattura" sulla rata (`formFatturaXml`) prepara i dati da copiare in
+  Fattura SMART (Nuova fattura); l'XML si scarica solo come archivio. Fattura SMART importa anche
+  anagrafiche clienti/fornitori/prodotti. Dentro il programma non c'è un canale per l'assistenza:
+  la richiesta API a Wolters Kluwer va via mail (bozza in Outlook).
 - Sempre: propone, l'amministratore conferma. Mai fatture vere nel repository (test con XML sintetici).
 
 ### File e cartelle
