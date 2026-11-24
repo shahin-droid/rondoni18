@@ -180,6 +180,22 @@ Per ogni richiesta:
   `ALIAS_CARTELLE` riconosce BRIEF, DWG, OFFERTA, CONFERME ORDINE, POST RILIEVO… Dentro Claude il caricamento
   è limitato a 1 MB: i file più grandi si trascinano a mano nella cartella indicata.
 
+## Pubblicare il gestionale in un nuovo account (es. Claude Team BTWN)
+
+1. Nell'account vecchio, dalla versione **ufficiale**: "Esporta backup" (file JSON, resta al titolare: mai nel repo).
+2. `python3 gestionale/tools/build_artifact.py <cartella>` → crea `ufficiale/index.html` e `prova/index.html`
+   (pdf.js incorporato, immagini, nessun dato).
+3. Pubblica `ufficiale/index.html` (+ `img/`) come artifact "BTWN · Bussola – ufficiale" e dichiara le capability:
+   - `db` con regola `{path:"", read:"interact", write:"interact"}` (archivio condiviso del team);
+   - connettori **Microsoft 365** (outlook_create_draft, outlook_send_mail, outlook_email_search,
+     outlook_create_event, outlook_calendar_search, get_me, read_resource, sharepoint_folder_search,
+     sharepoint_create_folder, sharepoint_upload_file) e **Fireflies** (fireflies_get_transcripts);
+   - download di file.
+   Poi la versione **prova** allo stesso modo, senza `db`.
+4. Il titolare apre l'ufficiale, fa "Importa backup" e la condivide con l'organizzazione (lo fa lui dal menu
+   di condivisione). Ognuno collega il proprio Microsoft 365 in Impostazioni → Connettori.
+5. Ricaricare nel nuovo account le skill (profilo BTWN, prontuari Lema/Flou/Gervasoni).
+
 ## Architettura (riferimento rapido)
 
 - Stato globale `S` in `localStorage` (`btwn-bussola-v1`); file in IndexedDB (`putFile`, mappa `FILES`).
@@ -202,5 +218,6 @@ Per ogni richiesta:
 
 - Gestione e configurazione della **nuova commessa B2B / cantiere** (ancora da completare).
 - File messi a mano su OneDrive → riconosciuti dal gestionale per spuntare i passaggi (da fare).
-- Passaggio a Claude Team (account aziendale) e, più avanti, sgancio da Claude
+- Claude Team attivato il 24/11/2026 (account aziendale, Matteo e Alberto invitati): da fare la migrazione
+  del gestionale come sopra. Più avanti, sgancio da Claude
   (vedi `gestionale/SGANCIO-DA-CLAUDE.md`).
