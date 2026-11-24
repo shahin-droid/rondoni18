@@ -162,6 +162,12 @@ Per ogni richiesta:
   la richiesta API a Wolters Kluwer va via mail (bozza in Outlook).
 - Sempre: propone, l'amministratore conferma. Mai fatture vere nel repository (test con XML sintetici).
 
+### To-do ripetuti
+- "+ To-do" → "Ripeti" ogni settimana (giorno) o ogni mese (1-28); modelli in `S.ricorrenti`, generati da
+  `generaRicorrenti` all'apertura e nel promemoria del mattino (un to-do per occorrenza, `ricId`+`dataRic`).
+  Gestione da "↻ Ripetuti" nella lista to-do. Di base (`S.ricDefault`): ogni **lunedì** all'amministratore
+  "carica l'Excel delle fatture da Fattura SMART" e "carica il CSV della banca".
+
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
