@@ -125,8 +125,9 @@ Per ogni richiesta:
 - I controlli automatici restano visibili: non perdere mai il controllo della commessa.
 - Pagamenti come **una riga per rata**: da provare e far validare al titolare.
 - **Varianti, tre situazioni**: A privato senza cantiere (paga il cliente); B cliente in un cantiere
-  (paga cliente o sviluppatore); C cantiere con accordo quadro (impianti + finiture di capitolato ed
-  extra capitolato, pagatore cliente/sviluppatore/ripartito, eventuale fee proprietà per monitoraggio
+  (paga cliente o sviluppatore); C cantiere con accordo quadro (impianti elettrico/idrico, architettonico = modifica pareti,
+  finiture di capitolato: pavimenti, rivestimenti, sanitari, rubinetterie; extra capitolato: rubinetterie
+  o pavimenti diversi/superiori, pagatore cliente/sviluppatore/ripartito, eventuale fee proprietà per monitoraggio
   cantiere) → **C va disegnata a parte**, con la parte B2B.
 
 ### File e cartelle
