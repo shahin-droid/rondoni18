@@ -52,6 +52,8 @@ Per ogni richiesta:
   (sono disattivati e rispondono sempre "sì"). Usa `openForm(...)` con messaggi nella pagina.
   Download di `.eml`/`.ics` e `fetch` di `data:` URL sono bloccati: usa le alternative già presenti
   (`mailOutlook`, conversione base64 manuale, `scaricaStampa`/`dlPronto`).
+  Anche le chiamate a siti esterni sono bloccate (es. ricerca indirizzi OpenStreetMap in `wireIndirizzo`):
+  dentro Claude l'indirizzo si scrive a mano e resta il link "Vedi su Google Maps" (Street View da lì).
 - L'intestazione della commessa resta visibile scorrendo (sticky, senza sfarfallio).
 - Le fasi completate si chiudono (`details.fase-chiusa`); i binari arredi/varianti scorrono separati.
 
