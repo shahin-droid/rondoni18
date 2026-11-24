@@ -181,6 +181,8 @@ Per ogni richiesta:
   (`cartellaPerTipo` / `CARTELLA_DOC`, `spCopiaDoc`), con il nome standard. I lavori vecchi non si toccano:
   `ALIAS_CARTELLE` riconosce BRIEF, DWG, OFFERTA, CONFERME ORDINE, POST RILIEVO… Dentro Claude il caricamento
   è limitato a 1 MB: i file più grandi si trascinano a mano nella cartella indicata.
+- Nell'interfaccia si dice **OneDrive** (non SharePoint): riquadro "Cartella del lavoro (OneDrive)". I file già nella
+  cartella si portano nei Documenti con "+ Documenti" (`spDocAgg`: collegamento, nessuna copia, spunta il passaggio del tipo).
 
 ## Pubblicare il gestionale in un nuovo account (es. Claude Team BTWN)
 
