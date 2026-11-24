@@ -19,6 +19,7 @@ pdf = '<script>/* pdf.js incorporato */' + w + '</script><script>' + l + '</scri
 for nome, extra in (('ufficiale', avvio + uff), ('prova', avvio)):
     d = os.path.join(OUT, nome); os.makedirs(d, exist_ok=True)
     h = src.replace('<head>', '<head>' + extra, 1)
+    h = h.replace('<title>BTWN · Bussola</title>', '<title>BTWN · Bussola – ' + nome + '</title>', 1)
     i = h.rindex('</body>'); h = h[:i] + pdf + h[i:]
     open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(h)
     img = os.path.join(G, '..', 'img')
