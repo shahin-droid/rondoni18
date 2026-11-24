@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>BTWN Bussola · Flusso cliente privato v2 (proposta)</title>
+<style>
+:root{--ink:#213e3b;--muted:#6c7b77;--bg:#f3f5f1;--green:#173d39;--lime:#d9ef92;--line:#dfe6dc;--soft:#eef4e7;--amber:#fcf0dc;--amberink:#9b6a2c;--blue:#e8eff7;--blueink:#466a8c;--red:#fae9e7;--redink:#a8453f;--violet:#efeaf7;--violetink:#6a4f9a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13.5px/1.55 Inter,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1240px;margin:auto;padding:30px 24px 70px}
+header{border-bottom:2px solid var(--green);padding-bottom:14px;margin-bottom:20px}
+.brand{font-size:26px;font-weight:800;letter-spacing:-1.2px}.brand span{color:#8fb04a}
+h1{font-size:24px;margin:6px 0 2px;letter-spacing:-.4px}h2{font-size:17px;margin:34px 0 10px;letter-spacing:-.2px}h3{font-size:14px;margin:0 0 6px}
+p{margin:5px 0;color:var(--muted)}b{color:var(--ink)}
+.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.tag{display:inline-block;font-size:10px;font-weight:700;border-radius:4px;padding:1px 6px;background:var(--soft);color:#486346;white-space:nowrap;vertical-align:1px}
+.tag.adm{background:var(--green);color:var(--lime)}.tag.auto{background:var(--blue);color:var(--blueink)}.tag.ext{background:var(--amber);color:var(--amberink)}.tag.meet{background:var(--violet);color:var(--violetink)}.tag.opt{background:#fff;border:1px dashed #9aa9a2;color:var(--muted)}.tag.new{background:var(--red);color:var(--redink)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--muted);margin:10px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:10px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.trunk{border-left:6px solid var(--green)}.arr{border-left:6px solid #8fb04a}.var{border-left:6px solid #6a8fb0}
+.fase{margin:10px 0 2px;font-weight:700;font-size:13.5px}.fase .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--lime);color:var(--green);font-weight:800;font-size:11px;margin-right:6px}
+ul{margin:2px 0 6px;padding-left:18px}li{margin:2px 0}
+.meet{background:var(--violet);border:1px solid #d9cfee;border-radius:12px;padding:12px 16px;margin:12px 0}
+.meet h3{color:var(--violetink)}
+.note{background:var(--amber);border-radius:12px;padding:12px 16px;margin:12px 0;color:var(--amberink)}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;font-size:12.5px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#fafbf8;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.big{font-size:28px;font-weight:800;color:var(--green)}
+.q{border:2px solid var(--green);border-radius:14px;padding:14px 18px;background:#fff}
+</style></head><body><div class="wrap">
+<header><div class="brand">BT<span>W</span>N · Bussola</div><div class="eyebrow" style="margin-top:8px">Proposta da validare · non ancora nel gestionale</div><h1>Flusso cliente privato v2: un tronco comune, due binari, punti d'incontro flessibili</h1>
+<p>Riassume le decisioni prese con il titolare. Obiettivo: togliere i doppioni tra arredo e varianti senza perdere controllo, così niente viene dimenticato e ogni attività ha un responsabile chiaro.</p></header>
+
+<div class="grid3">
+<div class="card"><div class="eyebrow">Oggi</div><div class="big">≈ 65</div><p>passaggi tra binario arredo e binario varianti, con doppioni (DWG, brief, schemi impianti, presentazione, verifica/rilievo) e 2–3 passaggi per ogni rata.</p></div>
+<div class="card"><div class="eyebrow">Proposta</div><div class="big">≈ 40</div><p>passaggi da fare, più i <b>controlli automatici</b> che restano visibili (si spuntano da soli, ma se mancano lo vedi).</p></div>
+<div class="card"><div class="eyebrow">Regola d'oro</div><p style="color:var(--ink)"><b>Ogni attività ha un solo responsabile</b>, assegnato in automatico in base al binario. Si può sempre passare a un collega. L'altro binario la vede come <i>"in attesa di …"</i>, senza averla nella sua lista.</p></div>
+</div>
+
+<div class="legend"><span><span class="tag adm">Amministrazione</span> fatture e incassi</span><span><span class="tag auto">Automatico</span> si spunta da solo, resta visibile come controllo</span><span><span class="tag ext">Attesa esterna</span> dipende da altri, non blocca il resto, con sollecito</span><span><span class="tag meet">Punto d'incontro</span> si può fare insieme o separato</span><span><span class="tag opt">Facoltativo</span></span><span><span class="tag new">Nuovo</span> rispetto a oggi</span></div>
+
+<h2>1 · Tronco comune <span style="font-weight:400;color:var(--muted);font-size:13px">· capo commessa, prima che i binari partano</span></h2>
+<div class="card trunk">
+<div class="fase"><span class="n">1</span>Primo contatto</div>
+<ul><li>Chiama il cliente, spiega chi siamo e cosa facciamo (btwn.it/privati)</li><li>Servizi scelti: <b>Home Book</b>, <b>varianti</b>, <b>arredo</b> <span class="tag auto">dalla configurazione</span> → decide quali binari si accendono</li></ul>
+<div class="fase"><span class="n">2</span>Incarico BTWN <span class="tag new">unico</span></div>
+<ul><li>Invia <b>un solo contratto</b> con i servizi scelti (Home Book, varianti o entrambi)</li><li>Contratto firmato ricevuto (caricalo)</li><li><b>Riga di pagamento fee</b> <span class="tag adm">amministrazione</span>: fattura emessa ✓ · incasso ✓. Una sola fattura al cliente con le righe dei servizi; <b>se una parte la paga un altro</b> (es. lo sviluppatore), la fattura per quella parte va a lui in automatico <span class="tag new">nuovo</span></li></ul>
+<div class="fase"><span class="n">3</span>Documenti della casa <span class="tag new">una sola richiesta</span></div>
+<ul><li><b>Da chi arrivano?</b> Cliente · architetto del cliente · impresa · studio di progettazione · <b>non esistono</b></li><li>Se non esistono: <b>rilievo dello stato di fatto</b> fatto da noi (diventa il passaggio successivo)</li><li>Documenti ricevuti (caricali): li vedono entrambi i binari</li><li>Responsabile: <b>chi segue l'arredo</b> se c'è l'Home Book, altrimenti chi segue le varianti (modificabile)</li></ul>
+</div>
+
+<h2>2 · Due binari in parallelo</h2>
+<div class="grid2">
+<div class="card arr"><h3>Binario arredi e Home Book <span class="tag">chi segue l'arredo</span></h3>
+<div class="fase"><span class="n">4</span>Brief arredo <span class="tag meet">punto d'incontro</span></div>
+<ul><li>Brief con il cliente: esigenze, stile, budget</li></ul>
+<div class="fase"><span class="n">5</span>Progetto e preventivo</div>
+<ul><li>Progetta gli arredi (agenzie dei brand <span class="tag opt">facoltativo</span>)</li><li>Inserisci il preventivo · prepara l'Home Book</li><li>Chiedi il preventivo di montaggio alla squadra <span class="tag ext">attesa esterna 3–6 giorni</span>: parte a fine rev. 1, sollecito automatico, <b>non blocca</b> presentazione e modifiche; serve solo prima della firma del contratto arredi</li></ul>
+<div class="fase"><span class="n">6</span>Presentazione <span class="tag meet">punto d'incontro</span></div>
+<ul><li>Fissa e fai la presentazione (Home Book + offerta arredi)</li><li>Modifiche <span class="tag opt">facoltativo</span> → nuova revisione</li><li><b>Layout arredo approvato</b> <span class="tag auto">automatico</span> all'accettazione</li></ul>
+<div class="fase"><span class="n">7</span>Contratto arredi</div>
+<ul><li>Montaggio inserito nell'offerta definitiva <span class="tag auto">controllo</span></li><li>Contratto firmato (caricalo)</li><li>Riga pagamento <b>acconto</b> <span class="tag adm">amministrazione</span></li></ul>
+<div class="fase"><span class="n">8</span>Rilievo <span class="tag meet">punto d'incontro</span> → cruscotto post-rilievo</div>
+<div class="fase"><span class="n">9</span>Ordine</div>
+<ul><li>Riga pagamento <b>acconto all'ordine</b> <span class="tag adm">amministrazione</span> · senza incasso non si ordina</li><li>Invia gli ordini · controlla le conferme · schede di montaggio</li></ul>
+<div class="fase"><span class="n">10</span>Magazzino · <span class="n">11</span>Consegna · <span class="n">12</span>Verbale</div>
+<ul><li>Merce arrivata · riga pagamento <b>saldo</b> <span class="tag adm">amministrazione</span></li><li>Pianifica e fai consegna e montaggio</li><li>Verbale firmato · esito difetti <span class="tag auto">automatico</span></li></ul>
+<div class="fase"><span class="n">13</span>Riordino e ripristino <span class="tag opt">solo se ci sono difetti</span> · <span class="n">14</span>Finito</div>
+</div>
+
+<div class="card var"><h3>Binario varianti <span class="tag">chi segue le varianti</span></h3>
+<p style="margin-bottom:6px">Qui sotto la variante del <b>privato senza cantiere</b>. Le varianti in cantiere hanno un flusso proprio (vedi sezione 5).</p>
+<div class="fase"><span class="n">4</span>Brief varianti <span class="tag meet">punto d'incontro</span></div>
+<ul><li>Richieste di impianto del cliente: quelle legate all'arredo e quelle sganciate (es. presa aspirapolvere in corridoio)</li></ul>
+<div class="fase"><span class="n">5</span>Progetto varianti</div>
+<ul><li>Schema impianti stato di fatto</li><li>Schema impianti di progetto: per le parti legate all'arredo usa il <b>layout approvato</b>. Se il layout non c'è ancora compare un avviso <i>"in attesa del layout arredo"</i>, <b>non un blocco</b>: le richieste sganciate dall'arredo si possono disegnare subito</li><li>Costi dell'impresa del cliente <span class="tag opt">facoltativo</span></li></ul>
+<div class="fase"><span class="n">6</span>Presentazione varianti <span class="tag meet">punto d'incontro</span></div>
+<ul><li>Invia o presenta progetto e costi · modifiche <span class="tag opt">facoltativo</span></li><li>Progetto e costi firmati dal cliente (caricali)</li></ul>
+<div class="fase"><span class="n">7</span>Impresa e cantiere</div>
+<ul><li>Invia il pacchetto all'impresa (o all'architetto del cliente)</li><li>Coordinamento: chiamate e mail con il prossimo richiamo</li><li>L'impresa conferma che è pronto</li></ul>
+<div class="fase"><span class="n">8</span>Verifica <span class="tag meet">punto d'incontro</span></div>
+<ul><li>Verifica a lavori finiti · difformità <span class="tag opt">facoltativo</span> · sistemate <span class="tag auto">controllo</span></li></ul>
+<div class="note" style="margin-top:12px"><b>Senza varianti</b>, gli schemi impianti (stato di fatto, progetto riferito all'arredo, invio al cliente/architetto/impresa) restano nel binario arredi, dopo il contratto: oggi è la fase "Schemi impianti".</div>
+</div>
+</div>
+
+<h2>3 · Punti d'incontro flessibili</h2>
+<div class="meet"><h3>Come funzionano</h3>
+<p style="color:var(--ink)">Brief, presentazione e sopralluogo esistono <b>in tutti e due i binari</b>, ognuno con il suo responsabile. Quando fissi l'appuntamento scegli:</p>
+<ul style="color:var(--ink)"><li><b>Insieme</b> (proposta di default se entrambi i binari sono attivi): un solo appuntamento in agenda con le due persone; quando è fatto si spuntano i passaggi di entrambi i binari.</li><li><b>Separati</b>: ogni binario fissa il suo appuntamento quando vuole. Nessun blocco.</li></ul>
+<table style="margin-top:8px"><tr><th>Punto d'incontro</th><th>Arredi</th><th>Varianti</th><th>Note</th></tr>
+<tr><td><b>Brief</b></td><td>esigenze, stile, budget</td><td>richieste impianti</td><td>Insieme se il cliente ha Home Book e varianti; se separati, le richieste legate all'arredo aspettano il layout</td></tr>
+<tr><td><b>Presentazione</b></td><td>Home Book + offerta</td><td>progetto e costi varianti</td><td>Insieme di default, separabile</td></tr>
+<tr><td><b>Sopralluogo</b></td><td>rilievo misure</td><td>verifica varianti fatte</td><td>Stessa visita quando il cantiere è pronto, separabile</td></tr>
+<tr><td><b>Layout arredo</b></td><td>layout approvato</td><td>schema impianti di progetto</td><td>Solo avviso, mai blocco</td></tr></table></div>
+
+<h2>4 · Pagamenti: una riga per rata <span class="tag new">da provare</span></h2>
+<div class="card"><p style="color:var(--ink)">Oggi ogni rata occupa 2–3 passaggi ("emetti la fattura", "chiedi il pagamento", "hai incassato?"). Proposta: <b>una riga sola</b> per rata, assegnata all'amministrazione, che si aggiorna dai Pagamenti:</p>
+<table><tr><th>Rata</th><th>Fattura</th><th>Incasso</th><th>Effetto</th></tr>
+<tr><td>Fee incarico (Home Book / varianti)</td><td>✓ 12/03</td><td>✗ <span class="tag ext">sollecito tra 3 gg</span></td><td>blocca l'avvio dei binari</td></tr>
+<tr><td>Acconto alla firma</td><td>✓</td><td>✓ 20/03</td><td>fase verde</td></tr>
+<tr><td>Acconto all'ordine</td><td>da emettere</td><td>—</td><td>senza incasso non si ordina</td></tr></table>
+<p>Il blocco sulle fasi resta identico. Spariscono solo i passaggi doppi dalla lista dei to-do. Lo provi su una commessa e decidi.</p></div>
+
+<h2>5 · Varianti: tre situazioni diverse <span style="font-weight:400;color:var(--muted);font-size:13px">· la configurazione della commessa dice quale</span></h2>
+<table><tr><th>Situazione</th><th>Documenti da</th><th>Variante va a</th><th>Chi paga</th><th>Cosa comprende</th></tr>
+<tr><td><b>A · Privato senza cantiere</b></td><td>cliente o suo architetto (spesso niente DWG → rilievo)</td><td>impresa del cliente</td><td>il cliente</td><td>impianti personalizzati</td></tr>
+<tr><td><b>B · Cliente in un cantiere</b></td><td>sviluppatore / impresa</td><td>impresa del cantiere</td><td>cliente, oppure sviluppatore come servizio offerto</td><td>impianti personalizzati</td></tr>
+<tr><td><b>C · Cantiere con accordo quadro</b></td><td>studio di progettazione esecutiva</td><td>impresa del cantiere</td><td>cliente, sviluppatore o ripartito (es. % cliente + % proprietà); più eventuale fee della proprietà per il monitoraggio del cantiere</td><td>impianti (elettrico, idrico) + finiture di capitolato (pavimenti, rivestimenti, sanitari, rubinetterie) + extra capitolato; monitoraggio stato avanzamento</td></tr></table>
+<div class="note"><b>Da approfondire a parte:</b> la situazione C è un flusso più articolato (scelte di capitolato ed extra capitolato, avanzamento delle unità, doppio pagatore). La proposta è di non forzarla in questo schema e disegnarla in una sessione dedicata, insieme alla parte B2B/cantiere ancora da fare. In configurazione: <b>"Chi paga la fee varianti"</b> = cliente · sviluppatore · ripartito (%), e <b>"fee monitoraggio cantiere"</b> a carico della proprietà (sì/no).</div>
+
+<h2>6 · Chi fa cosa</h2>
+<table><tr><th>Attività</th><th>Responsabile automatico</th><th>Modificabile</th></tr>
+<tr><td>Primo contatto, incarico</td><td>capo commessa</td><td>sì, a qualunque collega</td></tr>
+<tr><td>Documenti della casa</td><td>chi segue l'arredo se c'è l'Home Book, altrimenti chi segue le varianti</td><td>sì</td></tr>
+<tr><td>Passaggi del binario arredi</td><td>chi segue l'arredo</td><td>sì, anche il singolo passaggio</td></tr>
+<tr><td>Passaggi del binario varianti</td><td>chi segue le varianti</td><td>sì, anche il singolo passaggio</td></tr>
+<tr><td>Punti d'incontro fatti insieme</td><td>entrambi, ognuno spunta la sua parte</td><td>sì</td></tr>
+<tr><td>Fatture e incassi</td><td>amministrazione</td><td>sì</td></tr></table>
+
+<h2>7 · Cosa non si perde</h2>
+<div class="card"><ul><li>Tutti i blocchi sui pagamenti (nessuna fase avanti senza incasso, nessun ordine senza acconto)</li><li>Fase verde solo se completa; i controlli automatici restano visibili</li><li>Promemoria e solleciti: anche le attese esterne (montaggio, documenti, impresa) hanno la loro data di richiamo</li><li>Le commesse già aperte: i passaggi già fatti restano spuntati, quelli unificati si spuntano se era fatto uno dei due</li></ul></div>
+
+<div class="q" style="margin-top:26px"><h3>Per andare avanti</h3><p style="color:var(--ink)">Se lo schema ti torna, lo porto nel gestionale in quest'ordine: <b>1.</b> tronco comune e incarico unico · <b>2.</b> punti d'incontro insieme/separati · <b>3.</b> righe di pagamento (da provare) · <b>4.</b> montaggio come attesa esterna. La situazione C delle varianti la disegniamo a parte.</p></div>
+</div></body></html>

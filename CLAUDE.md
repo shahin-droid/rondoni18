@@ -13,6 +13,7 @@ non le parole esatte.
 - `gestionale/index.html` – tutta l'app (single page, un solo file: HTML, CSS, JS).
 - `gestionale/SGANCIO-DA-CLAUDE.md` – cosa fare quando l'app esce da Claude e va su un sito nostro.
 - `gestionale/mappa.html`, `gestionale/mappa-b2c.html` – mappe dei flussi.
+- `gestionale/flusso-privato-v2.html` – proposta di flusso privato semplificato (da validare).
 - `gestionale/lib/` – pdf.js. `img/` – immagini.
 
 ## ⚠️ Riservatezza
@@ -106,6 +107,27 @@ Per ogni richiesta:
 - Coordinamento con il cantiere prima della verifica; difformità dopo la verifica, con ticket
   al cantiere (scheda Difformità: aggiungi/modifica/elimina). "Cantiere ha sistemato" non si spunta
   se ci sono difformità aperte.
+
+### Flusso privato v2 (decisioni del titolare, proposta in `gestionale/flusso-privato-v2.html`)
+- **Tronco comune** (capo commessa): primo contatto → **incarico unico** (un contratto con i servizi
+  scelti: Home Book, varianti o entrambi; una fattura con le righe; se una parte la paga un altro,
+  fattura separata a lui) → **documenti della casa richiesti una volta sola**.
+- **DWG nel privato**: spesso non c'è sviluppatore né impresa. Fonte da scegliere: cliente, architetto
+  del cliente, impresa, studio di progettazione, oppure **non esiste → rilievo dello stato di fatto**.
+- **Punti d'incontro flessibili** (brief, presentazione, sopralluogo): insieme di default se entrambi
+  i binari sono attivi, ma sempre separabili. Mai rigidi.
+- Lo schema impianti dipende dal layout arredo, ma alcune richieste sono sganciate (es. presa
+  aspirapolvere): **avviso, non blocco**.
+- **Responsabili**: ognuno fa il suo binario (non tutto al capo commessa); assegnazione automatica
+  per binario, sempre modificabile anche per singolo passaggio.
+- **Preventivo di montaggio**: richiesto a fine rev. 1 a squadra esterna, risponde in 3–6 giorni →
+  attesa esterna con sollecito, non blocca il resto; serve prima della firma del contratto arredi.
+- I controlli automatici restano visibili: non perdere mai il controllo della commessa.
+- Pagamenti come **una riga per rata**: da provare e far validare al titolare.
+- **Varianti, tre situazioni**: A privato senza cantiere (paga il cliente); B cliente in un cantiere
+  (paga cliente o sviluppatore); C cantiere con accordo quadro (impianti + finiture di capitolato ed
+  extra capitolato, pagatore cliente/sviluppatore/ripartito, eventuale fee proprietà per monitoraggio
+  cantiere) → **C va disegnata a parte**, con la parte B2B.
 
 ### File e cartelle
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
