@@ -33,7 +33,7 @@ Per ogni richiesta:
 2. **Prova sempre con Playwright** (Chromium preinstallato) prima di pubblicare.
    Dentro Claude `confirm()` e `alert()` non funzionano: nei test forza
    `window.confirm=()=>true` per simulare l'ambiente reale.
-3. Commit (con le righe di attribuzione) e push sul branch di lavoro.
+3. Commit (con le righe di attribuzione) e push **direttamente su `main`** (deciso dal titolare il 24/11/2026).
 4. Pubblica le due versioni dell'artifact:
    - **prova** (dati di esempio, per provare);
    - **ufficiale** (archivio condiviso con il team, capability `db`).
