@@ -13,7 +13,7 @@ non le parole esatte.
 - `gestionale/index.html` – tutta l'app (single page, un solo file: HTML, CSS, JS).
 - `gestionale/SGANCIO-DA-CLAUDE.md` – cosa fare quando l'app esce da Claude e va su un sito nostro.
 - `gestionale/mappa.html`, `gestionale/mappa-b2c.html` – mappe dei flussi.
-- `gestionale/flusso-privato-v2.html` – proposta di flusso privato semplificato (da validare).
+- `gestionale/flusso-privato-v2.html` – schema del flusso privato v2 (tronco + binari).
 - `gestionale/lib/` – pdf.js. `img/` – immagini.
 
 ## ⚠️ Riservatezza
@@ -108,7 +108,11 @@ Per ogni richiesta:
   al cantiere (scheda Difformità: aggiungi/modifica/elimina). "Cantiere ha sistemato" non si spunta
   se ci sono difformità aperte.
 
-### Flusso privato v2 (decisioni del titolare, proposta in `gestionale/flusso-privato-v2.html`)
+### Flusso privato v2 (in uso dal 24/11/2026; schema in `gestionale/flusso-privato-v2.html`)
+- Nel codice: fasi `contatto`, `homebook` (= Incarico BTWN), `dwg` (= Documenti della casa) sono il
+  **tronco** (`TRONCO`); punti d'incontro in `INCONTRI` (+ `c.insieme`); fonte documenti `c.docFonte`;
+  righe di pagamento = `STEP_PAG` (`hb_pagato` copre rate `hb` e `varianti`), dettaglio in `stepExtra`.
+  Migrazione delle commesse vecchie con `c.wfp4` (le nuove nascono con `wfp2/wfp3/wfp4`).
 - **Tronco comune** (capo commessa): primo contatto → **incarico unico** (un contratto con i servizi
   scelti: Home Book, varianti o entrambi; una fattura con le righe; se una parte la paga un altro,
   fattura separata a lui) → **documenti della casa richiesti una volta sola**.
