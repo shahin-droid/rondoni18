@@ -211,6 +211,18 @@ Per ogni richiesta:
   `autoPassi` (spunte automatiche da rate, documenti, ordini), `avanzaAuto`.
 - Microsoft 365 (Outlook, calendario, Teams, SharePoint) e Fireflies via connettori di Claude (`m365(...)`).
 
+## Dove vive il gestionale (dal 24/11/2026)
+
+- Il gestionale in uso è nell'account **Claude Team "Btwn"**: artifact "BTWN · Bussola – ufficiale" (archivio
+  condiviso, Matteo e Alberto come Contributori) e "BTWN · Bussola – prova", pubblicati dalla sessione Team.
+  Le modifiche si pubblicano **lì**. I vecchi artifact dell'account personale non si usano più.
+- Importati nel Team: rubrica clienti (anche The Green One) e parametri/sconti dei brand. Le commesse si
+  ricreano a mano. Cartella dei lavori collegata: SharePoint › General › LAVORO.
+- Sessione "Programma delle fatture" (sul Mac del titolare, browser): ha esplorato Fattura SMART
+  (vedi sezione Fatture). Struttura export Excel ridotto: intestazioni in riga 4, 20 colonne
+  (Numero, Suffisso, Anno, Data, Tipo Documento, Soggetto, Codice Fiscale, Partita IVA, Imponibile, …,
+  Totale, Ritenuta, Netto a pagare, Note piede, Stato, Stato esito).
+
 ## Da fare (prossimi passi)
 
 - **Fattura SMART**: richiesta API/integrazione inviata al commercialista il 24/11/2026 (da girare a
@@ -218,6 +230,8 @@ Per ogni richiesta:
 
 - Gestione e configurazione della **nuova commessa B2B / cantiere** (ancora da completare).
 - File messi a mano su OneDrive → riconosciuti dal gestionale per spuntare i passaggi (da fare).
-- Claude Team attivato il 24/11/2026 (account aziendale, Matteo e Alberto invitati): da fare la migrazione
-  del gestionale come sopra. Più avanti, sgancio da Claude
+- Pagamenti "una riga per rata": far validare al titolare dopo qualche settimana d'uso.
+- Varianti in cantiere (situazione C) da disegnare insieme alla parte B2B.
+- Ricaricare nel Team le skill (profilo BTWN, prontuari Lema/Flou/Gervasoni) se non ancora fatto.
+- Più avanti, sgancio da Claude
   (vedi `gestionale/SGANCIO-DA-CLAUDE.md`).
