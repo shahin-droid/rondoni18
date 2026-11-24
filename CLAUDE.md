@@ -135,6 +135,7 @@ Per ogni richiesta:
   cantiere) → **C va disegnata a parte**, con la parte B2B.
 
 ### File e cartelle
+- Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
 - Cartella SharePoint/OneDrive della commessa con sottocartelle: BRIEF, DWG, OFFERTA, PRESENTAZIONI,
   CONFERME ORDINE, MONTAGGIO, POST RILIEVO (+ VARIANTI). Dentro Claude il caricamento verso
