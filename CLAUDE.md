@@ -147,6 +147,18 @@ Per ogni richiesta:
   `formBanca`: **propone, l'amministratore conferma** (mai incassi automatici). Movimenti in `S.banca`
   (abbinato / ignorato / da abbinare). Mai committare estratti conto o dati bancari veri.
 
+### Fatture (Fattura SMART – Wolters Kluwer, sme.genya.it)
+- Nessuna API pubblica: si caricano in **Economia → Fatture emesse → "Da Fattura SMART"** gli XML FatturaPA
+  (anche firmati `.p7m`), l'export Excel/CSV (con lo stato SdI) → `caricaFattureSmart` → `formFattureSmart`.
+- Emesse (`S.fatture`, cedente = P.IVA BTWN): cliente per CF/P.IVA (`clienteDaFattura`), rata proposta
+  (`rateCandFatt`); confermando la rata passa a Fatturata con numero/data/`fatturaId`. Stato SdI scartata/
+  mancata consegna/rifiutata → to-do all'amministratore (`avvisiSdi`).
+- Ricevute (`S.fattureRic`): fornitore per P.IVA/nome, collegate a ordine o commessa (`ordiniCandFatt`);
+  il costo reale entra in `costiCommessa`; se diverso dalla conferma d'ordine → to-do di verifica.
+- "XML" sulla rata da emettere (`formFatturaXml`) prepara il file FatturaPA (dentro uno zip) da caricare
+  in Fattura SMART: il numero è solo proposto. Da verificare se Fattura SMART importa XML di fatture attive.
+- Sempre: propone, l'amministratore conferma. Mai fatture vere nel repository (test con XML sintetici).
+
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
 - Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.

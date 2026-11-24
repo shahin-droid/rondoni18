@@ -44,3 +44,8 @@ nostro con un'app registrata nel Microsoft 365 aziendale, ricordarsi di:
 ## Banca
 - Oggi l'estratto conto si carica a mano (PDF o CSV). Con un server nostro: collegamento open banking (PSD2)
   tramite un servizio ponte, movimenti in automatico ogni giorno; l'abbinamento resta da confermare.
+
+## Fatture
+- Oggi le fatture arrivano caricando XML/Excel esportati da Fattura SMART. Se Wolters Kluwer dà un'API o un
+  accesso partner: lettura automatica di emesse, ricevute e stati SdI e creazione delle fatture dal gestionale,
+  passando sempre da `caricaFattureSmart`/`formFattureSmart` (stessi abbinamenti, conferma dell'amministratore).
