@@ -186,6 +186,9 @@ Per ogni richiesta:
 
 ## Da fare (prossimi passi)
 
+- **Fattura SMART**: richiesta API/integrazione inviata al commercialista il 24/11/2026 (da girare a
+  Wolters Kluwer). In attesa di risposta: se c'è un accesso, collegamento automatico dopo lo sgancio.
+
 - Gestione e configurazione della **nuova commessa B2B / cantiere** (ancora da completare).
 - File caricati nel gestionale → automaticamente nella sottocartella SharePoint giusta
   (proposte nuove cartelle CONTRATTI e AMMINISTRAZIONE: da confermare).
