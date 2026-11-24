@@ -2361,7 +2361,7 @@ function movimentiDaTesto(txt){const L=txt.split('\n').map(x=>x.replace(/\s+/g,'
   return out}
 function movimentiDaCsv(txt){const sep=(txt.match(/;/g)||[]).length>(txt.match(/,/g)||[]).length/2?';':',';const rows=txt.split(/\r?\n/).filter(Boolean).map(r=>r.split(sep).map(x=>x.replace(/^"|"$/g,'').trim()));
   const hi=rows.findIndex(r=>r.some(x=>/^data/i.test(x))&&r.some(x=>/entrat|accredit|importo|avere/i.test(x)));if(hi<0)return[];const H=rows[hi].map(x=>x.toLowerCase());
-  const iD=H.findIndex(x=>/^data( contabile| operazione)?$/.test(x))>=0?H.findIndex(x=>/^data( contabile| operazione)?$/.test(x)):H.findIndex(x=>/^data/.test(x));const iE=H.findIndex(x=>/entrat|accredit|avere/.test(x)),iU=H.findIndex(x=>/uscit|addebit|dare/.test(x)),iI=H.findIndex(x=>/^importo/.test(x)),iC=H.findIndex(x=>/descri|causale|operazion/.test(x)&&!/^data/.test(x));
+  const iD=H.findIndex(x=>/^data( contabile| operazione)?$/.test(x))>=0?H.findIndex(x=>/^data( contabile| operazione)?$/.test(x)):H.findIndex(x=>/^data/.test(x));const iE=H.findIndex(x=>/entrat|accredit|avere/.test(x)),iU=H.findIndex(x=>/uscit|addebit|dare/.test(x)),iI=H.findIndex(x=>/^importo/.test(x)),iC=[/descri/,/causale|operazion/].map(re=>H.findIndex(x=>re.test(x)&&!/^data/.test(x))).find(i=>i>=0)??-1;
   return rows.slice(hi+1).map(r=>{let imp=iE>=0&&r[iE]?numBk(r[iE]):iI>=0?numBk(r[iI]):0;if(iE>=0&&!r[iE]&&iU>=0&&r[iU])imp=-Math.abs(numBk(r[iU]));return{data:isoDate(r[iD]||''),importo:imp,desc:(iC>=0?r[iC]:r.join(' ')).replace(/\s+/g,' ')}}).filter(m=>m.data&&m.importo)}
 const movId=m=>m.data+'|'+m.importo.toFixed(2)+'|'+m.desc.slice(0,40).toUpperCase();
 function candidatiRata(m){const D=(m.desc+' '+(m.cerca||'')).toUpperCase();const out=[];
