@@ -70,9 +70,11 @@ Per ogni richiesta:
   Verbale senza difetti → firma → Finito. Dopo Finito le segnalazioni sono **ticket post-vendita**
   (garanzia 24 mesi), la commessa non torna indietro.
 - Il capitolato si chiede solo se arriva dal cantiere.
-- Tempi dopo l'ordine (`SLA_STEP_DEF`, deciso il 25/11/2026): merce in arrivo in **8-9 settimane** → "È arrivata la merce?"
-  scade 60 giorni dall'invio dell'ordine (o alla data di arrivo della conferma d'ordine); controllo conferme 10 giorni,
-  schede di montaggio 30. Modificabili in Impostazioni › Scadenze dei to-do.
+- Tempi dei to-do (`SLA_STEP_DEF`, decisi dal titolare il 25/11/2026; modificabili in Impostazioni › Scadenze dei to-do):
+  merce in arrivo **8-9 settimane** ("È arrivata la merce?" 60 gg dall'invio o data di arrivo della conferma);
+  **conferma d'ordine da ricevere 5 gg** dall'invio (`CONF_RIC_GG`), poi **verifica 2 gg** (`CONF_VER_GG`, data `o.confIl`);
+  **schede di montaggio 3 gg**; **richiesta preventivo di montaggio 2 gg** (`log_prev`), **risposta della squadra 5 gg** (`log_off`);
+  **sollecito al cliente per risposta o firma 4 gg** (`SLA_CLIENTE`: passaggi di firma e conferme "Con il cliente"). Il resto 3 gg.
 
 ### Pagamenti
 - **Un solo piano di rate per commessa** (`rateCommessa`): ogni offerta accettata aggiunge la sua
