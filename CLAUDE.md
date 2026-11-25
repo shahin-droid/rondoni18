@@ -131,8 +131,9 @@ Per ogni richiesta:
   aspirapolvere): **avviso, non blocco**.
 - **Responsabili**: ognuno fa il suo binario (non tutto al capo commessa); assegnazione automatica
   per binario, sempre modificabile anche per singolo passaggio.
-- **Preventivo di montaggio**: richiesto a fine rev. 1 a squadra esterna, risponde in 3–6 giorni →
-  attesa esterna con sollecito, non blocca il resto; serve prima della firma del contratto arredi.
+- **Preventivo di montaggio** (deciso il 25/11/2026): si chiede alla squadra **solo quando il cliente ha detto sì
+  all'offerta arredi senza modifiche** (`accetta`) → primo passaggio della fase Contratto arredi (`log_prev`, entro 2 gg),
+  la squadra risponde entro 5 gg (`log_off`, attesa esterna con sollecito), poi offerta con montaggio e firma (`firma` dopo `log_off`).
 - I controlli automatici restano visibili: non perdere mai il controllo della commessa.
 - Pagamenti come **una riga per rata**: da provare e far validare al titolare.
 - **Varianti, tre situazioni**: A privato senza cantiere (paga il cliente); B cliente in un cantiere
