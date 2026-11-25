@@ -172,7 +172,9 @@ Per ogni richiesta:
 
 ### File e cartelle
 - Contratto del tronco: tipo documento **CONTRATTO INCARICO** (firmato: CONTRATTO INCARICO FIRMATO); comprende i servizi scelti.
-- Nomi dei documenti: `CANTIERE_APT_CLIENTE_DOC`.
+- Nomi dei documenti (`prefissoDoc`, deciso il 25/11/2026): privato **`COGNOME_TIPO`** (mai la città o la via
+  dell'anagrafica); cliente di un cantiere **`SIGLA CANTIERE_UNITÀ_COGNOME_TIPO`** (`c.siglaCantiere`, `c.unitaApt`,
+  nella sezione "Cantiere di provenienza" della commessa). B2B: codice commessa_TIPO.
 - **Formato cartelle BTWN** (lavori nuovi, deciso il 24/11/2026), in SharePoint › General › LAVORO:
   cartella `VIA E CIVICO_COGNOME CLIENTE` (cantieri: `CANTIERE/APT_COGNOME`), sottocartelle `SP_SOTTO`:
   00_INCARICO · 01_DOCUMENTI CASA · 02_BRIEF · 03_PROGETTO (per brand) · 04_OFFERTA · 05_PRESENTAZIONI ·
