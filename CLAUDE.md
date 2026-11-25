@@ -147,6 +147,11 @@ Per ogni richiesta:
   chi, referente, data, confermata, sollecito, storico). Finché non è confermato c'è un to-do di sollecito;
   "Rispondi al cliente" prepara la mail su quando si fa il rilievo. Con le varianti e il sopralluogo
   insieme, "cantiere pronto" (`var_pronto`) e casa rilevabile si spuntano a vicenda.
+- **Data master del cantiere** (25/11/2026): per i clienti di un cantiere (stessa sigla, `siglaCantiere`) la data in cui è
+  rilevabile si registra una volta per tutto il cantiere (`S.rilCantiere[sigla]`, "Vale per: Tutto il cantiere") e scende
+  su tutti gli appartamenti, anche quelli creati dopo (`rilDaMaster`). Un appartamento può avere una data propria
+  (`c.rilevabile.proprio`, "Solo questo appartamento") e tornare alla data del cantiere. Il to-do "casa rilevabile?"
+  non scade prima della data prevista. Primo uso: cantiere Blossom (rilevabile dal 10/01/2027).
 
 ### Banca
 - Estratto conto (PDF Banco BPM o CSV dell'home banking) caricato in **Economia** → `movimentiDaTesto` /
