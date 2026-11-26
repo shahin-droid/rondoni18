@@ -131,6 +131,11 @@ Per ogni richiesta:
   e si **assegnano agli appartamenti** dove vanno bene (`u.dpAss` per posto: Cucina, Armadio, Armadio 2, …; "Assegna" su più
   appartamenti insieme o la matrice "Arredi tipo per appartamento"). Il pack di un appartamento = somma degli arredi tipo
   assegnati (`dpRighe`) + eventuali voci in più solo sue. Cambiando un arredo tipo cambiano tutti i pack che lo usano.
+- **Preventivi PDF del brand** (Pensare Casa fa un PDF per appartamento): "Carica i preventivi PDF del brand" (`dpPdf`, anche
+  molti file insieme) legge "APPARTAMENTO P-01.01", le sezioni e per ogni voce descrizione, "Totale Listino € X + IVA" e
+  "Prezzo Between € Y + IVA", più il trasporto e montaggio (`pdfRigheCol`, `pcParse`, `pcCat`). Trova l'unità (`normCod`:
+  P-01.01 = P-1-01), crea o riusa gli arredi tipo nell'abaco (stessa categoria + descrizione + listino = stesso arredo) e li
+  assegna (`pcApplica`). Listini convertiti IVA inclusa, sconto d'acquisto = 1 − prezzo/listino. Lo sconto cliente va messo a mano.
 - Ogni appartamento ha il **suo pack** (`u.dp.righe`: categoria `CAT_DP`, brand, q.tà, listino, sconto d'acquisto dal brand,
   flag "Fissi", "Sc. cliente %" per riga → offerta calcolata `offA` se non scritta a mano); due offerte: **Full pack** (`u.dp.off`) e **Arredi fissi** (`u.dp.offFissi`). Importi **IVA inclusa**,
   trasporto e montaggio compresi, come nel Design Pack presentato (`dpK`).
