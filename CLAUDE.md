@@ -104,6 +104,12 @@ Per ogni richiesta:
   comodino, scrivania) e testo libero.
 - Riordini: Binova dal portale, Lema via mail. Nessuna trattenuta al cliente.
 
+### Arredo a capitolato: chi paga (deciso 26/11/2026)
+- Nella commessa si sceglie **solo il metodo** (`capFormula`, `capFormOpts`): nel prezzo di vendita (tutto lo sviluppatore),
+  on top (tutto l'acquirente) oppure **"Quota per appartamento"** (`CAP_QUOTA_U`, `isQuotaU`). La cifra dello sviluppatore
+  **non è uguale per tutti**: si scrive su ogni appartamento (`u.dpQuota`, colonna "Quota sviluppatore" nel Capitolato);
+  il resto lo paga l'acquirente nella personalizzazione (`quotaSvilU`). "Metà e metà" resta solo per le commesse vecchie.
+
 ### Design Pack per appartamento (B2B, accordo quadro Design Pack, deciso il 26/11/2026)
 - Commessa B2B con servizio Leve commerciali e formula **`designpack`** (`isDP`): scheda "Design Pack" (`dpView`).
   Primo uso: operazione di uno sviluppatore con 27 unità, arredi del gruppo IMAB / Pensare Casa (ogni brand il suo sconto).
