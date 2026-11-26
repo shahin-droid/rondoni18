@@ -120,7 +120,7 @@ Per ogni richiesta:
 ### Pack fatti dal brand (deciso 26/11/2026)
 - Fase "Capitolati arredi" del B2B: "Chi prepara i pack" = noi oppure **il brand o le sue agenzie** (`c.progChi`, `c.progBrand`,
   `progBrand`). Se è il brand i passaggi diventano "Mandati a [brand] DWG e tipologici" (`op_pack_rich`, 2 gg) →
-  "Ricevuti da [brand] i pack" (`op_pacchetti`, attesa esterna, `c.progGiorni` default 10 gg, poi "sollecita") →
+  "Ricevuti da [brand] i pack" (`op_pacchetti`, attesa esterna, `c.progData` data prevista di ricezione, se manca 10 gg dalla richiesta; poi "sollecita") →
   "Controllati progetti e preventivi ricevuti". Chi li segue (es. Matteo) si assegna sul passaggio.
 
 ### Design Pack per appartamento (B2B, accordo quadro Design Pack, deciso il 26/11/2026)
