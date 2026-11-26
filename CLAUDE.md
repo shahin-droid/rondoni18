@@ -110,6 +110,12 @@ Per ogni richiesta:
   **non è uguale per tutti**: si scrive su ogni appartamento (`u.dpQuota`, colonna "Quota sviluppatore" nel Capitolato);
   il resto lo paga l'acquirente nella personalizzazione (`quotaSvilU`). "Metà e metà" resta solo per le commesse vecchie.
 
+### Ordine delle fasi B2B (WF_PACK, deciso 26/11/2026)
+- Contatto → Presentazione servizi → Arredo a capitolato (metodo) → Parte documentale (DWG) → **Simulazioni** (`op_simul`:
+  1–2 tipologici campione, simulazioni, presentate, ok dello sviluppatore) → **Accordo quadro** (inviato, firmato) →
+  Capitolati arredi (tutti i tipologici / design pack) → Progetti e preventivi → Offerta → Personalizzazioni → …
+  Le commesse create prima si spostano da sole alla fase giusta (`c.wfpk2`).
+
 ### Pack fatti dal brand (deciso 26/11/2026)
 - Fase "Capitolati arredi" del B2B: "Chi prepara i pack" = noi oppure **il brand o le sue agenzie** (`c.progChi`, `c.progBrand`,
   `progBrand`). Se è il brand i passaggi diventano "Mandati a [brand] DWG e tipologici" (`op_pack_rich`, 2 gg) →
