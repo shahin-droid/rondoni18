@@ -110,6 +110,12 @@ Per ogni richiesta:
   **non è uguale per tutti**: si scrive su ogni appartamento (`u.dpQuota`, colonna "Quota sviluppatore" nel Capitolato);
   il resto lo paga l'acquirente nella personalizzazione (`quotaSvilU`). "Metà e metà" resta solo per le commesse vecchie.
 
+### Pack fatti dal brand (deciso 26/11/2026)
+- Fase "Capitolati arredi" del B2B: "Chi prepara i pack" = noi oppure **il brand o le sue agenzie** (`c.progChi`, `c.progBrand`,
+  `progBrand`). Se è il brand i passaggi diventano "Mandati a [brand] DWG e tipologici" (`op_pack_rich`, 2 gg) →
+  "Ricevuti da [brand] i pack" (`op_pacchetti`, attesa esterna, `c.progGiorni` default 10 gg, poi "sollecita") →
+  "Controllati progetti e preventivi ricevuti". Chi li segue (es. Matteo) si assegna sul passaggio.
+
 ### Design Pack per appartamento (B2B, accordo quadro Design Pack, deciso il 26/11/2026)
 - Commessa B2B con servizio Leve commerciali e formula **`designpack`** (`isDP`): scheda "Design Pack" (`dpView`).
   Primo uso: operazione di uno sviluppatore con 27 unità, arredi del gruppo IMAB / Pensare Casa (ogni brand il suo sconto).
