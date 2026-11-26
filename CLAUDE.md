@@ -54,6 +54,8 @@ Per ogni richiesta:
   (`mailOutlook`, conversione base64 manuale, `scaricaStampa`/`dlPronto`).
   Anche le chiamate a siti esterni sono bloccate (es. ricerca indirizzi OpenStreetMap in `wireIndirizzo`):
   dentro Claude l'indirizzo si scrive a mano e resta il link "Vedi su Google Maps" (Street View da lì).
+- **ESC disattivato** (26/11/2026): non chiude le finestre né fa uscire dalla pagina (si perdeva il lavoro); chiude solo
+  menu e ingrandimenti. Le finestre si chiudono con Annulla o Salva.
 - L'intestazione della commessa resta visibile scorrendo (sticky, senza sfarfallio).
 - Le fasi completate si chiudono (`details.fase-chiusa`); i binari arredi/varianti scorrono separati.
 
