@@ -2249,7 +2249,7 @@ const r2=v=>Math.round((+v||0)*100)/100;
 function dpCalc(c,u){const dp=u.dp||{},R=dp.righe||[],k=dpK(c);let L=0,C=0,Lf=0,Cf=0;
   R.forEach(r=>{const l=(r.qta===''||r.qta==null?1:+r.qta)*(+r.listino||0),co=l/k*(1-pct(r.scAcq));L+=l;C+=co;if(r.fisso){Lf+=l;Cf+=co}});
   if(!R.length&&+dp.listinoMan)L=+dp.listinoMan;
-  const q=+u.dpQuota||0,off=dp.off!=null&&dp.off!==''?+dp.off:L,offF=dp.offFissi!=null&&dp.offFissi!==''?+dp.offFissi:Lf;
+  const q=+u.dpQuota||0,off=dp.off!=null&&dp.off!==''?+dp.off:0,offF=dp.offFissi!=null&&dp.offFissi!==''?+dp.offFissi:0;
   return{L,C,Lf,Cf,q,off,cli:Math.max(0,off-q),sc:L?(1-(off-q)/L)*100:0,scOff:L?(1-off/L)*100:0,marg:R.length?off/k-C:null,offF,cliF:offF?Math.max(0,offF-q):0,righe:R.length}}
 const isoMesi=(d,m)=>{if(!d)return'';const x=new Date(d+'T12:00:00');x.setMonth(x.getMonth()+(+m||0));return x.toISOString().slice(0,10)};
 const dpMaturata=u=>!!(u.dpAdesione&&u.preliminare);
