@@ -470,6 +470,7 @@ function render(){
   if(r.view==='verbale'){const c=commessa(r.id);sub=c?` / <a href="#/commessa/${c.id}/workflow" style="color:inherit">${esc(c.nome)}</a> / <b>Verbale</b>`:''}
   if(r.view==='postrilievo'){const c=commessa(r.id);sub=c?` / <a href="#/commessa/${c.id}/preventivi" style="color:inherit">${esc(c.nome)}</a> / <b>Cruscotto post-rilievo</b>`:''}
   if(r.view==='preventivo'){const p=byId('preventivi',r.id),c=p&&commessa(p.commessaId);sub=c?` / <a href="#/commessa/${c.id}/preventivi" style="color:inherit">${esc(c.nome)}</a> / <b>${esc(p.titolo)} rev.${p.rev}</b>`:''}
+  const scrBin=render.keepScroll?[...document.querySelectorAll('.binario')].map(b=>b.scrollTop):null,scrWin=window.scrollY;
   $('#app').innerHTML=`
   <aside class="sidebar" id="sidebar"><div class="brand">BT<span>W</span>N<small>BUSSOLA · GESTIONALE</small></div>
     <nav>${NAV.filter(([k])=>k!=='economia'||isAdmin()).map(([k,i,l])=>`<button class="${navKey===k?'active':''}" data-act="nav" data-h="#/${k}">${ic(i)}${l}${k==='dashboard'&&nAl?` <span class="tag amber" style="margin-left:auto">${nAl}</span>`:''}</button>`).join('')}</nav>
@@ -480,7 +481,8 @@ function render(){
   <main class="main" id="main">${fn(r)}</main></div>`;
   if(fk){const el=document.querySelector(`[data-r="${fk[0]}"][data-f="${fk[1]}"]`);if(el){el.focus();if(el.select)el.select()}}else if(!render.keepScroll)window.scrollTo(0,0);
   if(!render.keepScroll)document.querySelectorAll('.binario').forEach(b=>{const cur=[...b.querySelectorAll('.panel')].find(p=>{const h=p.querySelector('.panel-head');return h&&/fase attuale/.test(h.textContent)});if(cur)b.scrollTop=Math.max(0,cur.offsetTop-b.offsetTop-30)});
-  render.keepScroll=false;if(!document.querySelector('.comm-top')){document.body.classList.remove('scrolled');document.body.style.paddingBottom=''}commTopSync();
+  if(scrBin){document.querySelectorAll('.binario').forEach((b,i)=>{if(scrBin[i]!=null)b.scrollTop=scrBin[i]});}
+  render.keepScroll=false;if(!document.querySelector('.comm-top')){document.body.classList.remove('scrolled');document.body.style.paddingBottom=''}commTopSync();if(scrBin&&Math.abs(window.scrollY-scrWin)>2){window.scrollTo(0,scrWin);requestAnimationFrame(()=>{if(Math.abs(window.scrollY-scrWin)>2)window.scrollTo(0,scrWin)})}
   if(r.view==='economia')wireEconomia();
 }
 window.addEventListener('hashchange',()=>render());
@@ -1399,7 +1401,7 @@ function openForm({title,fields,values={},onSave,calc,onDelete,intro,regole,okLa
   d.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>d.close());
   if(onDelete)$('#mdel').onclick=()=>{if(confirm('Eliminare definitivamente?')){onDelete();save();d.close();render();toast('Eliminato')}};
   form.onsubmit=e=>{e.preventDefault();const o=read();const miss=fields.filter(f=>f.req&&(o[f.k]===''||o[f.k]==null)).map(f=>f.l);if(miss.length){$('#formErr').innerHTML=`<div class="error">Compila: ${miss.join(', ')}</div>`;return}
-    const res=onSave(o);if(res===false)return;save();d.close();render();toast('Salvato')};
+    const h0=location.hash;const res=onSave(o);if(res===false)return;save();d.close();if(location.hash===h0)render.keepScroll=true;render();toast('Salvato')};
   cercaSelect(d);d.showModal();
   if(regole)dipendenze(form,regole);
   const first=form.querySelector('input:not([type=checkbox]):not([disabled]),select,textarea');if(first)first.focus();

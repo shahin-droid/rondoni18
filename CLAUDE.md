@@ -46,7 +46,8 @@ Per ogni richiesta:
 ### Interfaccia
 - **Nomi dei clienti sempre in MAIUSCOLO.**
 - Le opzioni escluse o non pertinenti sono **in grigio o nascoste**, mai cliccabili a vuoto.
-- Dopo un'azione **resta sulla stessa pagina** (usa `render.keepScroll=true`), non saltare altrove.
+- Dopo un'azione **resta sulla stessa pagina e nello stesso punto** (`render.keepScroll=true`): dopo il salvataggio di
+  una finestra `openForm` lo fa da solo se la pagina non cambia, e `render` ripristina anche lo scorrimento dei binari.
 - Testi semplici, da ufficio, non tecnici. Ogni finestra spiega cosa succede dopo.
 - Dentro Claude: **niente `alert`/`confirm`/`prompt`** per decisioni importanti
   (sono disattivati e rispondono sempre "sì"). Usa `openForm(...)` con messaggi nella pagina.
