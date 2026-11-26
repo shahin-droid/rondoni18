@@ -118,6 +118,13 @@ Per ogni richiesta:
   corrispettivo: rata allo sviluppatore (`dpUnita`). Nasce la personalizzazione (`p.dp`): righe del pack come "capitolato",
   più la riga "prezzo riservato" (al cliente). Il cliente può togliere arredi (**il valore tolto resta nel conteggio**) e
   cambiarli: paga solo il **differenziale di listino** in più; di base puro differenziale (`scDiff` 0), lo sconto si decide dopo.
+- **Logica** (titolare 26/11/2026): commessa = cantiere (es. 27 unità); ogni unità ha codice, quota sviluppatore, il suo
+  design pack con gli item e il prezzo per l'acquirente. Quando l'acquirente aderisce l'unità diventa **"B27 · ROSSI MARIO"**
+  (`unitaNome`) e parte la sua gestione: personalizzazione, nuove revisioni (rev. 2…) sul suo preventivo.
+- **Rate dell'acquirente separate per appartamento** (`rateUnita`, piano "Fornitura privati" 20/40/40): all'accettazione
+  della personalizzazione ogni acquirente ha le sue rate, legate all'unità e intestate a lui (`dpCliente`, `dpSlot`).
+  Eccezione voluta a "un solo piano per commessa". Una revisione accettata aggiorna le rate non fatturate; se una parte è
+  già fatturata la differenza va in "(integrazione)". Le rate dello sviluppatore (quota, forfait) restano a parte.
 - **Garanzia minima / forfait** (art. 6.3): interruttore "C'è un forfait" (`c.dpForfaitOn`) e una **frase da completare**
   come nel contratto (`dpFrase`): "Se entro [8] mesi dalla consegna dei materiali ([data]) non ci sono almeno [4] appartamenti
   con preliminare e adesione, lo sviluppatore paga [6.000] € + IVA" + riga "Quindi: scadenza…". Promemoria all'amministratore
@@ -267,7 +274,7 @@ Per ogni richiesta:
   Wolters Kluwer). In attesa di risposta: se c'è un accesso, collegamento automatico dopo lo sgancio.
 
 - Gestione e configurazione della **nuova commessa B2B / cantiere**: Design Pack per appartamento fatto (26/11/2026);
-  da decidere: rate degli acquirenti separate per appartamento (oggi confluiscono nel piano della commessa B2B).
+  rate per acquirente fatte. Da capire con l'uso come gestire le revisioni della personalizzazione (rev. 2).
 - File messi a mano su OneDrive → riconosciuti dal gestionale per spuntare i passaggi (da fare).
 - Pagamenti "una riga per rata": far validare al titolare dopo qualche settimana d'uso.
 - Varianti in cantiere (situazione C) da disegnare insieme alla parte B2B.
