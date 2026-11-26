@@ -102,6 +102,22 @@ Per ogni richiesta:
   comodino, scrivania) e testo libero.
 - Riordini: Binova dal portale, Lema via mail. Nessuna trattenuta al cliente.
 
+### Design Pack per appartamento (B2B, accordo quadro Design Pack, deciso il 26/11/2026)
+- Commessa B2B con servizio Leve commerciali e formula **`designpack`** (`isDP`): scheda "Design Pack" (`dpView`).
+  Primo uso: operazione di uno sviluppatore con 27 unità, arredi del gruppo IMAB / Pensare Casa (ogni brand il suo sconto).
+- Ogni appartamento ha il **suo pack** (`u.dp.righe`: categoria `CAT_DP`, brand, q.tà, listino, sconto d'acquisto dal brand,
+  flag "Fissi"); due offerte: **Full pack** (`u.dp.off`) e **Arredi fissi** (`u.dp.offFissi`). Importi **IVA inclusa**,
+  trasporto e montaggio compresi, come nel Design Pack presentato (`dpK`).
+- **Quota dello sviluppatore** per unità (`u.dpQuota`, 2.000–3.000 €): **al cliente = offerta − quota** (come nell'Excel
+  "listino / offerta / offerta al cliente"). Unità, tipologie e quote si incollano dall'Excel (`dpImporta`: codice ·
+  tipologia · quota · listino · offerta). L'Excel vero resta al titolare: mai nel repository.
+- **Adesione** (`dpAdesione`): acquirente, pack scelto, data adesione e preliminare. Con preliminare + adesione matura il
+  corrispettivo: rata allo sviluppatore (`dpUnita`). Nasce la personalizzazione (`p.dp`): righe del pack come "capitolato",
+  più la riga "prezzo riservato" (al cliente). Il cliente può togliere arredi (**il valore tolto resta nel conteggio**) e
+  cambiarli: paga solo il **differenziale di listino** in più; di base puro differenziale (`scDiff` 0), lo sconto si decide dopo.
+- **Forfait** (art. 6.3): 6.000 € + IVA, non dovuto se almeno 4 unità con preliminare + adesione entro 8 mesi dalla consegna
+  dei materiali (`c.dpConsegna`, `dpForfait`); scaduto → "Crea la rata del forfait".
+
 ### Verbale di fine lavori
 - Squadre con smartphone: pagina verbale digitale con foto; anche versione cartacea.
 - "Nessun difetto" è sempre possibile.
@@ -245,7 +261,8 @@ Per ogni richiesta:
 - **Fattura SMART**: richiesta API/integrazione inviata al commercialista il 24/11/2026 (da girare a
   Wolters Kluwer). In attesa di risposta: se c'è un accesso, collegamento automatico dopo lo sgancio.
 
-- Gestione e configurazione della **nuova commessa B2B / cantiere** (ancora da completare).
+- Gestione e configurazione della **nuova commessa B2B / cantiere**: Design Pack per appartamento fatto (26/11/2026);
+  da chiarire con il titolare se la quota sviluppatore si toglie IVA inclusa (come nell'Excel) o è "oltre IVA" (accordo).
 - File messi a mano su OneDrive → riconosciuti dal gestionale per spuntare i passaggi (da fare).
 - Pagamenti "una riga per rata": far validare al titolare dopo qualche settimana d'uso.
 - Varianti in cantiere (situazione C) da disegnare insieme alla parte B2B.
