@@ -127,7 +127,7 @@ Per ogni richiesta:
 - Commessa B2B con servizio Leve commerciali e formula **`designpack`** (`isDP`): scheda "Design Pack" (`dpView`).
   Primo uso: operazione di uno sviluppatore con 27 unità, arredi del gruppo IMAB / Pensare Casa (ogni brand il suo sconto).
 - Ogni appartamento ha il **suo pack** (`u.dp.righe`: categoria `CAT_DP`, brand, q.tà, listino, sconto d'acquisto dal brand,
-  flag "Fissi"); due offerte: **Full pack** (`u.dp.off`) e **Arredi fissi** (`u.dp.offFissi`). Importi **IVA inclusa**,
+  flag "Fissi", "Sc. cliente %" per riga → offerta calcolata `offA` se non scritta a mano); due offerte: **Full pack** (`u.dp.off`) e **Arredi fissi** (`u.dp.offFissi`). Importi **IVA inclusa**,
   trasporto e montaggio compresi, come nel Design Pack presentato (`dpK`).
 - **Quota dello sviluppatore** per unità (`u.dpQuota`, 2.000–3.000 €) **+ IVA**: BTWN la fattura allo sviluppatore come
   consulenza commerciale strategica (deciso 26/11/2026). **Al cliente = offerta − quota** (come nell'Excel
