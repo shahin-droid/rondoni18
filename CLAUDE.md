@@ -126,6 +126,11 @@ Per ogni richiesta:
 ### Design Pack per appartamento (B2B, accordo quadro Design Pack, deciso il 26/11/2026)
 - Commessa B2B con servizio Leve commerciali e formula **`designpack`** (`isDP`): scheda "Design Pack" (`dpView`).
   Primo uso: operazione di uno sviluppatore con 27 unità, arredi del gruppo IMAB / Pensare Casa (ogni brand il suo sconto).
+- **Si parte dall'abaco** (deciso dal titolare 26/11/2026): dall'analisi dei DWG si creano gli **arredi tipo** della commessa
+  (`c.dpAbaco`: K1 cucina 3 m, ARM1, B1, divano, tavolo, sedie… con brand, listino, sconto d'acquisto, sconto cliente, "Fissi")
+  e si **assegnano agli appartamenti** dove vanno bene (`u.dpAss` per posto: Cucina, Armadio, Armadio 2, …; "Assegna" su più
+  appartamenti insieme o la matrice "Arredi tipo per appartamento"). Il pack di un appartamento = somma degli arredi tipo
+  assegnati (`dpRighe`) + eventuali voci in più solo sue. Cambiando un arredo tipo cambiano tutti i pack che lo usano.
 - Ogni appartamento ha il **suo pack** (`u.dp.righe`: categoria `CAT_DP`, brand, q.tà, listino, sconto d'acquisto dal brand,
   flag "Fissi", "Sc. cliente %" per riga → offerta calcolata `offA` se non scritta a mano); due offerte: **Full pack** (`u.dp.off`) e **Arredi fissi** (`u.dp.offFissi`). Importi **IVA inclusa**,
   trasporto e montaggio compresi, come nel Design Pack presentato (`dpK`).
