@@ -2333,6 +2333,7 @@ function pcApplica(c,u,P,brand){const k=dpK(c);c.dpAbaco=c.dpAbaco||[];const nd=
   const voci=P.items.map(x=>({cat:pcCat(x.sez,x.desc),desc:x.desc,listino:x.listino,prezzo:x.prezzo}));if(P.mont)voci.push({cat:'Trasporto e montaggio',desc:'Servizio di trasporto e montaggio',listino:P.mont,prezzo:P.mont});
   voci.forEach(v=>{const L=r2(v.listino*k),sc=v.listino&&v.prezzo!=null?r2((1-v.prezzo/v.listino)*100):'';
     let x=c.dpAbaco.find(y=>y.cat===v.cat&&nd(y.desc)===nd(v.desc)&&Math.abs((+y.listino||0)-L)<0.6);
+    if(!x){x=c.dpAbaco.find(y=>y.cat===v.cat&&!y.desc&&(y.listino===''||y.listino==null)&&!dpNAss(c,y.id));if(x)Object.assign(x,{desc:v.desc,brand,listino:L,scAcq:sc,fonte:'PDF'})}
     if(!x){const pre=DP_PREF[v.cat]||'X';let n=c.dpAbaco.filter(y=>y.cat===v.cat).length+1;while(c.dpAbaco.some(y=>y.codice===pre+n))n++;x={id:uid(),cat:v.cat,codice:pre+n,desc:v.desc,brand,listino:L,scAcq:sc,scCli:'',fisso:CAT_DP_FISSI.includes(v.cat),qta:1,fonte:'PDF'};c.dpAbaco.push(x);nuovi++}
     let slot=v.cat,i=2;while(u.dpAss[slot])slot=v.cat+' '+(i++);u.dpAss[slot]={id:x.id,qta:1};ass.push(x.codice)});
   u.dpFonte={tipo:'PDF '+brand,il:today(),listino:r2(P.items.reduce((a,x)=>a+(x.listino||0),0)),prezzo:r2(P.items.reduce((a,x)=>a+(x.prezzo||0),0)),mont:P.mont||0};dpAggiorna(c,u);return{nuovi,ass}}
